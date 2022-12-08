@@ -1,28 +1,22 @@
-#include<stdio.h>
-int main(){
-    int a[15],b,x,y=0;
-    scanf("%d",&x);
-    for(int i=0;i<x;i++){
-        scanf("%d",&a[i]);
-    }
-    scanf("%d",&b);
-    for(int i=0;i<x;i++){
-        if(b<a[i]){
-for(int t=x;t>=i;t--){
-    a[t]=a[t-1];
+#include <stdio.h>
+
+double mypow( double x, int n );
+
+int main()
+{
+    double x;
+    int n;
+
+    scanf("%lf %d", &x, &n);
+    printf("%f\n", mypow(x, n));
+
+    return 0;
 }
-a[i]=b;
-y=1;
-break;
-        }
-        
+
+double mypow( double x, int n ){
+    double a=1;
+    for(int i=0;i<n;i++){
+        a*=x;
     }
-    if(y==0){
-        a[x]=b;
-    }
-    if(x==0)
-    a[0]=b;
-    for(int i=0;i<x+1;i++){
-        printf("%d ",a[i]);
-    }
+    return a;
 }

@@ -1,34 +1,34 @@
-#include<stdio.h>
-//交换函数t
-int main(){
-    int t,a[15],b,c,i,max,min,x;
-    scanf("%d",&x);
-    for(i=0;i<x;i++){
-        scanf("%d",&a[i]);
-    }
+#include <stdio.h>
+
+int fib( int n );
+void PrintFN( int m, int n );
     
-    min=a[0];
-    for(i=0;i<x;i++){
-        if(a[i]<min){
-            min=a[i];
-            c=i;
-        }
-    }
-    t=a[0];
-    a[0]=a[c];
-    a[c]=t;
-    max=a[0];
-        for(i=0;i<x;i++){
-        if(a[i]>max){
-            max=a[i];
-            b=i;
-        }
-    }
-    t=a[x-1];
-    a[x-1]=a[b];
-    a[b]=t;
-    
-     for(i=0;i<x;i++){
-        printf("%d",a[i]);
-    }
+int main()
+{
+    int m, n, t;
+
+    scanf("%d %d %d", &m, &n, &t);
+    printf("fib(%d) = %d\n", t, fib(t));
+    PrintFN(m, n);
+
+    return 0;
+}
+
+int fib( int n ){
+if(n==1||n==2)
+return 1;
+else
+return fib(n-1)+fib(n-2);
+}
+
+void PrintFN( int m, int n ){
+int item=0,j=1; 
+while (fib(j)<m) j++;
+while (fib(j)<=n){
+    if (item==0) printf ("%d", fib(j));
+    else printf (" %d", fib(j));
+    item=1;
+    j++;
+}
+if (!item) printf ("No Fibonacci number");
 }
