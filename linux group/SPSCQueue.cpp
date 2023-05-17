@@ -2,6 +2,7 @@
 #include <string>
 #include <queue>
 #include<pthread.h>
+#include<iostream>
 //#include <mutex>
 //#include <condition_variable>
 using namespace std;
@@ -45,7 +46,7 @@ pthread_t con,pro;
         }
         now--;
         unique_ptr<char> value= move(queue_.front());
-        queue_.pop();
+        queue_.pop();//
         pthread_mutex_unlock(&mutex);
         pthread_cond_signal(&cond);
         return value;
@@ -59,20 +60,22 @@ void *producer(void *arg){
         unique_ptr<char> pchar(new char(i));
         Push(pchar);
     }        
+    cout<<endl;
     }
 
 }
 
 void *consumer(void *arg){
     while(1){
-        printf("%c\n",*(Pop().release()));
+        printf("%c ",*(Pop()));
     }
 }
 
 int main(){
     int num=0;
     //scanf("num & max:%d%d",&num,&max);
-    scanf("max:%d",&max_);
+    //scanf("max:%d",&max_);
+    cin>>max_;
     pthread_t con,pro;
         pthread_create(&pro,nullptr,producer,nullptr);
         pthread_create(&con,nullptr,consumer,nullptr);
