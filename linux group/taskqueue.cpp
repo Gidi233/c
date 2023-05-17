@@ -2,86 +2,79 @@
 #include <string>
 #include <queue>
 #include<pthread.h>
-#include <mutex>
-#include <condition_variable>
+//#include <mutex>
+//#include <condition_variable>
 using namespace std;
-
-// // Single-producer , single-consumer Queue
-// template<class T>
-// class SPSCQueue {
-// public:
-//     explicit SPSCQueue(int capacity);
-//     virtual bool Push(std::unique_ptr<T>) = 0;
-//     virtual std::unique_ptr<T> pop() = 0;
-//     virtual ~SPSCQueue() = 0;
-// };
-
-
-
 
 
 template <typename T>
 class SPSCQueue {
 public:
-    explicit SPSCQueue(int capacity) : max_(capacity) {}
+    SPSCQueue(int capacity) : max_(capacity) {}
 
-    bool Push(unique_ptr<T> value) {
+    bool Push(T value) {
         pthread_mutex_lock(&mutex);
         while (queue_.size() >= max_) {
             pthread_cond_wait(&cond,&mutex);
         }
         now++;
-        queue_.push(value);
+        queue_.push(move(value));
         pthread_mutex_unlock(&mutex);
         pthread_cond_signal(&cond);
         return true;
     }
 
-    unique_ptr<T> Pop() {
+    T Pop() {
         pthread_mutex_lock(&mutex);
         while (queue_.empty()) {
             pthread_cond_wait(&cond,&mutex);
         }
         now--;
-        value = move(queue_.front());
+        T value = move(queue_.front());
         queue_.pop();
         pthread_mutex_unlock(&mutex);
         pthread_cond_signal(&cond);
         return value;
     }
 
-    ~MPMCQueue(){}
+    ~SPSCQueue(){}
 
 private:
     int max_,now=0;
     queue<T> queue_;
-    pthread_mutex_t mutex;
-    pthread_cond_t cond;
-    unique_ptr<T> value;
+    pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
+    pthread_cond_t cond=PTHREAD_COND_INITIALIZER;
+    //unique_ptr<T> value;
 };
 
-//Multi-producer , Multi-consumer Queue
-// template<class T>
-// class MPMCQueue {
-// public:
-//     explicit MPMCQueue(int capacity);
-//     virtual bool Push(std::unique_ptr<T>) = 0;
-//     virtual std::unique_ptr<T> pop() = 0;
-//     virtual ~MPMCQueue() = 0;
-// };
+void *producer(void *arg){
+    while(1){
+    for(char i='a';i<'z';i++){
+        unique_ptr<char> pchar(new char(i));
+        ((SPSCQueue<unique_ptr<char>> *)arg)->Push(move(pchar));
+    }        
+    }
+
+}
+
+void *consumer(void *arg){
+    while(1){
+        printf("%c\n",*(((SPSCQueue<unique_ptr<char>> *)arg)->Pop()));
+    }
+}
 
 int main(){
-    int num=0;
-    //scanf("num & max:%d%d",&num,&max);
+    int num=1,max;
     scanf("max:%d",&max);
+    SPSCQueue<unique_ptr<char>> dan(max);
     pthread_t con[100],pro[100];
     for(int i=0;i<num;i++){
-        pthread_create(&pro[i],nullptr,producer,nullptr);
-        pthread_create(&con[i],nullptr,consumer,nullptr);
+        pthread_create(&pro[i],nullptr,producer,&dan);
+        pthread_create(&con[i],nullptr,consumer,&dan);
     }
     for(int i=0;i<num;i++){
-        pthread_create(pro[i],nullptr);
-        pthread_create(con[i],nullptr);
+        pthread_join(pro[i],nullptr);
+        pthread_join(con[i],nullptr);
     }
     return 0;
 }
