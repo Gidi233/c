@@ -28,7 +28,7 @@ public:
         return res / classes.size();
     }
 };
-//对STL库用的不熟啊~，priority_queue是自动维护排序的队列默认从大到小，结构体Ratio重写了小于运算符，让以通过率变化量从大到小排序（公式推导看官方题解了）。
+//对STL库用的不熟啊~，priority_queue是自动维护排序的队列默认从大到小，标准库默认使用元素类型的<操作符来确定它们之间的优先级关系。结构体Ratio重写了小于运算符，让以通过率变化量从大到小排序（公式推导看官方题解了）。
 //24行，这是 C++ 17 引入的结构化绑定（Structured Binding）语法，可以将一个复合类型（如pair，tuple，结构体等）的成员分别绑定到不同的变量中，方便直接访问和使用。
 //auto [pass, total] = q.top() 的意思是将结构体 Ratio 中的 pass 和 total 成员分别绑定到变量 pass 和 total 中。这样，我们就可以直接使用 pass 和 total 变量来访问 Ratio 对象的 pass 和 total 成员。
 
