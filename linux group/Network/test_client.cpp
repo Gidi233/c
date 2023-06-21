@@ -245,6 +245,121 @@ class mess {
 
 int main() {
     // Server 端的监听地址
-    auto msg = InitTestClient("192.168.30.170:1234");
-    // Put your code Here!
+    auto msg = InitTestClient("127.0.0.0:1");
+    //u_int32_t
+    int cfd;
+    int numRead;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;//struct
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
+    hints.ai_family = AF_UNSPEC;                /* Allows IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_NUMERICSERV;//不必当做名字解析
+
+    if (getaddrinfo("127.0.0.0:1", 50000, &hints, &result) != 0) cout<<"error:267";
+
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+
+        cfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (cfd == -1)
+            continue;                   /* On error, try next address */
+
+        if (connect(cfd, rp->ai_addr, rp->ai_addrlen) != -1)
+            break;                              /* Success */
+
+        /* Connect failed: close this socket and try next address */
+
+        close(cfd);
+    }
+
+    if (rp == NULL) cout<<"找不到可用addrinfo"
+    
+    freeaddrinfo(result);
+
+    while(1){
+        std::string masg=msg->pop();
+        numRead=masg.length();
+        send(cfd,(const void*) &numRead,sizeof(int));
+        send(cfd,masg.c_str(),sizeof(masg));
+    }
+    
+    exit(EXIT_SUCCESS);                         /* Closes 'cfd' */
 }
+
+// int main() {
+//     // 创建套接字
+//     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+//     if (sockfd == -1) {
+//         std::cerr << "Error: Failed to create socket." << std::endl;
+//         return -1;
+//     }
+
+//     // 连接服务器
+//     struct sockaddr_in server_addr;
+//     server_addr.sin_family = AF_INET;
+    //  server_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // 设置服务器 IP 地址
+    // server_addr.sin_port = htons(8080); // 设置服务器端口号
+
+//     if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
+//         std::cerr << "Error: Failed to connect to server." << std::endl;
+//         close(sockfd);
+//         return -1;
+//     }
+
+//     // 发送数据包
+//     std::string data = "Hello, world!";
+//     int seq_num = 0;
+//     int sent_bytes = 0;
+//     int ret = 0;
+//     time_t start_time = time(nullptr);
+//     while (sent_bytes < data.length()) {
+//         // 发送数据包
+//         ret = send(sockfd, data.c_str() + sent_bytes, data.length() - sent_bytes, 0);
+//         if (ret < 0) {
+//             std::cerr << "Error: Failed to send data." << std::endl;
+//             close(sockfd);
+//             return -1;
+//         }
+
+//         // 记录发送时间和数据包序号
+//         time_t send_time = time(nullptr);
+//         seq_num++;
+//         sent_bytes += ret;
+
+//         // 等待确认消息
+//         while (true) {
+//             // 计算已经等待的时间
+//             time_t elapsed_time = time(nullptr) - start_time;
+//             if (elapsed_time >= TIMEOUT) {
+//                 // 超时，重传数据包
+//                 std::cerr << "Timeout: Resending data packet " << seq_num << std::endl;
+//                 break;
+//             }
+
+//             // 检查是否收到确认消息
+//             char buf[1024];
+//             memset(buf, 0, sizeof(buf));
+//             int recv_bytes = recv(sockfd, buf, sizeof(buf), MSG_DONTWAIT);
+//             if (recv_bytes < 0) {
+//                 // 没有收到确认消息，继续等待
+//                 continue;
+//             } else {
+//                 // 收到确认消息，更新发送窗口的状态
+//                 int ack_num = std::stoi(buf);
+//                 if (ack_num == seq_num) {
+//                     std::cout << "Received ACK " << ack_num << std::endl;
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+
+//     // 关闭套接字
+//     close(sockfd);
+
+//     return 0;
+// }
