@@ -23,6 +23,7 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unordered_map>
+#include <netdb.h>
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -152,8 +153,76 @@ public:
     int partid;
     int len;
 };
+
 int main() {
     // Server 端的监听地址
     auto test = TestInit("0.0.0.0:1234");
     // Put your code Here!
+    int lfd, cfd, optval, reqLen;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+    char reciv[1024]={0};
+
+
+    signal(SIGPIPE, SIG_IGN) 
+
+    /* Call getaddrinfo() to obtain a list of addresses that
+       we can try binding to */
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = AF_UNSPEC;        /* Allows IPv4 or IPv6 */
+    hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV;//通配地址
+                        /* Wildcard IP address; service name is numeric */
+
+    if (getaddrinfo(NULL, PORT_NUM, &hints, &result) != 0) cout<<strerrno(errno);
+
+    /* Walk through returned list until we find an address structure
+       that can be used to successfully create and bind a socket */
+
+    optval = 1;
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        lfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (lfd == -1)
+            continue;                   /* On error, try next address */
+
+        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))== -1) cout<<strerrno(errno);
+
+        if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
+            break;                      /* Success */
+
+        /* bind() failed: close this socket and try next address */
+
+        close(lfd);
+    }
+
+    if (rp == NULL) cout<<strerrno(errno);
+
+    if (listen(lfd, BACKLOG) == -1) cout<<strerrno(errno);
+
+    freeaddrinfo(result);
+
+    cfd = accept(lfd, NULL, NULL);
+    if (cfd == -1) {
+        cout<<strerrno(errno);
+        continue;
+    }
+
+    for (;;) {                  
+
+        if (read(cfd, *reqLen,sizeof(int))<= 0){
+            close(cfd);
+            continue;                   /* Failed read; skip request */
+        }
+
+        if ((reqLen=read(cfd,reciv,sizeof(char)*reqLen) )<= 0) {
+            close(cfd);
+            continue;                   /* Failed read; skip request */
+        }
+        test->commit(new string(reciv,reqLen));
+        
+    }
 }
