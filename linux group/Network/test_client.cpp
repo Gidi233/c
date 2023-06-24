@@ -31,7 +31,7 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
-
+#include <netdb.h>
 class ClientTester {
     friend void RunClientTest(std::shared_ptr<ClientTester> tester);
     using NT = NetworkTest::NT;
@@ -245,8 +245,8 @@ class mess {
 
 int main() {
     // Server 端的监听地址
-    auto msg = InitTestClient("127.0.0.0:1");
-    //u_int32_t
+    std::cout<<"1"<<std::endl;
+    //auto msg = InitTestClient("127.0.0.0:1");  
     int cfd;
     int numRead;
     struct addrinfo hints;
@@ -258,10 +258,10 @@ int main() {
     hints.ai_next = NULL;
     hints.ai_family = AF_UNSPEC;                /* Allows IPv4 or IPv6 */
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_NUMERICSERV;//不必当做名字解析
+    hints.ai_flags = 0;//AI_NUMERICSERV;//不必当做名字解析
 
-    if (getaddrinfo("127.0.0.0:1", 50000, &hints, &result) != 0) cout<<"error:267";
-
+    if (getaddrinfo("127.0.0.0:1", "50000", &hints, &result) != 0) std::cout<<"error:267";
+    
     for (rp = result; rp != NULL; rp = rp->ai_next) {
 
         cfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
@@ -276,15 +276,15 @@ int main() {
         close(cfd);
     }
 
-    if (rp == NULL) cout<<"找不到可用addrinfo"
+    if (rp == NULL) std::cout<<"找不到可用addrinfo";
     
     freeaddrinfo(result);
-
+    
     while(1){
         std::string masg=msg->pop();
         numRead=masg.length();
-        send(cfd,(const void*) &numRead,sizeof(int));
-        send(cfd,masg.c_str(),sizeof(masg));
+        send(cfd,(const void*) &numRead,sizeof(int),0);
+        send(cfd,masg.c_str(),sizeof(masg),0);
     }
     
     exit(EXIT_SUCCESS);                         /* Closes 'cfd' */

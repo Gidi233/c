@@ -164,12 +164,7 @@ int main() {
     char reciv[1024]={0};
 
 
-    signal(SIGPIPE, SIG_IGN) 
-
-    /* Call getaddrinfo() to obtain a list of addresses that
-       we can try binding to */
-
-    memset(&hints, 0, sizeof(struct addrinfo));
+    memset(&hints, 0, sizeof(addrinfo));
     hints.ai_canonname = NULL;
     hints.ai_addr = NULL;
     hints.ai_next = NULL;
@@ -178,7 +173,7 @@ int main() {
     hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV;//通配地址
                         /* Wildcard IP address; service name is numeric */
 
-    if (getaddrinfo(NULL, PORT_NUM, &hints, &result) != 0) cout<<strerrno(errno);
+    if (getaddrinfo(NULL, "50000", &hints, &result) != 0) std::cout<<strerror(errno);
 
     /* Walk through returned list until we find an address structure
        that can be used to successfully create and bind a socket */
@@ -189,7 +184,7 @@ int main() {
         if (lfd == -1)
             continue;                   /* On error, try next address */
 
-        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))== -1) cout<<strerrno(errno);
+        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))== -1) std::cout<<strerror(errno);
 
         if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
             break;                      /* Success */
@@ -199,21 +194,20 @@ int main() {
         close(lfd);
     }
 
-    if (rp == NULL) cout<<strerrno(errno);
+    if (rp == NULL) std::cout<<strerror(errno);
 
-    if (listen(lfd, BACKLOG) == -1) cout<<strerrno(errno);
+    if (listen(lfd, 5) == -1) std::cout<<strerror(errno);
 
     freeaddrinfo(result);
 
     cfd = accept(lfd, NULL, NULL);
     if (cfd == -1) {
-        cout<<strerrno(errno);
-        continue;
+        std::cout<<strerror(errno);
     }
 
     for (;;) {                  
 
-        if (read(cfd, *reqLen,sizeof(int))<= 0){
+        if (read(cfd,(void *)&reqLen,sizeof(int))<= 0){
             close(cfd);
             continue;                   /* Failed read; skip request */
         }
@@ -222,7 +216,7 @@ int main() {
             close(cfd);
             continue;                   /* Failed read; skip request */
         }
-        test->commit(new string(reciv,reqLen));
+        test->commit(std::string(reciv,reqLen));//new???
         
     }
 }
