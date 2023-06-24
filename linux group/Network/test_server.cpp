@@ -161,7 +161,7 @@ int main() {
     int lfd, cfd, optval, reqLen;
     struct addrinfo hints;
     struct addrinfo *result, *rp;
-    char reciv[1024]={0};
+    char reciv[10000]={0};
 
 
     memset(&hints, 0, sizeof(addrinfo));
@@ -173,8 +173,8 @@ int main() {
     hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV;//通配地址
                         /* Wildcard IP address; service name is numeric */
 
-    if (getaddrinfo(NULL, "50000", &hints, &result) != 0) std::cout<<strerror(errno);
-
+    if (getaddrinfo(NULL, "50000", &hints, &result) != 0) std::cout<<strerror(errno)<<"25";
+    //printf("1\n");
     /* Walk through returned list until we find an address structure
        that can be used to successfully create and bind a socket */
 
@@ -199,24 +199,26 @@ int main() {
     if (listen(lfd, 5) == -1) std::cout<<strerror(errno);
 
     freeaddrinfo(result);
-
+    printf("1\n");
     cfd = accept(lfd, NULL, NULL);
     if (cfd == -1) {
         std::cout<<strerror(errno);
     }
+    //printf("连接成功");
+    for (;;) {
 
-    for (;;) {                  
-
-        if (read(cfd,(void *)&reqLen,sizeof(int))<= 0){
+        if (recv(cfd,(void *)&reqLen,sizeof(int),0)<= 0){
             close(cfd);
             continue;                   /* Failed read; skip request */
         }
 
-        if ((reqLen=read(cfd,reciv,sizeof(char)*reqLen) )<= 0) {
+        std::cout<<"字数"<<reqLen<<std::endl;
+        if (recv(cfd,reciv,reqLen,0)<= 0) {
             close(cfd);
             continue;                   /* Failed read; skip request */
-        }
+        }               
+        std::cout<<reciv<<std::endl;
         test->commit(std::string(reciv,reqLen));//new???
-        
+        //memset(reciv,0,sizeof(reciv));
     }
 }

@@ -245,8 +245,7 @@ class mess {
 
 int main() {
     // Server 端的监听地址
-    std::cout<<"1"<<std::endl;
-    //auto msg = InitTestClient("127.0.0.0:1");  
+    auto msg = InitTestClient("127.0.0.1");
     int cfd;
     int numRead;
     struct addrinfo hints;
@@ -260,7 +259,7 @@ int main() {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = 0;//AI_NUMERICSERV;//不必当做名字解析
 
-    if (getaddrinfo("127.0.0.0:1", "50000", &hints, &result) != 0) std::cout<<"error:267";
+    if (getaddrinfo("127.0.0.1", "50000", &hints, &result) != 0) std::cout<<"error:267";
     
     for (rp = result; rp != NULL; rp = rp->ai_next) {
 
@@ -279,12 +278,18 @@ int main() {
     if (rp == NULL) std::cout<<"找不到可用addrinfo";
     
     freeaddrinfo(result);
-    
+    //std::cout<<"1"<<std::endl;
     while(1){
         std::string masg=msg->pop();
+        std::cout<<"字数"<<masg.length()<<std::endl;
         numRead=masg.length();
+
+        std::cout<<"对面收到字数"<<numRead<<std::endl;
         send(cfd,(const void*) &numRead,sizeof(int),0);
+
+        std::cout<<masg<<std::endl;
         send(cfd,masg.c_str(),sizeof(masg),0);
+        //sleep(1);//偷鸡！！！！！
     }
     
     exit(EXIT_SUCCESS);                         /* Closes 'cfd' */
