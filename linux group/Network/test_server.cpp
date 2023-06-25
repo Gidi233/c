@@ -213,7 +213,7 @@ int main() {
         }
 
         std::cout<<"字数"<<reqLen<<std::endl;
-        if (recv(cfd,reciv,reqLen+1,0)<= 0) {
+        if (recv(cfd,reciv,reqLen+1,0)<= 0) {//多接收应该\0不然好像就会粘包
             close(cfd);
             continue;                   /* Failed read; skip request */
         }
