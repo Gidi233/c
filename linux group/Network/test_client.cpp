@@ -278,17 +278,17 @@ int main() {
     if (rp == NULL) std::cout<<"找不到可用addrinfo";
     
     freeaddrinfo(result);
-    //std::cout<<"1"<<std::endl;
+    //std::cout<<"1"<<std::endl;             
     while(1){
         std::string masg=msg->pop();
         std::cout<<"字数"<<masg.length()<<std::endl;
+        //std::cout<<"字数"<<strlen(masg.c_str())<<std::endl;
         numRead=masg.length();
-
-        std::cout<<"对面收到字数"<<numRead<<std::endl;
+        
         send(cfd,(const void*) &numRead,sizeof(int),0);
-
+        
         std::cout<<masg<<std::endl;
-        send(cfd,masg.c_str(),sizeof(masg),0);
+        send(cfd,masg.c_str(),numRead+1,0);//sizeof(masg)是个指针应该//后面要多传一个\0
         //sleep(1);//偷鸡！！！！！
     }
     

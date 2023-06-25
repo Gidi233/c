@@ -199,7 +199,7 @@ int main() {
     if (listen(lfd, 5) == -1) std::cout<<strerror(errno);
 
     freeaddrinfo(result);
-    printf("1\n");
+    
     cfd = accept(lfd, NULL, NULL);
     if (cfd == -1) {
         std::cout<<strerror(errno);
@@ -213,12 +213,13 @@ int main() {
         }
 
         std::cout<<"字数"<<reqLen<<std::endl;
-        if (recv(cfd,reciv,reqLen,0)<= 0) {
+        if (recv(cfd,reciv,reqLen+1,0)<= 0) {
             close(cfd);
             continue;                   /* Failed read; skip request */
-        }               
-        std::cout<<reciv<<std::endl;
-        test->commit(std::string(reciv,reqLen));//new???
+        }
+        std::string ans(reciv,reqLen+1);        
+        std::cout<<ans<<std::endl;
+        test->commit(std::move(ans));//new???
         //memset(reciv,0,sizeof(reciv));
     }
 }
