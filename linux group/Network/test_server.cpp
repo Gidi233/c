@@ -214,7 +214,7 @@ int main() {
             close(cfd);
             continue;
         }
-        std::string ans(reciv,reqLen+1);        
+        std::string ans(reciv,reqLen);        
         std::cout<<ans<<std::endl;
         test->commit(std::move(ans));
     }
