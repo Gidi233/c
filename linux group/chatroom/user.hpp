@@ -13,6 +13,7 @@ public:
     string password;
     bool islogin; // protect?
 
+    UserBase();
     UserBase(string account1, string password1);
     UserBase(int ID1, string account1, string password1, bool islogin1);
     ~UserBase();
@@ -27,6 +28,7 @@ public:
     static int totalID; // 要在类外初始化//int UserTotal::totalID = 0;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
+    UserTotal();
     UserTotal(const UserBase &base);
     ~UserTotal();
     void toString();

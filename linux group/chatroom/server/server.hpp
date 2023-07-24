@@ -25,6 +25,7 @@ public:
     struct epoll_event evget[EPOLL_SIZE] = {};
 
     server();
+    ~server(); // close（lfd）有问题
 
     void Accept(); // 需要对象 否则上面的变量都得static
     void Wait_In();

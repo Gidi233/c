@@ -18,7 +18,7 @@ client::client()
     hints.ai_next = NULL;
     hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_NUMERICSERV; // ���ص������ֽ���
+    hints.ai_flags = AI_NUMERICSERV; //
 
     getaddrinfo("127.0.0.1", "50000", &hints, &result);
 

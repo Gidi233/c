@@ -28,7 +28,7 @@ bool Main_Menu_Ser_Register()
         else
         {
             cout << "已注册" << endl
-                 << "1.重新注册\n2.退出\n";
+                 << "1.重新注册\n0.退出\n";
             cin >> flag;
             if (!flag)
                 return 0;

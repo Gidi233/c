@@ -15,11 +15,11 @@ target_include_directories(client PRIVATE client ${CMAKE_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_COMPILER g++)
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 # 添加链接库
-# find_library(HIREDIS_LIBRARY NAMES hiredis)
-# target_link_libraries(server ${HIREDIS_LIBRARY})
+find_library(HIREDIS_LIBRARY NAMES hiredis)
+target_link_libraries(server ${HIREDIS_LIBRARY})
 # target_link_libraries(client ${HIREDIS_LIBRARY})
 
 

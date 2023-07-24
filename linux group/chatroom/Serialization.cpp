@@ -13,12 +13,6 @@ string From_Main(int opt, string account, string password)
     return j.dump();
 }
 
-// bool To_Main(string jso)
-// {
-//     json j = jso;
-//     // return j.at("option");
-// }
-
 /*
 
 
@@ -92,8 +86,11 @@ int getopt(const string &jso)
     return j.at("option");
 }
 
-UserTotal New_User(string jso)
+void Get_Ac_Pa(const string &jso, string *account, string *password)
 {
     json j = json::parse(jso);
-    return UserBase(j.at("account"), j.at("password"));
+    *account = j.at("account");
+    *password = j.at("password");
+    // *account = j["account"];
+    // *password = j["password"];
 }

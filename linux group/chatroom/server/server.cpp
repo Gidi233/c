@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "service_ser.hpp"
+#include "database.hpp"
 #include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -8,6 +9,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 using std::string, std::cout, std::cin, std::endl;
+
 server::server()
 {
 
@@ -42,28 +44,36 @@ server::server()
     }
 
     if (rp == NULL)
-        std::cout << strerror(errno);
+        cout << strerror(errno);
 
-    if (listen(lfd, 5) == -1)
-        std::cout << strerror(errno);
+    if (listen(lfd, 100) == -1)
+        cout << strerror(errno);
 
     freeaddrinfo(result);
 
     epfd = epoll_create(EPOLL_SIZE);
 }
 
+server::~server()
+{
+    Database::Close(); // 关闭数据库
+}
+
 void server::Accept()
 {
     while (1)
     {
-        memset(&host, 0, hostlen);
-        memset(&service, 0, servlen);
-        cfd = accept(lfd, &addr, &addrlen);
+        memset(host, 0, hostlen);
+        memset(service, 0, servlen);
+        memset(&addr, 0, addrlen); // 放到里面段错误，外面无限循环
+        cout << "lfd1:" << lfd << endl;
+        cfd = accept(lfd, &addr, &addrlen); // lfd自增了？？
+        cout << "lfd2:" << lfd << endl;
         getnameinfo(&addr, addrlen, host, hostlen, service, servlen, 0);
         cout << host << ":" << service << "连接\n";
         if (cfd == -1)
         {
-            std::cout << strerror(errno);
+            cout << "cfd" << cfd << strerror(errno) << endl;
         }
         int flags = fcntl(cfd, F_GETFL, 0);
         fcntl(cfd, F_SETFL, flags | O_NONBLOCK);
@@ -75,18 +85,24 @@ void server::Accept()
 
 void server::Wait_In()
 {
-    memset(&evget, 0, sizeof(evget));
+    memset(evget, 0, sizeof(evget));
     while (1)
     {
-
         int num = epoll_wait(epfd, evget, EPOLL_SIZE, -1);
+        if (num == -1)
+        {
+            cout << "num:" << num << strerror(errno) << endl;
+        }
         for (int i = 0; i < num; i++)
         {
             if (evget[i].events == EPOLLIN)
                 Getfd(evget[i].data.fd);
-            else if (evget[i].events == EPOLLHUP | EPOLLRDHUP)
+            else if (evget[i].events == EPOLLHUP | EPOLLRDHUP) // EPOLLRDHUP没起作用？
             {
+                cout << "用户" << evget[i].data.fd << "退出\n";
                 epoll_ctl(epfd, EPOLL_CTL_DEL, evget[i].data.fd, 0);
+                close(evget[i].data.fd);
+                cout << "lfd3:" << lfd << endl;
             }
         }
     }
