@@ -8,6 +8,7 @@ using std::string, std::cout, std::cin, std::endl;
 
 void Getfd(int fd)
 {
+    Database::Init();
     string jso = Recv(fd);
     string account, password;
     UserTotal usr;
