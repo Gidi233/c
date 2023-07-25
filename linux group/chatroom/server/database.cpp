@@ -1,6 +1,44 @@
 #include "database.hpp"
+#include <iostream>
+redisContext *Database::redis = nullptr; // 不能在这里直接redisConnect("127.0.0.1", 6379)
 
-redisContext *Database::redis = redisConnect("127.0.0.1", 6379);
+bool Database::Init()
+{
+    redis = redisConnect("127.0.0.1", 6379); // Database::
+    if (redis == nullptr || redis->err)
+    {
+        std::cerr << "Failed to connect Redis: " << redis->errstr << std::endl;
+        return 0;
+    }
+    return 1;
+}
+
+bool Database::SetID(int id)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", id);
+    freeReplyObject(reply);
+    return 1;
+}
+
+int Database::GetID()
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS UserID");
+    bool flag = reply->integer;
+    freeReplyObject(reply);
+    if (flag)
+    {
+        reply = (redisReply *)redisCommand(Database::redis, "GET UserID");
+        int ans = reply->integer;
+        freeReplyObject(reply);
+        return ans;
+    }
+    else
+    {
+        reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", 1);
+        freeReplyObject(reply);
+        return 1;
+    }
+}
 
 bool Database::User_In(string account, string jso)
 {
@@ -31,6 +69,6 @@ string Database::User_Out(string account)
 
 void Database::Close()
 {
-    redisFree(Database::redis);
+    redisFree(redis);
     return;
 }
