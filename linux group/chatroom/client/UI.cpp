@@ -76,10 +76,10 @@ void User_UI_First()
 		switch (choice)
 		{
 		case '1':
-
+			Friend_Ser();
 			break;
 		case '2':
-
+			Group_Ser();
 			break;
 		default:
 			cout << "啊？" << endl;

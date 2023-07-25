@@ -1,5 +1,6 @@
 #ifndef USER
 #define USER
+// #include "server/database.hpp"
 #include <queue>
 #include <list>
 #include <iostream>
@@ -25,12 +26,13 @@ public:
     list<UserBase> frd;
     // list<group> grp;
     // list<queue<massege>> msg_frd,msg_grp;map??聊天记录
-    static int totalID; // 要在类外初始化//int UserTotal::totalID = 0;
+    // static int totalID; // 要在类外初始化//int UserTotal::totalID = 0;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();
     UserTotal(const UserBase &base);
     ~UserTotal();
+    // static void Get_TotalID();
     void toString();
 };
 

@@ -101,6 +101,7 @@ void server::Wait_In()
             {
                 cout << "用户" << evget[i].data.fd << "退出\n";
                 epoll_ctl(epfd, EPOLL_CTL_DEL, evget[i].data.fd, 0);
+
                 close(evget[i].data.fd);
                 cout << "lfd3:" << lfd << endl;
             }

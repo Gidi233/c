@@ -16,7 +16,6 @@ public:
     ~client();
 
     static void Send(string jso);
-    // static void Sendopt(int opt);
     static bool RecvBool();
     static string Recv();
 };

@@ -13,13 +13,6 @@ bool Database::Init()
     return 1;
 }
 
-bool Database::SetID(int id)
-{
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", id);
-    freeReplyObject(reply);
-    return 1;
-}
-
 int Database::GetID()
 {
     redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS UserID");
@@ -28,13 +21,15 @@ int Database::GetID()
     if (flag)
     {
         reply = (redisReply *)redisCommand(Database::redis, "GET UserID");
-        int ans = reply->integer;
+        int ans = std::stoi(reply->str);
+        freeReplyObject(reply);
+        reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", ans + 1);
         freeReplyObject(reply);
         return ans;
     }
     else
     {
-        reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", 1);
+        reply = (redisReply *)redisCommand(Database::redis, "SET UserID %d", 2);
         freeReplyObject(reply);
         return 1;
     }
@@ -42,7 +37,7 @@ int Database::GetID()
 
 bool Database::User_In(string account, string jso)
 {
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET User%s %s", account.c_str(), jso.c_str());
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET User:%s %s", account.c_str(), jso.c_str());
     string ans(reply->str);
     freeReplyObject(reply);
     return ans == "OK";
@@ -50,7 +45,7 @@ bool Database::User_In(string account, string jso)
 
 bool Database::User_Exist(string account)
 {
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS User%s", account.c_str());
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS User:%s", account.c_str());
     if (reply == nullptr)
     {
         return false;
@@ -61,7 +56,7 @@ bool Database::User_Exist(string account)
 }
 string Database::User_Out(string account)
 {
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "GET User%s", account.c_str());
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "GET User:%s", account.c_str());
     string ans(reply->str);
     freeReplyObject(reply);
     return ans;

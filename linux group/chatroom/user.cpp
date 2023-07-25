@@ -1,6 +1,7 @@
+#include "./server/database.hpp"
 #include "user.hpp"
 
-int UserTotal::totalID = 0;
+// int UserTotal::totalID = 0;
 
 UserBase::UserBase() {}
 
@@ -19,7 +20,7 @@ UserTotal::UserTotal(const UserBase &base) : UserBase(base)
     if (!ID)
     {
         islogin = 1;
-        ID = ++totalID;
+        ID = Database::GetID();
     }
 }
 
