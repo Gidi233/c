@@ -6,7 +6,7 @@
 int main()
 {
     server ser;
-    Database::Init();
     Thread_Accept(ser);
-    ser.Wait_In(); //
+    Database::Init(); // 往上放一行就不行？？？
+    ser.Wait_In();    //
 }

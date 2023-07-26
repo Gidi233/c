@@ -41,17 +41,13 @@ string From_Self(int opt, int ID)
 string To_Json_User(UserTotal usr)
 {
     // json frd_arr = json::array();
-    json frd_arr;
-    for (const auto &f : usr.frd)
-    {
-        json f_json;
-        f_json["ID"] = f.ID;
-        f_json["account"] = f.account;
-        f_json["password"] = f.password;
-        f_json["islogin"] = f.islogin;
-        // frd_arr[f.account] = f_json;
-        frd_arr.push_back(f_json);
-    } // 放到另一个函数
+    json frd_arr(usr.frd);
+    // for (const auto &f : usr.frd)
+    // {
+    //     json f_json;
+    //     f_json["ID"] = f.ID;
+    //     frd_arr.push_back(f_json);
+    // } // 放到另一个函数
 
     // json frd_arr = j["frd"];
     // for (const auto &f : frd_arr)
@@ -76,6 +72,12 @@ UserTotal From_Json_User(string jso)
 {
     json j = json::parse(jso);
     return UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]);
+}
+
+UserBase From_Json_Frd(string jso)
+{
+    json j = json::parse(jso);
+    return UserBase(j.at("ID"), j["account"], nullptr, j["islogin"]);
 }
 
 /*
@@ -117,3 +119,14 @@ string Change_isLogin(string jso)
     j["islogin"] = flag;
     return j.dump();
 }
+
+// string To_Json_Friend(UserTotal usr)
+// {
+
+//     json j = {
+//         {"ID", usr.ID},
+//         {"account", usr.account},
+//         {"islogin", usr.islogin}
+//         };
+//     return j.dump();
+// }

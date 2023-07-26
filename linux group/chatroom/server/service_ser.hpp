@@ -6,6 +6,7 @@ using std::string;
 void Getfd(int fd);
 void Send(int fd, string jso);
 void SendBool(int fd, bool flag);
+void SendInt(int fd, int num);
 string Recv(int fd);
 UserTotal New_User(string account, string password);
 bool Change_isLogin_Ser(int ID);

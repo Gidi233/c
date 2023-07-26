@@ -61,17 +61,36 @@ bool Main_Menu_Ser_Login()
     }
 }
 
-bool User_Ser_Exit(int ID)
+void User_Ser_Exit(int ID)
 {
     client::Send(From_Self(10, ID));
 }
 
-bool Friend_Ser(int ID)
+void Friend_Ser(int ID)
 {
+    UserBase frd;
     client::Send(From_Self(11, ID));
+    int num = client::RecvInt();
+    if (num)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            frd = From_Json_Frd(client::Recv());
+            frd.toString();
+        }
+    }
+    else
+    {
+        cout << "当前无好友" << endl;
+    }
 }
 
-bool Group_Ser(int ID)
+void Group_Ser(int ID)
 {
     client::Send(From_Self(12, ID));
+}
+
+void To_User_Ser(int ID)
+{
+    client::Send(From_Self(100, ID));
 }

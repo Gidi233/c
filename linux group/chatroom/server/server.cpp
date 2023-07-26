@@ -67,10 +67,10 @@ void server::Accept()
     {
         memset(host, 0, hostlen);
         memset(service, 0, servlen);
-        memset(&addr, 0, addrlen); // 放到里面段错误，外面无限循环
-        cout << "lfd1:" << lfd << endl;
+        memset(&addr, 0, addrlen); // 放到里面段错误，外面无限循环？？
+        // cout << "lfd1:" << lfd << endl;
         cfd = accept(lfd, &addr, &addrlen); // lfd自增了？？
-        cout << "lfd2:" << lfd << endl;
+        // cout << "lfd2:" << lfd << endl;
         getnameinfo(&addr, addrlen, host, hostlen, service, servlen, 0);
         cout << host << ":" << service << "连接\n";
         if (cfd == -1)

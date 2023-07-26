@@ -9,13 +9,14 @@ using std::string, std::cout, std::cin, std::endl;
 
 void Getfd(int fd)
 {
-    Database::Init();
+    // Database::Init(); //???
     string jso = Recv(fd);
     string account, password;
     int ID;
     UserTotal usr;
     switch (getopt(jso))
     {
+
     case 1:
         // 判断是否重名
         Get_Ac_Pa(jso, nullptr, &account, &password);
@@ -30,7 +31,7 @@ void Getfd(int fd)
         Database::Set_Account_ID(usr.ID, account);
         Database::User_In(usr.ID, To_Json_User(usr));
         Send(fd, To_Json_User(usr));
-        cout << "返回用户" << usr.ID << "个人信息\n";
+        // cout << "返回用户" << usr.ID << "个人信息\n";
         server::ID_To_Fd.emplace(usr.ID, fd);
         break;
     case 2:
@@ -50,8 +51,20 @@ void Getfd(int fd)
         break;
     case 11:
         Get_Ac_Pa(jso, &ID, nullptr, nullptr); //
-
-        cout << "返回用户" << account << "好友信息\n";
+        usr = From_Json_User(Database::User_Out(ID));
+        if (usr.frd.empty())
+        {
+            SendInt(fd, 0);
+        }
+        else
+        {
+            SendInt(fd, usr.frd.size());
+            for (const int &FID : usr.frd)
+            {
+                Send(fd, Database::User_Out(FID));
+            }
+        }
+        cout << "返回用户" << ID << "好友信息\n";
         // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
@@ -80,6 +93,11 @@ void Getfd(int fd)
         // default://jump to case label???
         //     cout << "啊？" << endl;
         //     break;
+    case 100:
+        Get_Ac_Pa(jso, &ID, nullptr, nullptr);
+        Send(fd, Database::User_Out(ID));
+
+        break;
     }
 }
 
@@ -95,6 +113,11 @@ void Send(int fd, string jso)
 void SendBool(int fd, bool flag)
 {
     send(fd, (const void *)&flag, sizeof(bool), 0);
+}
+
+void SendInt(int fd, int num)
+{
+    send(fd, (const void *)&num, sizeof(int), 0);
 }
 
 string Recv(int fd)

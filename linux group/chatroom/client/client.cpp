@@ -63,6 +63,13 @@ bool client::RecvBool()
     return res;
 }
 
+int client::RecvInt()
+{
+    int res;
+    recv(cfd, (void *)&res, sizeof(int), 0);
+    return res;
+}
+
 string client::Recv()
 {
     int reqLen;

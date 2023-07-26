@@ -17,6 +17,7 @@ public:
 
     static void Send(string jso);
     static bool RecvBool();
+    static int RecvInt();
     static string Recv();
 };
 
