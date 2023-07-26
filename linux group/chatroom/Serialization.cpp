@@ -13,6 +13,14 @@ string From_Main(int opt, string account, string password)
     return j.dump();
 }
 
+string From_Self(int opt, string account)
+{
+    json j = {
+        {"option", opt},
+        {"account", account}};
+    return j.dump();
+}
+
 /*
 
 
@@ -90,7 +98,20 @@ void Get_Ac_Pa(const string &jso, string *account, string *password)
 {
     json j = json::parse(jso);
     *account = j.at("account");
-    *password = j.at("password");
+    if (password != nullptr)
+        *password = j.at("password");
     // *account = j["account"];
     // *password = j["password"];
+}
+
+string Change_isLogin(string jso)
+{
+    json j = json::parse(jso);
+    bool flag = j["islogin"]; // string转bool
+    cout << flag << endl;
+    // flag = ~flag;有问题
+    flag = !flag;
+    cout << flag << endl;
+    j["islogin"] = flag;
+    return j.dump();
 }

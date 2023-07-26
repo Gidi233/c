@@ -20,6 +20,7 @@ void Main_UI_First()
 		system("clear");
 		if (choice == '0')
 		{
+
 			printf("BYE HAVE A GREAT TIME\n");
 			return;
 		}
@@ -30,6 +31,7 @@ void Main_UI_First()
 
 		switch (choice)
 		{
+
 		case '1':
 			if (Main_Menu_Ser_Register())
 				User_UI_First();
@@ -66,6 +68,8 @@ void User_UI_First()
 		cout << choice << endl;
 		if (choice == '0')
 		{
+			User_Ser_Exit(self.account);
+
 			return;
 		}
 		if (choice != '1' && choice != '2')

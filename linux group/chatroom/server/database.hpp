@@ -14,6 +14,7 @@ public:
     static bool User_In(string account, string jso);
     static bool User_Exist(string account);
     static string User_Out(string account);
+    // static bool Change_isLogin();
     static void Close();
 };
 #endif

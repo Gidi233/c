@@ -8,5 +8,6 @@ void Send(int fd, string jso);
 void SendBool(int fd, bool flag);
 string Recv(int fd);
 UserTotal New_User(string account, string password);
+bool Change_isLogin_Ser(string account);
 
 #endif

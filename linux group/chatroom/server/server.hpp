@@ -4,10 +4,12 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <sys/epoll.h>
+#include <unordered_map>
 #define EPOLL_SIZE 100
 class server
 {
 public:
+    static std::unordered_map<int, std::string> Fd_To_User; // User_To_Fd
     int lfd, cfd, optval, reqLen, epfd;
     char host[100], service[100];
     int hostlen = sizeof(host), servlen = sizeof(service);

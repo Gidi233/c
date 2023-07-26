@@ -62,6 +62,10 @@ string Database::User_Out(string account)
     return ans;
 }
 
+// bool Change_isLogin()
+// {
+// }
+
 void Database::Close()
 {
     redisFree(redis);

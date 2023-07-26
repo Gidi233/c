@@ -1,6 +1,7 @@
 #include "service_ser.hpp"
 #include "../Serialization.hpp"
 #include "database.hpp"
+#include "server.hpp"
 #include <sys/socket.h>
 #include <cstring>
 #include <iostream>
@@ -29,20 +30,29 @@ void Getfd(int fd)
         Database::User_In(account, To_Json_User(usr));
         Send(fd, To_Json_User(usr));
         cout << "返回用户" << usr.account << "个人信息\n";
+        server::Fd_To_User.emplace(fd, account);
         break;
     case 2:
         Get_Ac_Pa(jso, &account, &password);
         usr = From_Json_User(Database::User_Out(account));
-        if (usr.password == password)
+        if (usr.password == password) //
         {
+            Change_isLogin_Ser(account);
+            // usr = From_Json_User(Database::User_Out(account)); //
             SendBool(fd, 1);
-            Send(fd, To_Json_User(usr));
+            Send(fd, Database::User_Out(account)); // To_Json_User(usr)
+            server::Fd_To_User.emplace(fd, account);
         }
-
         else
             SendBool(fd, 0);
 
         break;
+    case 10:
+        Get_Ac_Pa(jso, &account, nullptr); //
+        Change_isLogin_Ser(account);
+        // SendBool(fd, Change_isLogin_Ser(account));
+        break;
+
         // default://jump to case label???
         //     cout << "啊？" << endl;
         //     break;
@@ -77,4 +87,10 @@ string Recv(int fd)
 UserTotal New_User(string account, string password)
 {
     return UserBase(account, password);
+}
+
+bool Change_isLogin_Ser(string account)
+{
+    string jso = Change_isLogin(Database::User_Out(account));
+    return Database::User_In(account, jso);
 }
