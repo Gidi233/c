@@ -9,14 +9,13 @@ void Main_UI_First()
 {
 	client cil;
 	bool flag;
-	char choice;
+	int choice;
 	do
 	{
 		system("clear");
 		Main_Menu();
 		printf("输入(0-2):(初始界面)");
 		cin >> choice;
-		cout << choice << endl;
 		system("clear");
 		if (choice == '0')
 		{
@@ -24,7 +23,7 @@ void Main_UI_First()
 			printf("BYE HAVE A GREAT TIME\n");
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != 1 && choice != 2)
 		{
 			continue;
 		}
@@ -32,11 +31,11 @@ void Main_UI_First()
 		switch (choice)
 		{
 
-		case '1':
+		case 1:
 			if (Main_Menu_Ser_Register())
 				User_UI_First();
 			break;
-		case '2':
+		case 2:
 			if (Main_Menu_Ser_Login())
 				User_UI_First();
 
@@ -45,7 +44,7 @@ void Main_UI_First()
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void Main_Menu()
@@ -55,7 +54,7 @@ void Main_Menu()
 
 void User_UI_First()
 {
-	char choice;
+	int choice;
 	do
 	{
 		system("clear");
@@ -65,25 +64,24 @@ void User_UI_First()
 		User_UI();
 		printf("输入(0-2):（个人界面）");
 		cin >> choice;
-		cout << choice << endl;
-		if (choice == '0')
+		if (choice == 0)
 		{
-			User_Ser_Exit(self.account);
+			User_Ser_Exit(self.ID);
 
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != 1 && choice != 2)
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case '1':
-			Friend_Ser();
+		case 1:
+			Friend_Ser(self.ID);
 			break;
-		case '2':
-			Group_Ser();
+		case 2:
+			Group_Ser(self.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
@@ -94,5 +92,5 @@ void User_UI_First()
 
 void User_UI()
 {
-	printf("1.好友\n2.群组\n0.退出\n");
+	printf("1.好友\n2.群组\n9.注销\n0.退出\n");
 }

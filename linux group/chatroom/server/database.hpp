@@ -11,9 +11,11 @@ public:
     static redisContext *redis;
     static bool Init();
     static int GetID();
-    static bool User_In(string account, string jso);
+    static bool Set_Account_ID(int ID, string account);
+    static int Get_Account_ID(string account);
+    static bool User_In(int ID, string jso);
     static bool User_Exist(string account);
-    static string User_Out(string account);
+    static string User_Out(int account);
     // static bool Change_isLogin();
     static void Close();
 };

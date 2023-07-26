@@ -12,13 +12,13 @@ void Getfd(int fd)
     Database::Init();
     string jso = Recv(fd);
     string account, password;
+    int ID;
     UserTotal usr;
-    // int opt = ;
     switch (getopt(jso))
     {
     case 1:
         // 判断是否重名
-        Get_Ac_Pa(jso, &account, &password);
+        Get_Ac_Pa(jso, nullptr, &account, &password);
         if (Database::User_Exist(account))
         {
             SendBool(fd, 0);
@@ -26,30 +26,54 @@ void Getfd(int fd)
         }
         SendBool(fd, 1);
         usr = New_User(account, password);
-        cout << "账号" << usr.account << "注册\n";
-        Database::User_In(account, To_Json_User(usr));
+        cout << "账号" << usr.ID << "注册\n";
+        Database::Set_Account_ID(usr.ID, account);
+        Database::User_In(usr.ID, To_Json_User(usr));
         Send(fd, To_Json_User(usr));
-        cout << "返回用户" << usr.account << "个人信息\n";
-        server::Fd_To_User.emplace(fd, account);
+        cout << "返回用户" << usr.ID << "个人信息\n";
+        server::ID_To_Fd.emplace(usr.ID, fd);
         break;
     case 2:
-        Get_Ac_Pa(jso, &account, &password);
-        usr = From_Json_User(Database::User_Out(account));
-        if (usr.password == password) //
+        Get_Ac_Pa(jso, nullptr, &account, &password);
+        usr = From_Json_User(Database::User_Out(Database::Get_Account_ID(account)));
+        if (usr.password == password)
         {
-            Change_isLogin_Ser(account);
-            // usr = From_Json_User(Database::User_Out(account)); //
+            cout << "账号" << usr.ID << "登录\n";
+            Change_isLogin_Ser(usr.ID);
             SendBool(fd, 1);
-            Send(fd, Database::User_Out(account)); // To_Json_User(usr)
-            server::Fd_To_User.emplace(fd, account);
+            Send(fd, Database::User_Out(usr.ID));
+            server::ID_To_Fd.emplace(usr.ID, fd);
         }
         else
             SendBool(fd, 0);
 
         break;
+    case 11:
+        Get_Ac_Pa(jso, &ID, nullptr, nullptr); //
+
+        cout << "返回用户" << account << "好友信息\n";
+        // SendBool(fd, Change_isLogin_Ser(account));
+        break;
+
+    // case 12:
+    //     Get_Ac_Pa(jso, &account, nullptr); //
+    //     server::User_To_Fd.erase(account);
+    //     cout << "用户" << account << "退出\n";
+    //     // SendBool(fd, Change_isLogin_Ser(account));
+    //     break;
+
+    // case 19:
+    //     Get_Ac_Pa(jso, &account, nullptr); //
+    //     server::User_To_Fd.erase(account);
+    //     cout << "用户" << account << "退出\n";
+    //     // SendBool(fd, Change_isLogin_Ser(account));
+    //     break;
     case 10:
-        Get_Ac_Pa(jso, &account, nullptr); //
-        Change_isLogin_Ser(account);
+        Get_Ac_Pa(jso, &ID, nullptr, nullptr); //
+        // ID = Database::Get_Account_ID(account);
+        Change_isLogin_Ser(ID);
+        server::ID_To_Fd.erase(ID);
+        cout << "用户" << ID << "退出\n";
         // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
@@ -89,8 +113,8 @@ UserTotal New_User(string account, string password)
     return UserBase(account, password);
 }
 
-bool Change_isLogin_Ser(string account)
+bool Change_isLogin_Ser(int ID)
 {
-    string jso = Change_isLogin(Database::User_Out(account));
-    return Database::User_In(account, jso);
+    string jso = Change_isLogin(Database::User_Out(ID));
+    return Database::User_In(ID, jso);
 }

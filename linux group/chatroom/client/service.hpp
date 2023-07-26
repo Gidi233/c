@@ -3,8 +3,8 @@
 
 bool Main_Menu_Ser_Register();
 bool Main_Menu_Ser_Login();
-bool User_Ser_Exit(string);
-bool Friend_Ser();
-bool Group_Ser();
+bool User_Ser_Exit(int ID);
+bool Friend_Ser(int ID);
+bool Group_Ser(int ID);
 
 #endif

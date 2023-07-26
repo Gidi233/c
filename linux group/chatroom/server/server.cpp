@@ -10,7 +10,7 @@
 #include <fcntl.h>
 using std::string, std::cout, std::cin, std::endl;
 
-std::unordered_map<int, string> server::Fd_To_User = {};
+std::unordered_map<int, int> server::ID_To_Fd = {};
 
 server::server()
 {
@@ -101,11 +101,10 @@ void server::Wait_In()
                 Getfd(evget[i].data.fd);
             else if (evget[i].events == EPOLLHUP | EPOLLRDHUP) // EPOLLRDHUP没起作用？
             {
-                cout << "用户" << evget[i].data.fd << "退出\n";
+                cout << "连接" << evget[i].data.fd << "断开\n";
                 epoll_ctl(epfd, EPOLL_CTL_DEL, evget[i].data.fd, 0);
                 // Change_isLogin_Ser(Fd_To_User.find(evget[i].data.fd)->second);
                 close(evget[i].data.fd);
-                // cout << "lfd3:" << lfd << endl;
             }
         }
     }

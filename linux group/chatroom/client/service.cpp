@@ -61,15 +61,17 @@ bool Main_Menu_Ser_Login()
     }
 }
 
-bool User_Ser_Exit(string account)
+bool User_Ser_Exit(int ID)
 {
-    client::Send(From_Self(10, account));
+    client::Send(From_Self(10, ID));
 }
 
-bool Friend_Ser()
+bool Friend_Ser(int ID)
 {
+    client::Send(From_Self(11, ID));
 }
 
-bool Group_Ser()
+bool Group_Ser(int ID)
 {
+    client::Send(From_Self(12, ID));
 }
