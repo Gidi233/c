@@ -77,7 +77,7 @@ void Friend_Ser(int ID)
         {
             frd = From_Json_UserBase(client::Recv());
             frd.toString();
-            cout << "\n===========================================\n";
+            cout << "===========================================\n";
         }
     }
     else

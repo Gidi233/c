@@ -1,6 +1,5 @@
 #ifndef USER
 #define USER
-// #include "server/database.hpp"
 #include <queue>
 #include <unordered_map>
 #include <iostream>

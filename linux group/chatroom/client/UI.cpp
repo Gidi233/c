@@ -58,7 +58,7 @@ void User_UI_First()
 	int choice;
 	do
 	{
-		UserTotal self = From_Json_UserTotal(client::Recv());
+		UserBase self = From_Json_UserBase(client::Recv());
 		system("clear");
 		cout << "个人界面\n";
 		self.toString();
