@@ -12,15 +12,15 @@ void Getfd(int fd)
     // Database::Init(); //???
     string jso = Recv(fd);
     string account, password;
-    int ID;
+    int ID, oppositeID, chatID;
     UserTotal usr;
     switch (getopt(jso))
     {
 
     case 1:
         // 判断是否重名
-        Get_Ac_Pa(jso, nullptr, &account, &password);
-        if (Database::User_Exist(account))
+        Get_Info(jso, nullptr, &account, &password, nullptr);
+        if (Database::User_Exist_Account(account))
         {
             SendBool(fd, 0);
             return;
@@ -28,15 +28,15 @@ void Getfd(int fd)
         SendBool(fd, 1);
         usr = New_User(account, password);
         cout << "账号" << usr.ID << "注册\n";
-        Database::Set_Account_ID(usr.ID, account);
+        Database::Set_Account_To_ID(usr.ID, account);
         Database::User_In(usr.ID, To_Json_User(usr));
         Send(fd, To_Json_User(usr));
         // cout << "返回用户" << usr.ID << "个人信息\n";
         server::ID_To_Fd.emplace(usr.ID, fd);
         break;
     case 2:
-        Get_Ac_Pa(jso, nullptr, &account, &password);
-        usr = From_Json_User(Database::User_Out(Database::Get_Account_ID(account)));
+        Get_Info(jso, nullptr, &account, &password, nullptr);
+        usr = From_Json_UserTotal(Database::User_Out(Database::Get_Account_To_ID(account)));
         if (usr.password == password)
         {
             cout << "账号" << usr.ID << "登录\n";
@@ -50,8 +50,8 @@ void Getfd(int fd)
 
         break;
     case 11:
-        Get_Ac_Pa(jso, &ID, nullptr, nullptr); //
-        usr = From_Json_User(Database::User_Out(ID));
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
         if (usr.frd.empty())
         {
             SendInt(fd, 0);
@@ -59,9 +59,9 @@ void Getfd(int fd)
         else
         {
             SendInt(fd, usr.frd.size());
-            for (const int &FID : usr.frd)
+            for (const auto &FID : usr.frd) // std::pair<int, int>
             {
-                Send(fd, Database::User_Out(FID));
+                Send(fd, Database::User_Out(FID.first));
             }
         }
         cout << "返回用户" << ID << "好友信息\n";
@@ -82,21 +82,42 @@ void Getfd(int fd)
     //     // SendBool(fd, Change_isLogin_Ser(account));
     //     break;
     case 10:
-        Get_Ac_Pa(jso, &ID, nullptr, nullptr); //
-        // ID = Database::Get_Account_ID(account);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr);
         Change_isLogin_Ser(ID);
         server::ID_To_Fd.erase(ID);
         cout << "用户" << ID << "退出\n";
         // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
-        // default://jump to case label???
-        //     cout << "啊？" << endl;
-        //     break;
+    case 111:
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        if (!Database::User_Exist_ID(oppositeID))
+        {
+            SendInt(fd, 1);
+        }
+
+        // 检查是否找到了这个值
+        if (usr.frd.find(oppositeID) != usr.frd.end())
+        {
+            SendInt(fd, 2);
+            // cout << "找到值：" << *it << std::endl;
+        }
+        chatID = Database::Get_ChatID();
+        Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
+        Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); //
+        SendInt(fd, 0);
+        cout << "返回用户" << ID << "好友信息\n";
+        break;
+
     case 100:
-        Get_Ac_Pa(jso, &ID, nullptr, nullptr);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr);
         Send(fd, Database::User_Out(ID));
 
+        break;
+
+    default: // jump to case label???
+        cout << "啊？" << endl;
         break;
     }
 }

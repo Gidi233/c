@@ -75,13 +75,58 @@ void Friend_Ser(int ID)
     {
         for (int i = 0; i < num; i++)
         {
-            frd = From_Json_Frd(client::Recv());
+            frd = From_Json_UserBase(client::Recv());
             frd.toString();
+            cout << "\n===========================================\n";
         }
     }
     else
     {
         cout << "当前无好友" << endl;
+    }
+}
+
+void Add_Frd_Ser(int ID)
+{
+    int frdID;
+    int choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> frdID;
+        if (frdID == ID)
+        {
+            cout << "你小子酒吧进酒吧是吧（添加自己)\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (!choice)
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Frd(111, ID, frdID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "添加成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "查无此人\n";
+            break;
+        case 2:
+            cout << "你小子酒吧点炒菜是吧（重复添加)\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (!choice)
+            return;
     }
 }
 

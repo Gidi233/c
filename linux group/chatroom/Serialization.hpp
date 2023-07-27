@@ -7,12 +7,14 @@ using std::string, nlohmann::json;
 
 string From_Main(int opt, string account, string password);
 string From_Self(int opt, int ID); //
-UserTotal From_Json_User(string j);
-UserBase From_Json_Frd(string jso);
+string From_Frd(int opt, int ID, int frdID);
+UserTotal From_Json_UserTotal(string j);
+UserBase From_Json_UserBase(string jso);
 
 string To_Json_User(UserTotal usr);
 int getopt(const string &jso);
-void Get_Ac_Pa(const string &jso, int *ID, string *account, string *password);
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID);
+string Add_Friend(int ID, string json, int chatID);
 string Change_isLogin(string jso);
 // UserTotal New_User(string jso);
 

@@ -225,10 +225,12 @@ someTest.erase("Name");
 
 已解决：
 
-1.最好不要用函数返回值初始化静态（成员）变量
+1.静态（成员）变量要在声明外定义，最好不要用函数返回值初始化静态（成员）变量
 
 2.// flag = ~flag;有问题，按1字节按位取反
 
 bool flag = !flag;
 
 3.expected initializer before“***”，某个声明没加; 
+
+4.undefined reference to XXX，某个类中成员声明时没有（类名::），少头文件，cmake配置不全
