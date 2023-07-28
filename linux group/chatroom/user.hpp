@@ -3,6 +3,7 @@
 #include <queue>
 #include <unordered_map>
 #include <iostream>
+#include "Message.hpp"
 using namespace std;
 
 class UserBase
@@ -26,7 +27,7 @@ class UserTotal : public UserBase
 public:
     unordered_map<int, int> frd; // 对象ID对聊天数据ID
     unordered_map<int, int> grp;
-    // static int totalID; // 要在类外初始化//int UserTotal::totalID = 0;
+    // queue<Message> notice,manage;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();

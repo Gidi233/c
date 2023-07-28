@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "service_ser.hpp"
 #include "database.hpp"
+#include "thread_pool.hpp"
 #include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -88,6 +89,11 @@ void server::Accept()
 void server::Wait_In()
 {
     memset(evget, 0, sizeof(evget));
+    int fd;
+    ThreadPool pool(15);
+    pool.init();
+    pool.submit([this]()
+                { this->Accept(); }); //
     while (1)
     {
         int num = epoll_wait(epfd, evget, EPOLL_SIZE, -1);
@@ -98,7 +104,11 @@ void server::Wait_In()
         for (int i = 0; i < num; i++)
         {
             if (evget[i].events == EPOLLIN)
-                Getfd(evget[i].data.fd);
+            {
+                fd = dup(evget[i].data.fd);
+                // Getfd(fd);
+                pool.submit(Getfd, fd);
+            }
             else if (evget[i].events == EPOLLHUP | EPOLLRDHUP) // EPOLLRDHUP没起作用？
             {
                 cout << "连接" << evget[i].data.fd << "断开\n";

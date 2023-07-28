@@ -1,5 +1,4 @@
 #include "thread.hpp"
-#include "server.hpp"
 #include <thread>
 using std::thread;
 

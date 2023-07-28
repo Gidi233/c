@@ -4,12 +4,12 @@
 #include "server.hpp"
 #include <sys/socket.h>
 #include <cstring>
+#include <unistd.h>
 #include <iostream>
 using std::string, std::cout, std::cin, std::endl;
 
 void Getfd(int fd)
 {
-    // Database::Init(); //???
     string jso = Recv(fd);
     string account, password;
     int ID, oppositeID, chatID;
@@ -61,7 +61,7 @@ void Getfd(int fd)
             SendInt(fd, usr.frd.size());
             for (const auto &FID : usr.frd) // std::pair<int, int>
             {
-                Send(fd, Database::User_Out(FID.first));
+                Send(fd, Database::User_Out(FID.first)); //
             }
         }
         cout << "返回用户" << ID << "好友信息\n";
@@ -101,7 +101,6 @@ void Getfd(int fd)
         if (usr.frd.find(oppositeID) != usr.frd.end())
         {
             SendInt(fd, 2);
-            // cout << "找到值：" << *it << std::endl;
         }
         chatID = Database::Get_ChatID();
         Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
@@ -120,6 +119,7 @@ void Getfd(int fd)
         cout << "啊？" << endl;
         break;
     }
+    close(fd);
 }
 
 void Send(int fd, string jso)

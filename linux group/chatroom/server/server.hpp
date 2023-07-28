@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sys/epoll.h>
 #include <unordered_map>
+#include "thread_pool.hpp"
 #define EPOLL_SIZE 100
 class server
 {
@@ -30,6 +31,7 @@ public:
     ~server(); // close（lfd）有问题
 
     void Accept(); // 需要对象 否则上面的变量都得static
+
     void Wait_In();
 };
 

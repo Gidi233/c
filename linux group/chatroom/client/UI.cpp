@@ -56,9 +56,9 @@ void Main_Menu()
 void User_UI_First()
 {
 	int choice;
+	UserBase self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发
 	do
 	{
-		UserBase self = From_Json_UserBase(client::Recv());
 		system("clear");
 		cout << "个人界面\n";
 		self.toString();
@@ -93,7 +93,7 @@ void User_UI_First()
 
 void User_UI()
 {
-	printf("1.好友\n2.群组\n9.注销\n0.退出\n");
+	printf("1.好友\n2.群组\n3.通知\n9.注销\n0.退出\n");
 }
 
 void Friend_UI_First(UserTotal self)
