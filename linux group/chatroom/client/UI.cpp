@@ -10,7 +10,7 @@ void Main_UI_First()
 {
 	client cil;
 	bool flag;
-	int choice;
+	char choice;
 	do
 	{
 		system("clear");
@@ -24,7 +24,7 @@ void Main_UI_First()
 			printf("BYE HAVE A GREAT TIME\n");
 			return;
 		}
-		if (choice != 1 && choice != 2)
+		if (choice != '1' && choice != '2')
 		{
 			continue;
 		}
@@ -32,11 +32,11 @@ void Main_UI_First()
 		switch (choice)
 		{
 
-		case 1:
+		case '1':
 			if (Main_Menu_Ser_Register())
 				User_UI_First();
 			break;
-		case 2:
+		case '2':
 			if (Main_Menu_Ser_Login())
 				User_UI_First();
 
@@ -45,7 +45,7 @@ void Main_UI_First()
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != 0);
+	} while (choice != '0');
 }
 
 void Main_Menu()
@@ -55,8 +55,9 @@ void Main_Menu()
 
 void User_UI_First()
 {
-	int choice;
-	UserBase self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发
+	char choice;
+	UserBase self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发,把返回用户信息事件和登录注册分开
+														// 没刷新
 	do
 	{
 		system("clear");
@@ -65,40 +66,40 @@ void User_UI_First()
 		User_UI();
 		cout << "输入(0-2):（个人界面）";
 		cin >> choice;
-		if (choice == 0)
+		if (choice == '0')
 		{
 			User_Ser_Exit(self.ID);
 
 			return;
 		}
-		if (choice != 1 && choice != 2)
+		if (choice != '1' && choice != '2')
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case 1:
+		case '1':
 			Friend_UI_First(self);
 			break;
-		case 2:
+		case '2':
 			Group_UI_First(self);
 			break;
 		default:
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != 0);
+	} while (choice != '0');
 }
 
 void User_UI()
 {
-	printf("1.好友\n2.群组\n3.通知\n9.注销\n0.退出\n");
+	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
 }
 
 void Friend_UI_First(UserTotal self)
 {
-	int choice;
+	char choice;
 	do
 	{
 		system("clear");
@@ -107,29 +108,29 @@ void Friend_UI_First(UserTotal self)
 		Friend_UI();
 		printf("输入(0-2):");
 		cin >> choice;
-		if (choice == 0)
+		if (choice == '0')
 		{
-			To_User_Ser(self.ID);
+			// To_User_Ser(self.ID);
 
 			return;
 		}
-		if (choice != 1 && choice != 2 && choice != 3 && choice != 4)
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case 1:
+		case '1':
 			Add_Frd_Ser(self.ID);
 			break;
-		case 2:
+		case '2':
 			break;
 		default:
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != 0);
+	} while (choice != '0');
 }
 
 void Group_UI_First(UserTotal self)

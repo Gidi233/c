@@ -106,7 +106,7 @@ void server::Wait_In()
             if (evget[i].events == EPOLLIN)
             {
                 fd = dup(evget[i].data.fd);
-                // Getfd(fd);
+                // Getfd(evget[i].data.fd);
                 pool.submit(Getfd, fd);
             }
             else if (evget[i].events == EPOLLHUP | EPOLLRDHUP) // EPOLLRDHUP没起作用？

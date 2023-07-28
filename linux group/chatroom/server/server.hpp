@@ -22,7 +22,7 @@ public:
     socklen_t addrlen = sizeof(addr);
 
     struct epoll_event evadd = {
-        .events = EPOLLHUP | EPOLLRDHUP | EPOLLIN,
+        .events = EPOLLHUP | EPOLLRDHUP | EPOLLIN | EPOLLET,
         .data = {0},
     };
     struct epoll_event evget[EPOLL_SIZE] = {};

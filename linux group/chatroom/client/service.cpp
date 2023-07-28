@@ -5,10 +5,9 @@
 #include <iostream>
 using namespace std;
 
-static string account, password;
-
 bool Main_Menu_Ser_Register()
 {
+    string account, password;
     system("clear");
     bool flag;
     while (1)
@@ -38,6 +37,7 @@ bool Main_Menu_Ser_Register()
 
 bool Main_Menu_Ser_Login()
 {
+    string account, password;
     int cnt = 3;
     while (1)
     {
@@ -89,7 +89,7 @@ void Friend_Ser(int ID)
 void Add_Frd_Ser(int ID)
 {
     int frdID;
-    int choice;
+    char choice;
     while (1)
     {
         system("clear");
@@ -100,7 +100,7 @@ void Add_Frd_Ser(int ID)
             cout << "你小子酒吧进酒吧是吧（添加自己)\n";
             cout << "1.重新输入\n0.返回\n";
             cin >> choice;
-            if (!choice)
+            if (choice == '0')
                 return;
             else
                 continue;
@@ -125,7 +125,7 @@ void Add_Frd_Ser(int ID)
         }
         cout << "1.重新输入\n0.返回\n";
         cin >> choice;
-        if (!choice)
+        if (choice == '0')
             return;
     }
 }

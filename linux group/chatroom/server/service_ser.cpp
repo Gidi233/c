@@ -23,7 +23,7 @@ void Getfd(int fd)
         if (Database::User_Exist_Account(account))
         {
             SendBool(fd, 0);
-            return;
+            break;
         }
         SendBool(fd, 1);
         usr = New_User(account, password);
@@ -36,6 +36,12 @@ void Getfd(int fd)
         break;
     case 2:
         Get_Info(jso, nullptr, &account, &password, nullptr);
+
+        if (!Database::User_Exist_Account(account))
+        {
+            SendBool(fd, 0);
+            break;
+        }
         usr = From_Json_UserTotal(Database::User_Out(Database::Get_Account_To_ID(account)));
         if (usr.password == password)
         {
@@ -95,12 +101,14 @@ void Getfd(int fd)
         if (!Database::User_Exist_ID(oppositeID))
         {
             SendInt(fd, 1);
+            break;
         }
 
         // 检查是否找到了这个值
         if (usr.frd.find(oppositeID) != usr.frd.end())
         {
             SendInt(fd, 2);
+            break;
         }
         chatID = Database::Get_ChatID();
         Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
@@ -109,11 +117,11 @@ void Getfd(int fd)
         cout << "返回用户" << ID << "好友信息\n";
         break;
 
-    case 100:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr);
-        Send(fd, Database::User_Out(ID));
+        // case 100:
+        //     Get_Info(jso, &ID, nullptr, nullptr, nullptr);
+        //     Send(fd, Database::User_Out(ID));
 
-        break;
+        //     break;
 
     default: // jump to case label???
         cout << "啊？" << endl;
