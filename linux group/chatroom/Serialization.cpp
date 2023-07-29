@@ -103,13 +103,13 @@ UserBase From_Json_UserBase(string jso)
 
 
 */
-int getopt(const string &jso)
+Event getopt(const string &jso)
 {
     json j = json::parse(jso);
     return j.at("option");
 }
 
-void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID)
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID) // 能直接传引用吗？
 {
     json j = json::parse(jso);
     if (ID != nullptr)

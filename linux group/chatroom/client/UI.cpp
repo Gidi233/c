@@ -11,6 +11,7 @@ void Main_UI_First()
 	client cil;
 	bool flag;
 	char choice;
+	int ID;
 	do
 	{
 		system("clear");
@@ -33,12 +34,12 @@ void Main_UI_First()
 		{
 
 		case '1':
-			if (Main_Menu_Ser_Register())
-				User_UI_First();
+			if ((ID = Main_Menu_Ser_Register()))
+				User_UI_First(ID);
 			break;
 		case '2':
-			if (Main_Menu_Ser_Login())
-				User_UI_First();
+			if ((ID = Main_Menu_Ser_Login()))
+				User_UI_First(ID);
 
 			break;
 		default:
@@ -53,14 +54,16 @@ void Main_Menu()
 	printf("1.注册\n2.登录\n0.退出\n");
 }
 
-void User_UI_First()
+void User_UI_First(int ID)
 {
 	char choice;
-	UserBase self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发,把返回用户信息事件和登录注册分开
-														// 没刷新
+	UserBase self;
 	do
 	{
 		system("clear");
+		self = Get_User_Ser(ID);
+		// self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发,把返回用户信息事件和登录注册分开
+		// 										   // 没刷新
 		cout << "个人界面\n";
 		self.toString();
 		User_UI();
@@ -97,7 +100,7 @@ void User_UI()
 	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
 }
 
-void Friend_UI_First(UserTotal self)
+void Friend_UI_First(UserBase self)
 {
 	char choice;
 	do

@@ -77,6 +77,8 @@ string client::Recv()
     char *buffer = new char[reqLen];
     recv(cfd, buffer, reqLen, 0);
     string res(buffer, reqLen);
+    // 在这里检测是实时信息还是回应，实时消息再调Recv
+
     delete buffer;
     return res;
 }

@@ -1,6 +1,7 @@
 #include "service_ser.hpp"
 #include "../Serialization.hpp"
 #include "database.hpp"
+#include "../event.hpp"
 #include "server.hpp"
 #include <sys/socket.h>
 #include <cstring>
@@ -17,29 +18,29 @@ void Getfd(int fd)
     switch (getopt(jso))
     {
 
-    case 1:
+    case Register:
         // 判断是否重名
         Get_Info(jso, nullptr, &account, &password, nullptr);
         if (Database::User_Exist_Account(account))
         {
-            SendBool(fd, 0);
+            SendInt(fd, 0);
             break;
         }
-        SendBool(fd, 1);
         usr = New_User(account, password);
         cout << "账号" << usr.ID << "注册\n";
+        SendInt(fd, usr.ID);
         Database::Set_Account_To_ID(usr.ID, account);
         Database::User_In(usr.ID, To_Json_User(usr));
-        Send(fd, To_Json_User(usr));
+        // Send(fd, To_Json_User(usr));
         // cout << "返回用户" << usr.ID << "个人信息\n";
         server::ID_To_Fd.emplace(usr.ID, fd);
         break;
-    case 2:
+    case Login:
         Get_Info(jso, nullptr, &account, &password, nullptr);
 
         if (!Database::User_Exist_Account(account))
         {
-            SendBool(fd, 0);
+            SendInt(fd, 0); // 不存在
             break;
         }
         usr = From_Json_UserTotal(Database::User_Out(Database::Get_Account_To_ID(account)));
@@ -47,15 +48,20 @@ void Getfd(int fd)
         {
             cout << "账号" << usr.ID << "登录\n";
             Change_isLogin_Ser(usr.ID);
-            SendBool(fd, 1);
-            Send(fd, Database::User_Out(usr.ID));
+            SendInt(fd, usr.ID);
+            // Send(fd, Database::User_Out(usr.ID));
             server::ID_To_Fd.emplace(usr.ID, fd);
         }
         else
-            SendBool(fd, 0);
+            SendInt(fd, 0); // 密码错误
 
         break;
-    case 11:
+
+    case User:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
+        Send(fd, Database::User_Out(ID));
+        break;
+    case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         if (usr.frd.empty())
@@ -87,7 +93,7 @@ void Getfd(int fd)
     //     cout << "用户" << account << "退出\n";
     //     // SendBool(fd, Change_isLogin_Ser(account));
     //     break;
-    case 10:
+    case Exit:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr);
         Change_isLogin_Ser(ID);
         server::ID_To_Fd.erase(ID);
@@ -95,7 +101,7 @@ void Getfd(int fd)
         // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
-    case 111:
+    case Add_Frd:
         Get_Info(jso, &ID, nullptr, nullptr, &oppositeID); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         if (!Database::User_Exist_ID(oppositeID))
@@ -132,6 +138,8 @@ void Getfd(int fd)
 
 void Send(int fd, string jso)
 {
+
+    // 在这里用json设定是实时信息还是回应，多传一个参数
     int numRead = jso.length();
     char *buffer = new char[numRead + 4];
     memcpy(buffer, &numRead, sizeof(int));

@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <string>
 using std::string;
+// 懒得传参就都是static，好像就不用弄成类的
 class client
 {
 public:
@@ -17,7 +18,7 @@ public:
 
     static void Send(string jso);
     static bool RecvBool();
-    static int RecvInt();
+    static int RecvInt(); // 只有一个recv 收的是json 函数分为num str
     static string Recv();
 };
 
