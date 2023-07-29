@@ -54,7 +54,7 @@ void Main_Menu()
 	printf("1.注册\n2.登录\n0.退出\n");
 }
 
-void User_UI_First(int ID)
+void User_UI_First(int ID) // 都改成引用
 {
 	char choice;
 	UserBase self;
@@ -62,8 +62,6 @@ void User_UI_First(int ID)
 	{
 		system("clear");
 		self = Get_User_Ser(ID);
-		// self = From_Json_UserBase(client::Recv()); // 用一个_Ser兼顾收发,把返回用户信息事件和登录注册分开
-		// 										   // 没刷新
 		cout << "个人界面\n";
 		self.toString();
 		User_UI();
@@ -83,10 +81,10 @@ void User_UI_First(int ID)
 		switch (choice)
 		{
 		case '1':
-			Friend_UI_First(self);
+			Friend_UI_First(self.ID);
 			break;
 		case '2':
-			Group_UI_First(self);
+			Group_UI_First(self.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
@@ -100,21 +98,19 @@ void User_UI()
 	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
 }
 
-void Friend_UI_First(UserBase self)
+void Friend_UI_First(int ID)
 {
 	char choice;
 	do
 	{
 		system("clear");
 		cout << "好友界面\n";
-		Friend_Ser(self.ID);
+		Friend_Ser(ID);
 		Friend_UI();
 		printf("输入(0-2):");
 		cin >> choice;
 		if (choice == '0')
 		{
-			// To_User_Ser(self.ID);
-
 			return;
 		}
 		if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
@@ -125,7 +121,7 @@ void Friend_UI_First(UserBase self)
 		switch (choice)
 		{
 		case '1':
-			Add_Frd_Ser(self.ID);
+			Add_Frd_Ser(ID);
 			break;
 		case '2':
 			break;
@@ -136,7 +132,7 @@ void Friend_UI_First(UserBase self)
 	} while (choice != '0');
 }
 
-void Group_UI_First(UserTotal self)
+void Group_UI_First(int ID)
 {
 }
 

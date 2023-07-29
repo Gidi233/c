@@ -59,7 +59,7 @@ void Getfd(int fd)
 
     case User:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
-        Send(fd, Database::User_Out(ID));
+        Send(fd, To_UserBase(Database::User_Out(ID)));
         break;
     case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
@@ -73,7 +73,7 @@ void Getfd(int fd)
             SendInt(fd, usr.frd.size());
             for (const auto &FID : usr.frd) // std::pair<int, int>
             {
-                Send(fd, Database::User_Out(FID.first)); //
+                Send(fd, To_UserBase(Database::User_Out(FID.first))); //
             }
         }
         cout << "返回用户" << ID << "好友信息\n";

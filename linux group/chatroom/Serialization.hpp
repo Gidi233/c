@@ -15,6 +15,7 @@ UserBase From_Json_UserBase(string jso);
 
 string To_Json_User(UserTotal usr);
 Event getopt(const string &jso);
+string To_UserBase(string jso);
 void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID);
 string Add_Friend(int ID, string json, int chatID);
 string Change_isLogin(string jso);

@@ -18,6 +18,7 @@ int Main_Menu_Ser_Register()
         cin >> account;
         cout << "密码：";
         cin >> password;
+        // 加个再次输入密码
         client::Send(From_Main(Register, account, password));
         if ((ID = client::RecvInt()))
         {

@@ -109,7 +109,7 @@ Event getopt(const string &jso)
     return j.at("option");
 }
 
-void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID) // 能直接传引用吗？
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID)
 {
     json j = json::parse(jso);
     if (ID != nullptr)
@@ -122,6 +122,17 @@ void Get_Info(const string &jso, int *ID, string *account, string *password, int
         *oppositeID = j.at("oppositeID");
     // *account = j["account"];
     // *password = j["password"];
+}
+
+string To_UserBase(string jso)
+{
+    json total = json::parse(jso);
+    json base{
+        {"ID", total["ID"]},
+        {"account", total["account"]},
+        {"islogin", total["islogin"]},
+    };
+    return base.dump();
 }
 
 string Change_isLogin(string jso)
