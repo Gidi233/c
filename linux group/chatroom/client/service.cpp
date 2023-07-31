@@ -182,6 +182,31 @@ void Del_Frd_Ser(int ID)
     }
 }
 
+void Search_Frd_Ser(int ID)
+{
+    string account;
+    char choice;
+    int ans;
+    while (1)
+    {
+        system("clear");
+        cout << "对方账户:";
+        cin >> account;
+        client::Send(From_Frd_Account(Search_Frd, account));
+        if ((ans = client::RecvInt()))
+        {
+            cout << account << "的ID为" << ans << endl;
+            sleep(1);
+            return;
+        }
+        cout << "该用户不存在\n";
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+}
+
 void Group_Ser(int ID)
 {
     client::Send(From_Self(Grp_List, ID));

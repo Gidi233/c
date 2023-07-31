@@ -126,6 +126,12 @@ void Friend_UI_First(int ID)
 		case '2':
 			Del_Frd_Ser(ID);
 			break;
+		// case '3':
+		// Del_Frd_Ser(ID);
+		// break;
+		case '4':
+			Search_Frd_Ser(ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -135,7 +141,7 @@ void Friend_UI_First(int ID)
 
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天\n4.搜索好友\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天\n4.搜索账户对应ID\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

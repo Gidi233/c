@@ -10,6 +10,7 @@ enum Event
     Frd_List,
     Add_Frd,
     Del_Frd,
+    Search_Frd,
     Grp_List
 };
 

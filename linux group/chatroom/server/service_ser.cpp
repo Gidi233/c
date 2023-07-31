@@ -12,7 +12,7 @@ using std::string, std::cout, std::cin, std::endl;
 void Getfd(int fd)
 {
     string jso = Recv(fd);
-    string account, password;
+    string account, password, opposite_account;
     int ID, oppositeID, chatID;
     UserTotal usr;
     switch (getopt(jso))
@@ -20,7 +20,7 @@ void Getfd(int fd)
 
     case Register:
         // 判断是否重名
-        Get_Info(jso, nullptr, &account, &password, nullptr);
+        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr);
         if (Database::User_Exist_Account(account))
         {
             SendInt(fd, 0);
@@ -36,7 +36,7 @@ void Getfd(int fd)
         server::ID_To_Fd.emplace(usr.ID, fd);
         break;
     case Login:
-        Get_Info(jso, nullptr, &account, &password, nullptr);
+        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr);
 
         if (!Database::User_Exist_Account(account))
         {
@@ -58,11 +58,11 @@ void Getfd(int fd)
         break;
 
     case User:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         Send(fd, To_UserBase(Database::User_Out(ID)), 0);
         break;
     case Frd_List:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         if (usr.frd.empty())
         {
@@ -77,7 +77,6 @@ void Getfd(int fd)
             }
         }
         cout << "返回用户" << ID << "好友信息\n";
-        // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
     // case 12:
@@ -94,15 +93,14 @@ void Getfd(int fd)
     //     // SendBool(fd, Change_isLogin_Ser(account));
     //     break;
     case Exit:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr);
         Change_isLogin_Ser(ID);
         server::ID_To_Fd.erase(ID);
         cout << "用户" << ID << "退出\n";
-        // SendBool(fd, Change_isLogin_Ser(account));
         break;
 
     case Add_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID); //
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         if (!Database::User_Exist_ID(oppositeID))
         {
@@ -121,11 +119,10 @@ void Getfd(int fd)
         Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
         Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); // 这些都放到处理好友申请里
         SendInt(fd, 0);
-        // cout << "返回用户" << ID << "好友信息\n";
         break;
 
     case Del_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID); //
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         // 检查是否找到了这个值
         if (usr.frd.find(oppositeID) == usr.frd.end())
@@ -143,14 +140,14 @@ void Getfd(int fd)
             Database::User_In(oppositeID, To_Json_User(opposite));
         }
         SendInt(fd, 0);
-        // cout << "返回用户" << ID << "好友信息\n";
         break;
-
-        // case 100:
-        //     Get_Info(jso, &ID, nullptr, nullptr, nullptr);
-        //     Send(fd, Database::User_Out(ID));
-
-        //     break;
+    case Search_Frd:
+        Get_Info(jso, nullptr, nullptr, nullptr, nullptr, &opposite_account); //
+        if (Database::User_Exist_Account(opposite_account))
+            SendInt(fd, Database::Get_Account_To_ID(opposite_account));
+        else
+            SendInt(fd, 0);
+        break;
 
     default: // jump to case label???
         cout << "啊？" << endl;

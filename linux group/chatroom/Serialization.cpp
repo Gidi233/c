@@ -50,6 +50,14 @@ string From_Frd(int opt, int ID, int oppositeID)
     return j.dump();
 }
 
+string From_Frd_Account(int opt, string opposite_account)
+{
+    json j = {
+        {"option", opt},
+        {"opposite_account", opposite_account}};
+    return j.dump();
+}
+
 /*
 
 
@@ -124,7 +132,7 @@ string Set_Num(int num)
     return j.dump();
 }
 
-void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID)
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID, string *opposite_account)
 {
     json j = json::parse(jso);
     if (ID != nullptr)
@@ -135,8 +143,8 @@ void Get_Info(const string &jso, int *ID, string *account, string *password, int
         *password = j.at("password");
     if (oppositeID != nullptr)
         *oppositeID = j.at("oppositeID");
-    // *account = j["account"];
-    // *password = j["password"];
+    if (opposite_account != nullptr)
+        *opposite_account = j.at("opposite_account");
 }
 
 string To_UserBase(string jso)
