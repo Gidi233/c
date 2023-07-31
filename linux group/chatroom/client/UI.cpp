@@ -124,6 +124,7 @@ void Friend_UI_First(int ID)
 			Add_Frd_Ser(ID);
 			break;
 		case '2':
+			Del_Frd_Ser(ID);
 			break;
 		default:
 			cout << "啊？" << endl;
@@ -132,11 +133,10 @@ void Friend_UI_First(int ID)
 	} while (choice != '0');
 }
 
-void Group_UI_First(int ID)
-{
-}
-
 void Friend_UI()
 {
 	printf("1.加好友\n2.删好友\n3.选择好友聊天\n4.搜索好友\n0.退出\n");
+}
+void Group_UI_First(int ID)
+{
 }

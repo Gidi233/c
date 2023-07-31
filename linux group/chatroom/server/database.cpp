@@ -117,7 +117,7 @@ int Database::Get_ChatID()
 
 bool Database::Chat_In(int ID, string jso)
 {
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Chat:%d %s", ID, jso.c_str());
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Chat:%d %s", ID, jso.c_str()); // 换成链表存？
     string ans(reply->str);
     freeReplyObject(reply);
     return ans == "OK";
@@ -131,6 +131,13 @@ string Database::Chat_Out(int ID)
     return ans;
 }
 
+bool Database::Del_Chat(int ID)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "DEL Chat:%d", ID);
+    int ans = reply->integer;
+    freeReplyObject(reply);
+    return ans;
+}
 void Database::Close()
 {
     redisFree(redis);

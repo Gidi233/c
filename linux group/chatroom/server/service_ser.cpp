@@ -118,9 +118,33 @@ void Getfd(int fd)
         }
         chatID = Database::Get_ChatID();
         Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
-        Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); //
+        Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); // 这些都放到处理好友申请里
         SendInt(fd, 0);
-        cout << "返回用户" << ID << "好友信息\n";
+        // cout << "返回用户" << ID << "好友信息\n";
+        break;
+
+    case Del_Frd:
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        // 检查是否找到了这个值
+        if (usr.frd.find(oppositeID) == usr.frd.end())
+        {
+            SendInt(fd, 1);
+            break;
+        }
+        // 发送消息
+        Database::Del_Chat(usr.frd[oppositeID]); // 构造了删
+        usr.frd.erase(oppositeID);
+        Database::User_In(ID, To_Json_User(usr));
+        { //
+            UserTotal opposite = From_Json_UserTotal(Database::User_Out(oppositeID));
+            opposite.frd.erase(ID);
+            Database::User_In(oppositeID, To_Json_User(opposite));
+        }
+        // Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
+        // Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); //
+        SendInt(fd, 0);
+        // cout << "返回用户" << ID << "好友信息\n";
         break;
 
         // case 100:

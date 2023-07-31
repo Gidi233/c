@@ -141,6 +141,47 @@ void Add_Frd_Ser(int ID)
     }
 }
 
+void Del_Frd_Ser(int ID)
+{
+    int frdID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> frdID;
+        if (frdID == ID)
+        {
+            cout << "你小子酒吧进酒吧是吧（删自己)\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Frd(Del_Frd, ID, frdID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "删除成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "并无该好友\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+}
+
 void Group_Ser(int ID)
 {
     client::Send(From_Self(Grp_List, ID));

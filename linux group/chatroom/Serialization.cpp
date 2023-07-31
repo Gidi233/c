@@ -50,26 +50,8 @@ string From_Frd(int opt, int ID, int oppositeID)
 
 string To_Json_User(UserTotal usr)
 {
-    // json frd_arr = json::array();
     json frd_map(usr.frd);
     json grp_map(usr.grp);
-    // for (const auto &f : usr.frd)
-    // {
-    //     json f_json;
-    //     f_json["ID"] = f.ID;
-    //     frd_arr.push_back(f_json);
-    // } // 放到另一个函数
-
-    // json frd_arr = j["frd"];
-    // for (const auto &f : frd_arr)
-    // {
-    //     UserBase f_user;
-    //     f_user.ID = f["ID"];
-    //     f_user.account = f["account"];
-    //     f_user.password = f["password"];
-    //     f_user.islogin = f["islogin"];
-    //     user.frd.push_back(f_user);
-    // }
     json j = {
         {"ID", usr.ID},
         {"account", usr.account},
