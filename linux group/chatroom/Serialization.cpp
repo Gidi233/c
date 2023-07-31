@@ -2,7 +2,26 @@
 #include <json.hpp>
 #include "Serialization.hpp"
 #include "user.hpp"
+#include "client/client.hpp"
 using std::string, std::cout, std::endl, nlohmann::json;
+
+string Get_Type(string jso)
+{
+    json j = json::parse(jso);
+    if (j["type"]) // 在线消息
+    {
+        // 接受message输出
+        return client::Recv();
+    }
+    else
+        return jso; // 回应
+}
+
+int Get_Num(string jso)
+{
+    json j = json::parse(jso);
+    return j["num"]; // 回应
+}
 
 string From_Main(int opt, string account, string password)
 {
@@ -89,6 +108,20 @@ Event getopt(const string &jso)
 {
     json j = json::parse(jso);
     return j.at("option");
+}
+
+string Set_Type(string jso, bool type)
+{
+    json j = json::parse(jso);
+    j["type"] = type;
+    return j.dump();
+}
+
+string Set_Num(int num)
+{
+    json j{
+        {"num", num}};
+    return j.dump();
 }
 
 void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID)

@@ -59,7 +59,7 @@ void Getfd(int fd)
 
     case User:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
-        Send(fd, To_UserBase(Database::User_Out(ID)));
+        Send(fd, To_UserBase(Database::User_Out(ID)), 0);
         break;
     case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr); //
@@ -73,7 +73,7 @@ void Getfd(int fd)
             SendInt(fd, usr.frd.size());
             for (const auto &FID : usr.frd) // std::pair<int, int>
             {
-                Send(fd, To_UserBase(Database::User_Out(FID.first))); //
+                Send(fd, To_UserBase(Database::User_Out(FID.first)), 0); //
             }
         }
         cout << "返回用户" << ID << "好友信息\n";
@@ -116,6 +116,7 @@ void Getfd(int fd)
             SendInt(fd, 2);
             break;
         }
+
         chatID = Database::Get_ChatID();
         Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
         Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); // 这些都放到处理好友申请里
@@ -141,8 +142,6 @@ void Getfd(int fd)
             opposite.frd.erase(ID);
             Database::User_In(oppositeID, To_Json_User(opposite));
         }
-        // Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
-        // Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); //
         SendInt(fd, 0);
         // cout << "返回用户" << ID << "好友信息\n";
         break;
@@ -160,25 +159,21 @@ void Getfd(int fd)
     close(fd);
 }
 
-void Send(int fd, string jso)
+void Send(int fd, string jso, bool type)
 {
-
+    string realjso = Set_Type(jso, type);
     // 在这里用json设定是实时信息还是回应，多传一个参数
-    int numRead = jso.length();
+    int numRead = realjso.length();
     char *buffer = new char[numRead + 4];
     memcpy(buffer, &numRead, sizeof(int));
-    memcpy(buffer + 4, jso.c_str(), numRead);
+    memcpy(buffer + 4, realjso.c_str(), numRead);
     send(fd, buffer, numRead + 4, 0);
 }
 
-void SendBool(int fd, bool flag)
+void SendInt(int fd, int num) //,bool flag
 {
-    send(fd, (const void *)&flag, sizeof(bool), 0);
-}
-
-void SendInt(int fd, int num)
-{
-    send(fd, (const void *)&num, sizeof(int), 0);
+    Send(fd, Set_Num(num), 0);
+    // send(fd, (const void *)&num, sizeof(int), 0);
 }
 
 string Recv(int fd)

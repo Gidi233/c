@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 project(ChatRoom)
 
 # 添加可执行文件
-add_executable(server user.cpp server/database.cpp server/server.cpp server/service_ser.cpp server/thread.cpp server/main.cpp Serialization.cpp Message.cpp)
+add_executable(server user.cpp server/database.cpp server/server.cpp server/service_ser.cpp server/thread.cpp server/main.cpp Serialization.cpp Message.cpp client/client.cpp)
 add_executable(client client/client.cpp client/service.cpp client/UI.cpp client/main.cpp Serialization.cpp server/database.cpp user.cpp Message.cpp)
 
 
 # 添加头文件路径
-target_include_directories(server PRIVATE server ${CMAKE_SOURCE_DIR})
+target_include_directories(server PRIVATE server ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/client)
 target_include_directories(client PRIVATE client ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/server)
 
 # 设置编译选项

@@ -7,12 +7,16 @@
 
 using std::string, nlohmann::json;
 
+string Get_Type(string jso);
+int Get_Num(string jso);
 string From_Main(int opt, string account, string password);
 string From_Self(int opt, int ID); //
 string From_Frd(int opt, int ID, int frdID);
 UserTotal From_Json_UserTotal(string j);
 UserBase From_Json_UserBase(string jso);
 
+string Set_Type(string jso, bool flag);
+string Set_Num(int num);
 string To_Json_User(UserTotal usr);
 Event getopt(const string &jso);
 string To_UserBase(string jso);

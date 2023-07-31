@@ -7,7 +7,7 @@
 #include "client.hpp"
 using namespace std;
 
-int client::cfd = -1;
+int client::cfd = -1, client::oppositeID = -1;
 
 client::client()
 {
@@ -56,18 +56,16 @@ void client::Send(string jso)
     delete buffer;
 }
 
-bool client::RecvBool()
-{
-    bool res;
-    recv(cfd, (void *)&res, sizeof(bool), 0);
-    return res;
-}
+// bool client::RecvBool()
+// {
+//     bool res;
+//     recv(cfd, (void *)&res, sizeof(bool), 0);
+//     return res;
+// }
 
 int client::RecvInt()
 {
-    int res;
-    recv(cfd, (void *)&res, sizeof(int), 0);
-    return res;
+    return Get_Num(Recv());
 }
 
 string client::Recv()
@@ -77,8 +75,6 @@ string client::Recv()
     char *buffer = new char[reqLen];
     recv(cfd, buffer, reqLen, 0);
     string res(buffer, reqLen);
-    // 在这里检测是实时信息还是回应，实时消息再调Recv
-
     delete buffer;
-    return res;
+    return Get_Type(res); // 在这里检测是实时信息还是回应，实时消息再调Recv
 }
