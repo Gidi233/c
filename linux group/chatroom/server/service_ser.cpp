@@ -64,18 +64,7 @@ void Getfd(int fd)
     case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        if (usr.frd.empty())
-        {
-            SendInt(fd, 0);
-        }
-        else
-        {
-            SendInt(fd, usr.frd.size());
-            for (const auto &FID : usr.frd) // std::pair<int, int>
-            {
-                Send(fd, To_UserBase(Database::User_Out(FID.first)), 0); //
-            }
-        }
+        Send(fd, To_Json_Frdlist(usr.frd), 0);
         cout << "返回用户" << ID << "好友信息\n";
         break;
 

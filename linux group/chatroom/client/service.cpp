@@ -2,6 +2,7 @@
 #include "../Serialization.hpp"
 #include "service.hpp"
 #include "../event.hpp"
+#include <list>
 #include <unistd.h>
 #include <iostream>
 using namespace std;
@@ -79,22 +80,16 @@ void User_Ser_Exit(int ID)
 
 void Friend_Ser(int ID)
 {
-    UserBase frd;
+    list<UserBase> frd;
     client::Send(From_Self(Frd_List, ID));
-    int num = client::RecvInt();
-    if (num)
+    frd = From_Json_Frdlist(client::Recv()); // 把这改了就可以只在Send，Recv里改了
+    for (auto &f : frd)
     {
-        for (int i = 0; i < num; i++)
-        {
-            frd = From_Json_UserBase(client::Recv());
-            frd.toString();
-            cout << "==================================================\n";
-        }
+        f.toString();
+        cout << "==================================================\n";
     }
-    else
-    {
+    if (frd.empty())
         cout << "当前无好友" << endl;
-    }
 }
 
 void Add_Frd_Ser(int ID)

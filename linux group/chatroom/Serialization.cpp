@@ -1,6 +1,7 @@
 #include <iostream>
 #include <json.hpp>
 #include "Serialization.hpp"
+#include "server/database.hpp"
 #include "user.hpp"
 #include "client/client.hpp"
 using std::string, std::cout, std::endl, nlohmann::json;
@@ -40,7 +41,19 @@ string From_Self(int opt, int ID)
 
     return j.dump();
 }
-// 把这俩个合到一起
+
+list<UserBase> From_Json_Frdlist(string jso)
+{
+    list<UserBase> frd;
+    json frd_arr = json::parse(jso);
+    for (const auto &f : frd_arr)
+    {
+        UserBase f_user(f["ID"], f["account"], f["islogin"]);
+        frd.push_back(f_user);
+    }
+    return frd;
+}
+
 string From_Frd(int opt, int ID, int oppositeID)
 {
     json j = {
@@ -175,13 +188,13 @@ string Add_Friend(int ID, string jso, int chatID)
     return j.dump();
 }
 
-// string To_Json_Friend(UserTotal usr)
-// {
-
-//     json j = {
-//         {"ID", usr.ID},
-//         {"account", usr.account},
-//         {"islogin", usr.islogin}
-//         };
-//     return j.dump();
-// }
+string To_Json_Frdlist(const unordered_map<int, int> &frd)
+{
+    json j;
+    for (const auto &FID : frd) // std::pair<int, int>
+    {
+        json f = json::parse(To_UserBase(Database::User_Out(FID.first)));
+        j.push_back(f);
+    }
+    return j.dump();
+}
