@@ -46,7 +46,7 @@ list<UserBase> From_Json_Frdlist(string jso)
 {
     list<UserBase> frd;
     json frd_arr = json::parse(jso);
-    for (const auto &f : frd_arr)
+    for (const auto &f : frd_arr["frd"])
     {
         UserBase f_user(f["ID"], f["account"], f["islogin"]);
         frd.push_back(f_user);
@@ -190,11 +190,12 @@ string Add_Friend(int ID, string jso, int chatID)
 
 string To_Json_Frdlist(const unordered_map<int, int> &frd)
 {
-    json j;
+    json j, frd;
     for (const auto &FID : frd) // std::pair<int, int>
     {
         json f = json::parse(To_UserBase(Database::User_Out(FID.first)));
-        j.push_back(f);
+        frd.push_back(f);
     }
+    j["frd"] = frd;
     return j.dump();
 }
