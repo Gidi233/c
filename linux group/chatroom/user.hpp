@@ -1,6 +1,6 @@
 #ifndef USER
 #define USER
-#include <queue>
+#include <list>
 #include <unordered_map>
 #include <iostream>
 #include "Message.hpp"
@@ -26,13 +26,14 @@ class UserTotal : public UserBase
 {
 public:
     unordered_map<int, int> frd; // 对象ID对聊天数据ID
+    unordered_map<int, bool> frd_Block;
     unordered_map<int, int> grp;
-    // queue<Message> notice,manage;
+    list<Message> notice, manage;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();
     UserTotal(const UserBase &base);
-    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, int> grp);
+    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, bool> frd_Block, unordered_map<int, int> grp, list<Message> notice, list<Message> manage);
     ~UserTotal();
 };
 

@@ -50,6 +50,8 @@ void Getfd(int *fd)
             Change_isLogin_Ser(usr.ID);
             SendInt(*fd, usr.ID);
             server::ID_To_Fd.emplace(usr.ID, *fd);
+            Send(*fd, Get_Notice(Database::User_Out(usr.ID)), 0);
+            Database::User_In(usr.ID, Notice_Clear(Database::User_Out(usr.ID)));
         }
         else
             SendInt(*fd, 0); // 密码错误
@@ -158,6 +160,7 @@ void Getfd(int *fd)
         else
         {
             // 加到对方的消息队列
+            Database::User_In(msg.ReceiveID, Add_Notice(msg.ReceiveID, msg));
         }
         Database::Chat_In(chatID, Add_Msg(To_Json_Msg(msg), Database::Chat_Out(chatID)));
         cout << "追加" << msg.SendID << "发给" << msg.ReceiveID << "的消息" << endl;

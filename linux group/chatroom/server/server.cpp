@@ -122,7 +122,7 @@ void server::Wait_In()
             {
                 cout << "连接" << evget[i].data.fd << "断开\n";
                 epoll_ctl(epfd, EPOLL_CTL_DEL, evget[i].data.fd, 0);
-                // Change_isLogin_Ser(Fd_To_User.find(evget[i].data.fd)->second);
+                // Change_isLogin_Ser(Fd_To_User.find(evget[i].data.fd)->second);还是在这里改
                 close(evget[i].data.fd);
             }
         }

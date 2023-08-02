@@ -3,7 +3,6 @@
 #include "Serialization.hpp"
 #include "user.hpp"
 #include "Message.hpp"
-#include "Message.hpp"
 #include "server/database.hpp"
 #include "client/client.hpp"
 using std::string, std::cout, std::endl, nlohmann::json;
@@ -102,25 +101,75 @@ void From_Json_Chat(string jso)
 
 
 */
+json To_Json_MsgList(list<Message> qu)
+{
+    json que;
+    for (const auto &q : qu)
+    {
+        json j = json::parse(To_Json_Msg(q));
+        que.push_back(j);
+    }
+    return que;
+}
 
 string To_Json_User(UserTotal usr)
 {
     json frd_map(usr.frd);
     json grp_map(usr.grp);
+    json block(usr.frd_Block);
+    json notice = To_Json_MsgList(usr.notice);
+    json manage = To_Json_MsgList(usr.manage);
     json j = {
         {"ID", usr.ID},
         {"account", usr.account},
         {"password", usr.password},
         {"islogin", usr.islogin},
         {"frd", frd_map},
-        {"grp", grp_map}};
+        {"frd_Block", block},
+        {"grp", grp_map},
+        {"notice", notice},
+        {"manage", manage}};
     return j.dump();
+}
+
+string Get_Notice(string jso)
+{
+    json j = json::parse(jso);
+    json n;
+    n["notice"] = j["notice"];
+    return n.dump();
+}
+
+json To_Notice(string jso)
+{
+    json j = json::parse(jso);
+    return j["notice"];
+}
+
+string Notice_Clear(string jso)
+{
+    json j = json::parse(jso), n;
+    j["notice"] = n;
+    return j.dump();
+}
+
+list<Message> From_Json_MsgList(json j)
+{
+    list<Message> li;
+    for (const auto &l : j)
+    {
+        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["str"], l["time"]);
+        li.push_back(msg);
+    }
+    return li;
 }
 
 UserTotal From_Json_UserTotal(string jso)
 {
     json j = json::parse(jso);
-    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["grp"]); //
+    list<Message> notice = From_Json_MsgList(j["notice"]);
+    list<Message> manage = From_Json_MsgList(j["manage"]);
+    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_Block"], j["grp"], notice, manage); //
 }
 
 UserBase From_Json_UserBase(string jso)
@@ -200,6 +249,22 @@ string Add_Friend(int ID, string jso, int chatID)
 {
     json j = json::parse(jso);
     j["frd"].push_back({ID, chatID}); //[]
+    return j.dump();
+}
+
+string Add_Notice(int ID, Message msg)
+{
+    json j = json::parse(Database::User_Out(ID));
+    json m = json::parse(To_Json_Msg(msg));
+    j["notice"].push_back(m);
+    return j.dump();
+}
+
+string Add_Manage(int ID, Message msg)
+{
+    json j = json::parse(Database::User_Out(ID));
+    json m = json::parse(To_Json_Msg(msg));
+    j["manage"].push_back(m);
     return j.dump();
 }
 

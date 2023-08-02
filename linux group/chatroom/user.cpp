@@ -30,7 +30,7 @@ UserTotal::UserTotal(const UserBase &base) : UserBase(base) // 注册用
     }
 }
 
-UserTotal::UserTotal(const UserBase &base, unordered_map<int, int> friends, unordered_map<int, int> group) : UserBase(base), frd(friends), grp(group) // 数据库取数据用
+UserTotal::UserTotal(const UserBase &base, unordered_map<int, int> friends, unordered_map<int, bool> Block, unordered_map<int, int> group, list<Message> notice1, list<Message> manage1) : UserBase(base), frd(friends), frd_Block(Block), grp(group), notice(notice1), manage(manage1) // 数据库取数据用
 {
 }
 

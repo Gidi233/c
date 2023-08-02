@@ -56,10 +56,12 @@ void Main_Menu()
 
 void User_UI_First(int ID) // 都改成引用
 {
+	sigaction(SIGIO, &client::ign, 0);
+	list<Message> Offline_Msg = From_Json_MsgList(To_Notice(client::Recv())); // 还是得构造list
+	bool set = 1;
 	client::ID = ID;
 	char choice;
 	UserBase self;
-	sigaction(SIGIO, &client::respond, 0);
 	do
 	{
 		system("clear");
@@ -68,6 +70,15 @@ void User_UI_First(int ID) // 都改成引用
 		self.toString();
 		User_UI();
 		cout << "输入(0-2):（个人界面）";
+		if (set)
+		{
+			for (auto &l : Offline_Msg)
+			{
+				l.toString();
+			}
+			set = 0;
+		}
+
 		cin >> choice;
 		if (choice == '0')
 		{
