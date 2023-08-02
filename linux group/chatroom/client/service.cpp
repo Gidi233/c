@@ -1,9 +1,11 @@
 #include "client.hpp"
 #include "../Serialization.hpp"
 #include "service.hpp"
+#include "../Message.hpp"
 #include "../event.hpp"
 #include <list>
 #include <unistd.h>
+#include <signal.h>
 #include <iostream>
 using namespace std;
 
@@ -82,14 +84,7 @@ void Friend_Ser(int ID)
 {
     list<UserBase> frd;
     client::Send(From_Self(Frd_List, ID));
-    frd = From_Json_Frdlist(client::Recv()); // 把这改了就可以只在Send，Recv里改了
-    for (auto &f : frd)
-    {
-        f.toString();
-        cout << "==================================================\n";
-    }
-    if (frd.empty())
-        cout << "当前无好友" << endl;
+    From_Json_Frdlist(client::Recv()); // 把这改了就可以只在Send，Recv里改了
 }
 
 void Add_Frd_Ser(int ID)
@@ -174,6 +169,57 @@ void Del_Frd_Ser(int ID)
         cin >> choice;
         if (choice == '0')
             return;
+    }
+}
+
+void Send_Msg_Ser(UserBase usr)
+{
+    int frdID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> frdID;
+        if (frdID == usr.ID)
+        {
+            cout << "你小子跟自己唠是吧\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Frd(Exist_Frd, usr.ID, frdID));
+        if (client::RecvInt())
+        {
+            break;
+        }
+        cout << "并无该好友\n";
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+
+    client::frdID = frdID;
+    client::Send(From_Frd(Get_frdChat, usr.ID, frdID));
+    From_Json_Chat(client::Recv());
+    string str;
+    while (1)
+    {
+        cin >> str;
+        if (str == "\\q")
+        {
+            client::frdID = -1;
+            return;
+        }
+        cout << "\033[1A\x1b[2K\r";
+        Message msg(Sendmsg_Tofrd, usr.ID, usr.account, frdID, str, gettime());
+        msg.toString();
+        client::Send(To_Json_Msg(msg)); //
+        sigaction(SIGIO, &client::respond, 0);
     }
 }
 

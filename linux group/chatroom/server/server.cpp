@@ -37,6 +37,16 @@ server::server()
 
         if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1)
             std::cout << strerror(errno);
+        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+        {
+            perror("setsockopt error");
+            exit(1);
+        }
+        if (setsockopt(lfd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0)
+        {
+            perror("setsockopt error");
+            exit(1);
+        }
         // 重用ip地址
         if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
             break; /* Success */
@@ -105,9 +115,8 @@ void server::Wait_In()
         {
             if (evget[i].events == EPOLLIN)
             {
-                fd = dup(evget[i].data.fd);
                 // Getfd(evget[i].data.fd);
-                pool.submit(Getfd, fd);
+                pool.submit(Getfd, &evget[i].data.fd); // 直接传值的话有这个问题：error: cannot bind packed field ‘((server*)this)->server::evget[i].epoll_event::data.epoll_data::fd’ to ‘int&’
             }
             else if (evget[i].events == EPOLLHUP | EPOLLRDHUP) // EPOLLRDHUP没起作用？
             {

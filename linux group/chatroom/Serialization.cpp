@@ -1,8 +1,10 @@
 #include <iostream>
 #include <json.hpp>
 #include "Serialization.hpp"
-#include "server/database.hpp"
 #include "user.hpp"
+#include "Message.hpp"
+#include "Message.hpp"
+#include "server/database.hpp"
 #include "client/client.hpp"
 using std::string, std::cout, std::endl, nlohmann::json;
 
@@ -12,6 +14,8 @@ string Get_Type(string jso)
     if (j["type"]) // 在线消息
     {
         // 接受message输出
+        Message msg = From_Json_Msg(jso);
+        msg.toString();
         return client::Recv();
     }
     else
@@ -27,7 +31,7 @@ int Get_Num(string jso)
 string From_Main(int opt, string account, string password)
 {
     json j = {
-        {"option", opt},
+        {"event", opt},
         {"account", account},
         {"password", password}};
     return j.dump();
@@ -36,28 +40,29 @@ string From_Main(int opt, string account, string password)
 string From_Self(int opt, int ID)
 {
     json j = {
-        {"option", opt},
+        {"event", opt},
         {"ID", ID}};
 
     return j.dump();
 }
 
-list<UserBase> From_Json_Frdlist(string jso)
+void From_Json_Frdlist(string jso)
 {
-    list<UserBase> frd;
     json frd_arr = json::parse(jso);
     for (const auto &f : frd_arr["frd"])
     {
         UserBase f_user(f["ID"], f["account"], f["islogin"]);
-        frd.push_back(f_user);
+        f_user.toString();
+        cout << "==================================================\n";
     }
-    return frd;
+    if (frd_arr["frd"].empty())
+        cout << "当前无好友" << endl;
 }
 
 string From_Frd(int opt, int ID, int oppositeID)
 {
     json j = {
-        {"option", opt},
+        {"event", opt},
         {"ID", ID},
         {"oppositeID", oppositeID}};
     return j.dump();
@@ -66,9 +71,19 @@ string From_Frd(int opt, int ID, int oppositeID)
 string From_Frd_Account(int opt, string opposite_account)
 {
     json j = {
-        {"option", opt},
+        {"event", opt},
         {"opposite_account", opposite_account}};
     return j.dump();
+}
+
+void From_Json_Chat(string jso)
+{
+    json list = json::parse(jso);
+    for (const auto &l : list["chat"])
+    {
+        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["str"], l["time"]);
+        msg.toString();
+    }
 }
 
 /*
@@ -128,7 +143,7 @@ UserBase From_Json_UserBase(string jso)
 Event getopt(const string &jso)
 {
     json j = json::parse(jso);
-    return j.at("option");
+    return j.at("event");
 }
 
 string Set_Type(string jso, bool type)
@@ -184,14 +199,40 @@ string Change_isLogin(string jso)
 string Add_Friend(int ID, string jso, int chatID)
 {
     json j = json::parse(jso);
-    j["frd"].push_back({ID, chatID});
+    j["frd"].push_back({ID, chatID}); //[]
     return j.dump();
 }
 
-string To_Json_Frdlist(const unordered_map<int, int> &frd)
+Message From_Json_Msg(string jso)
+{
+    json j = json::parse(jso);
+    return Message(j["event"], j["sendID"], j["send_account"], j["receiveID"], j["str"], j["time"]);
+}
+
+string To_Json_Msg(Message msg)
+{
+    json j;
+    j["event"] = msg.event;
+    j["sendID"] = msg.SendID;
+    j["send_account"] = msg.Send_Account;
+    j["receiveID"] = msg.ReceiveID;
+    j["str"] = msg.Str;
+    j["time"] = msg.Time;
+
+    return j.dump();
+}
+
+string Add_Msg(string msg, string chat)
+{
+    json Msg = json::parse(msg), Chat = json::parse(chat);
+    Chat["chat"].push_back(Msg);
+    return Chat.dump();
+}
+
+string To_Json_Frdlist(const unordered_map<int, int> &frd_Map)
 {
     json j, frd;
-    for (const auto &FID : frd) // std::pair<int, int>
+    for (const auto &FID : frd_Map) // std::pair<int, int>
     {
         json f = json::parse(To_UserBase(Database::User_Out(FID.first)));
         frd.push_back(f);

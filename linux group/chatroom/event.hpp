@@ -11,6 +11,11 @@ enum Event
     Add_Frd,
     Del_Frd,
     Search_Frd,
+    Exist_Frd,
+    Get_frdChat,
+    Sendmsg_Tofrd,
+    Get_grpChat,
+    Sendmsg_Togrp,
     Grp_List
 };
 

@@ -99,7 +99,7 @@ int Database::Get_ChatID()
     {
         reply = (redisReply *)redisCommand(Database::redis, "GET ChatID");
         int ans = std::stoi(reply->str);
-        Chat_In(ans, "");
+        Chat_In(ans, "{\"chat\":null}"); //
         // 在这建一个库reply = (redisReply *)redisCommand(Database::redis, "SET Chat:%d  ", ans + 1);
         freeReplyObject(reply);
         reply = (redisReply *)redisCommand(Database::redis, "SET ChatID %d", ans + 1);
@@ -110,14 +110,14 @@ int Database::Get_ChatID()
     {
         reply = (redisReply *)redisCommand(Database::redis, "SET ChatID %d", 2);
         freeReplyObject(reply);
-        Chat_In(1, "");
+        Chat_In(1, "{\"chat\":null}");
         return 1;
     }
 }
 
 bool Database::Chat_In(int ID, string jso)
 {
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Chat:%d %s", ID, jso.c_str()); // 换成链表存？
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Chat:%d %s", ID, jso.c_str());
     string ans(reply->str);
     freeReplyObject(reply);
     return ans == "OK";

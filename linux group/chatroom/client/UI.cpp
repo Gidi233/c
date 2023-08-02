@@ -56,8 +56,10 @@ void Main_Menu()
 
 void User_UI_First(int ID) // 都改成引用
 {
+	client::ID = ID;
 	char choice;
 	UserBase self;
+	sigaction(SIGIO, &client::respond, 0);
 	do
 	{
 		system("clear");
@@ -81,7 +83,7 @@ void User_UI_First(int ID) // 都改成引用
 		switch (choice)
 		{
 		case '1':
-			Friend_UI_First(self.ID);
+			Friend_UI_First(self);
 			break;
 		case '2':
 			Group_UI_First(self.ID);
@@ -98,14 +100,14 @@ void User_UI()
 	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
 }
 
-void Friend_UI_First(int ID)
+void Friend_UI_First(UserBase usr)
 {
 	char choice;
 	do
 	{
 		system("clear");
 		cout << "好友界面\n";
-		Friend_Ser(ID);
+		Friend_Ser(usr.ID);
 		Friend_UI();
 		printf("输入(0-2):");
 		cin >> choice;
@@ -121,16 +123,16 @@ void Friend_UI_First(int ID)
 		switch (choice)
 		{
 		case '1':
-			Add_Frd_Ser(ID);
+			Add_Frd_Ser(usr.ID);
 			break;
 		case '2':
-			Del_Frd_Ser(ID);
+			Del_Frd_Ser(usr.ID);
 			break;
-		// case '3':
-		// Del_Frd_Ser(ID);
-		// break;
+		case '3':
+			Send_Msg_Ser(usr);
+			break;
 		case '4':
-			Search_Frd_Ser(ID);
+			Search_Frd_Ser(usr.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
@@ -141,7 +143,7 @@ void Friend_UI_First(int ID)
 
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天\n4.搜索账户对应ID\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.搜索账户对应ID\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

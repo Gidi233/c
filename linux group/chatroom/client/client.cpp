@@ -3,11 +3,15 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <iostream>
+#include <fcntl.h>
+#include <signal.h>
 #include <unistd.h>
 #include "client.hpp"
+#include "../Message.hpp"
 using namespace std;
 
-int client::cfd = -1, client::oppositeID = -1;
+int client::cfd = -1, client::frdID = -1, client::grpID = -1, client::ID = -1;
+struct sigaction client::ign, client::respond;
 
 client::client()
 {
@@ -38,6 +42,16 @@ client::client()
     }
     cfd = fd;
     freeaddrinfo(result);
+
+    sigemptyset(&ign.sa_mask);
+    ign.sa_handler = SIG_IGN;
+    sigemptyset(&respond.sa_mask);
+    respond.sa_flags = SA_RESTART;
+    respond.sa_handler = sigioHandler;
+    sigaction(SIGIO, &ign, 0);
+    fcntl(cfd, F_SETOWN, getpid());
+    int flags = fcntl(cfd, F_GETFL);
+    fcntl(cfd, F_SETFL, flags | O_ASYNC);
 }
 
 client::~client()
@@ -47,7 +61,7 @@ client::~client()
 
 void client::Send(string jso)
 {
-
+    sigaction(SIGIO, &ign, 0);
     int numRead = jso.length();
     char *buffer = new char[numRead + 4];
     memcpy(buffer, &numRead, sizeof(int));
@@ -76,5 +90,25 @@ string client::Recv()
     recv(cfd, buffer, reqLen, 0);
     string res(buffer, reqLen);
     delete buffer;
-    return Get_Type(res); // 在这里检测是实时信息还是回应，实时消息再调Recv
+    string ans = Get_Type(res);    // 在这里检测是实时信息还是回应，实时消息再调Recv
+    sigaction(SIGIO, &respond, 0); // 重复调用，改成迭代？
+    return ans;
+}
+
+string client::Recv_Online()
+{
+    int reqLen;
+    recv(cfd, (void *)&reqLen, sizeof(int), 0);
+    char *buffer = new char[reqLen];
+    recv(cfd, buffer, reqLen, 0);
+    string res(buffer, reqLen);
+    delete buffer;
+    return res;
+}
+
+void sigioHandler(int sig)
+{
+    Message msg = From_Json_Msg(client::Recv_Online());
+    msg.toString(); // 在信号处理程序中输出（好像）会刷新输出流（还是什么来着）
+    // 在这里开个进程输出？？？
 }

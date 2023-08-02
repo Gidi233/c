@@ -3,7 +3,7 @@
 #include <string>
 #include "../user.hpp"
 using std::string;
-void Getfd(int fd);
+void Getfd(int *fd);
 void Send(int fd, string jso, bool type);
 void SendInt(int fd, int num);
 string Recv(int fd);
