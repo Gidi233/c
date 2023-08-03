@@ -67,15 +67,9 @@ void client::Send(string jso)
     memcpy(buffer, &numRead, sizeof(int));
     memcpy(buffer + 4, jso.c_str(), numRead);
     send(cfd, buffer, numRead + 4, 0);
+    // cout << send(cfd, buffer, numRead + 4, 0) << endl;
     delete buffer;
 }
-
-// bool client::RecvBool()
-// {
-//     bool res;
-//     recv(cfd, (void *)&res, sizeof(bool), 0);
-//     return res;
-// }
 
 int client::RecvInt()
 {

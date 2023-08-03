@@ -1,4 +1,6 @@
 #include <iostream>
+#include <list>
+#include "../Message.hpp"
 #include "client.hpp"
 #include "service.hpp"
 #include "../Serialization.hpp"
@@ -56,7 +58,6 @@ void Main_Menu()
 
 void User_UI_First(int ID) // 都改成引用
 {
-	sigaction(SIGIO, &client::ign, 0);
 	list<Message> Offline_Msg = From_Json_MsgList(To_Notice(client::Recv())); // 还是得构造list
 	bool set = 1;
 	client::ID = ID;
@@ -70,6 +71,7 @@ void User_UI_First(int ID) // 都改成引用
 		self.toString();
 		User_UI();
 		cout << "输入(0-2):（个人界面）";
+
 		if (set)
 		{
 			for (auto &l : Offline_Msg)
@@ -86,7 +88,7 @@ void User_UI_First(int ID) // 都改成引用
 
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != '1' && choice != '2' && choice != '3')
 		{
 			continue;
 		}
@@ -99,6 +101,9 @@ void User_UI_First(int ID) // 都改成引用
 		case '2':
 			Group_UI_First(self.ID);
 			break;
+		case '3':
+			Manage_Apply_UI(self.ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -109,6 +114,35 @@ void User_UI_First(int ID) // 都改成引用
 void User_UI()
 {
 	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
+}
+
+void Manage_Apply_UI(int ID)
+{
+	char choice;
+	int num;
+	list<Message> manage;
+	while (1)
+	{
+		system("clear");
+		manage = Get_ManageList_Ser(ID);
+		if (manage.empty())
+		{
+			cout << "当前无任何请求\n";
+			sleep(1);
+			return;
+		}
+		for (auto &m : manage)
+		{
+			m.toString();
+		}
+		cout << "1.逐个处理\n0.返回\n";
+		cin >> choice;
+		if (choice == '0')
+		{
+			return;
+		}
+		Manage_Apply_Ser(ID, manage);
+	}
 }
 
 void Friend_UI_First(UserBase usr)

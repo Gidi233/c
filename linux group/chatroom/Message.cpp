@@ -5,7 +5,19 @@ Message::Message()
 {
 }
 
+Message::Message(Event event1, int sendID1, string send_account1, int receiveID1, string time1) : event(event1), SendID(sendID1), Send_Account(send_account1), ReceiveID(receiveID1), Time(time1)
+{
+}
+
+Message::Message(Event event1, int sendID1, string send_account1, int receiveID1, string time1, int num1) : event(event1), SendID(sendID1), Send_Account(send_account1), ReceiveID(receiveID1), Time(time1), num(num1)
+{
+}
+
 Message::Message(Event event1, int sendID1, string send_account1, int receiveID1, string str1, string time1) : event(event1), SendID(sendID1), Send_Account(send_account1), ReceiveID(receiveID1), Str(str1), Time(time1)
+{
+}
+
+Message::Message(Event event1, int sendID1, string send_account1, int receiveID1, string recv_account1, string str1, string time1, int num1) : event(event1), SendID(sendID1), Send_Account(send_account1), ReceiveID(receiveID1), Receive_Account(recv_account1), Str(str1), Time(time1), num(num1)
 {
 }
 
@@ -27,6 +39,15 @@ void Message::toString()
         }
         break;
 
+    case Send_Add_Frd:
+        cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条好友申请\n";
+        break;
+    case Recv_Add_Frd:
+        if (num)
+            cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")接受了你的好友申请\n";
+        else
+            cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")拒绝了你的好友申请\n";
+        break;
     default:
         break;
     }

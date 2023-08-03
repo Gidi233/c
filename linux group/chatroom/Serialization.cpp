@@ -45,6 +45,17 @@ string From_Self(int opt, int ID)
     return j.dump();
 }
 
+string From_Manage(int opt, int ID, int oppositeID, int num)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"oppositeID", oppositeID},
+        {"num", num}};
+
+    return j.dump();
+}
+
 void From_Json_Frdlist(string jso)
 {
     json frd_arr = json::parse(jso);
@@ -78,9 +89,9 @@ string From_Frd_Account(int opt, string opposite_account)
 void From_Json_Chat(string jso)
 {
     json list = json::parse(jso);
-    for (const auto &l : list["chat"])
+    for (const auto &j : list["chat"])
     {
-        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["str"], l["time"]);
+        Message msg(j["event"], j["sendID"], j["send_account"], j["receiveID"], j["receiveID_account"], j["str"], j["time"], j["num"]);
         msg.toString();
     }
 }
@@ -153,12 +164,26 @@ string Notice_Clear(string jso)
     return j.dump();
 }
 
+string Get_Manage(string jso)
+{
+    json j = json::parse(jso);
+    json n;
+    n["manage"] = j["manage"];
+    return n.dump();
+}
+
+json To_Manage(string jso)
+{
+    json j = json::parse(jso);
+    return j["manage"];
+}
+
 list<Message> From_Json_MsgList(json j)
 {
     list<Message> li;
     for (const auto &l : j)
     {
-        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["str"], l["time"]);
+        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["receiveID_account"], l["str"], l["time"], l["num"]);
         li.push_back(msg);
     }
     return li;
@@ -252,26 +277,33 @@ string Add_Friend(int ID, string jso, int chatID)
     return j.dump();
 }
 
-string Add_Notice(int ID, Message msg)
+string Add_Notice(string jso, Message msg)
 {
-    json j = json::parse(Database::User_Out(ID));
+    json j = json::parse(jso);
     json m = json::parse(To_Json_Msg(msg));
     j["notice"].push_back(m);
     return j.dump();
 }
 
-string Add_Manage(int ID, Message msg)
+string Add_Manage(string jso, Message msg)
 {
-    json j = json::parse(Database::User_Out(ID));
+    json j = json::parse(jso);
     json m = json::parse(To_Json_Msg(msg));
     j["manage"].push_back(m);
+    return j.dump();
+}
+
+string Del_Manage(string jso)
+{
+    json j = json::parse(jso);
+    j["manage"].erase(0);
     return j.dump();
 }
 
 Message From_Json_Msg(string jso)
 {
     json j = json::parse(jso);
-    return Message(j["event"], j["sendID"], j["send_account"], j["receiveID"], j["str"], j["time"]);
+    return Message(j["event"], j["sendID"], j["send_account"], j["receiveID"], j["receiveID_account"], j["str"], j["time"], j["num"]);
 }
 
 string To_Json_Msg(Message msg)
@@ -281,9 +313,10 @@ string To_Json_Msg(Message msg)
     j["sendID"] = msg.SendID;
     j["send_account"] = msg.Send_Account;
     j["receiveID"] = msg.ReceiveID;
+    j["receiveID_account"] = msg.Receive_Account;
     j["str"] = msg.Str;
     j["time"] = msg.Time;
-
+    j["num"] = msg.num;
     return j.dump();
 }
 

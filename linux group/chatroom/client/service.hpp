@@ -2,9 +2,14 @@
 #define SERVICE_CIL
 
 #include "../user.hpp"
+#include "../Message.hpp"
+#include <list>
 
 int Main_Menu_Ser_Register();
 int Main_Menu_Ser_Login();
+
+list<Message> Get_ManageList_Ser(int ID);
+void Manage_Apply_Ser(int ID, list<Message> manage);
 
 void User_Ser_Exit(int ID);
 void Friend_Ser(int ID);

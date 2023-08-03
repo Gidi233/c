@@ -14,9 +14,10 @@ void Getfd(int *fd)
 {
     string jso = Recv(*fd);
     string account, password, opposite_account;
-    int ID, oppositeID, chatID;
+    int ID, oppositeID, chatID, num;
     UserTotal usr;
     Message msg;
+    // cout << "得到事件：" << getopt(jso) << endl;
     switch (getopt(jso))
     {
 
@@ -33,6 +34,7 @@ void Getfd(int *fd)
         SendInt(*fd, usr.ID);
         Database::Set_Account_To_ID(usr.ID, account);
         Database::User_In(usr.ID, To_Json_User(usr));
+        Send(*fd, Get_Notice(Database::User_Out(usr.ID)), 0); // 理论上没有但不发客户端在堵塞
         server::ID_To_Fd.emplace(usr.ID, *fd);
         break;
     case Login:
@@ -69,14 +71,20 @@ void Getfd(int *fd)
         cout << "返回用户" << ID << "好友信息\n";
         break;
 
+    case Get_ManageList:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr);
+        Send(*fd, Get_Manage(Database::User_Out(ID)), 0);
+        cout << "返回用户" << ID << "待处理信息\n";
+        break;
+
     case Exit:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr);
         Change_isLogin_Ser(ID);
-        server::ID_To_Fd.erase(ID);
+        server::ID_To_Fd.erase(ID); // 在server里再关一次
         cout << "用户" << ID << "退出\n";
         break;
 
-    case Add_Frd:
+    case Send_Add_Frd:
         Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         if (!Database::User_Exist_ID(oppositeID))
@@ -91,11 +99,29 @@ void Getfd(int *fd)
             SendInt(*fd, 2);
             break;
         }
-
-        chatID = Database::Get_ChatID();
-        Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
-        Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID)); // 这些都放到处理好友申请里
         SendInt(*fd, 0);
+        msg = Message(Send_Add_Frd, ID, usr.account, oppositeID, gettime());
+        Database::User_In(oppositeID, Add_Manage(Database::User_Out(oppositeID), msg));
+        Relay_To_User(oppositeID, msg);
+
+        break;
+
+    case Recv_Add_Frd:
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr);
+        Database::User_In(ID, Del_Manage(Database::User_Out(ID)));
+        cout << "返回用户" << ID << "处理信息\n";
+        if ((num = Get_Num(jso)))
+        {
+            chatID = Database::Get_ChatID();
+            Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
+            Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID));
+            Relay_To_User(oppositeID, Message(Recv_Add_Frd, ID, usr.account, oppositeID, gettime(), 1));
+        }
+        else
+        {
+            Relay_To_User(oppositeID, Message(Recv_Add_Frd, ID, usr.account, oppositeID, gettime(), 0));
+        }
+
         break;
 
     case Del_Frd:
@@ -152,16 +178,7 @@ void Getfd(int *fd)
         usr = From_Json_UserTotal(Database::User_Out(msg.SendID));
         chatID = usr.frd[msg.ReceiveID];
         // 发实时
-        if (server::ID_To_Fd.find(msg.ReceiveID) != server::ID_To_Fd.end())
-        {
-            // cout << *fd << "         " << server::ID_To_Fd[msg.ReceiveID] << endl;
-            Send(server::ID_To_Fd[msg.ReceiveID], To_Json_Msg(msg), 1);
-        }
-        else
-        {
-            // 加到对方的消息队列
-            Database::User_In(msg.ReceiveID, Add_Notice(msg.ReceiveID, msg));
-        }
+        Relay_To_User(msg.ReceiveID, msg);
         Database::Chat_In(chatID, Add_Msg(To_Json_Msg(msg), Database::Chat_Out(chatID)));
         cout << "追加" << msg.SendID << "发给" << msg.ReceiveID << "的消息" << endl;
         break;
@@ -179,6 +196,7 @@ void Send(int fd, string jso, bool type)
     // 在这里用json设定是实时信息还是回应，多传一个参数
     int numRead = realjso.length();
     char *buffer = new char[numRead + 4];
+    // cout << realjso << endl;
     memcpy(buffer, &numRead, sizeof(int));
     memcpy(buffer + 4, realjso.c_str(), numRead);
     send(fd, buffer, numRead + 4, 0);
@@ -199,6 +217,14 @@ string Recv(int fd)
 
     recv(fd, buffer, reqLen, 0);
     return string(buffer, reqLen);
+}
+
+void Relay_To_User(int oppositeID, Message msg)
+{
+    if (server::ID_To_Fd.find(oppositeID) != server::ID_To_Fd.end())
+        Send(server::ID_To_Fd[oppositeID], To_Json_Msg(msg), 1);
+    else
+        Database::User_In(oppositeID, Add_Notice(Database::User_Out(oppositeID), msg));
 }
 
 UserTotal New_User(string account, string password)

@@ -25,6 +25,7 @@ int Main_Menu_Ser_Register()
         client::Send(From_Main(Register, account, password));
         if ((ID = client::RecvInt()))
         {
+            sigaction(SIGIO, &client::ign, 0);
             cout << "注册成功" << endl;
             sleep(1); //
             return ID;
@@ -56,6 +57,7 @@ int Main_Menu_Ser_Login()
         client::Send(From_Main(Login, account, password));
         if ((ID = client::RecvInt()))
         {
+            sigaction(SIGIO, &client::ign, 0);
             return ID;
         }
         else
@@ -78,6 +80,31 @@ UserBase Get_User_Ser(int ID)
 void User_Ser_Exit(int ID)
 {
     client::Send(From_Self(Exit, ID));
+}
+
+list<Message> Get_ManageList_Ser(int ID)
+{
+    client::Send(From_Self(Get_ManageList, ID));
+    return From_Json_MsgList(To_Manage(client::Recv()));
+}
+
+void Manage_Apply_Ser(int ID, list<Message> manage)
+{
+    int num;
+    char choice;
+    for (auto &m : manage)
+    {
+        system("clear");
+        m.toString();
+        cout << "1.同意\n0.拒绝\n";
+        cin >> num;
+        client::Send(From_Manage(m.event + 1, ID, m.SendID, num));
+        sigaction(SIGIO, &client::respond, 0);
+        cout << "1.继续处理\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            break;
+    }
 }
 
 void Friend_Ser(int ID)
@@ -106,11 +133,11 @@ void Add_Frd_Ser(int ID)
             else
                 continue;
         }
-        client::Send(From_Frd(Add_Frd, ID, frdID));
+        client::Send(From_Frd(Send_Add_Frd, ID, frdID));
         switch (client::RecvInt())
         {
         case 0:
-            cout << "添加成功\n";
+            cout << "发送申请成功\n";
             sleep(1);
             return;
             break;
