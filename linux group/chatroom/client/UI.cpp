@@ -195,4 +195,40 @@ void Friend_UI()
 }
 void Group_UI_First(int ID)
 {
+	char choice;
+	do
+	{
+		system("clear");
+		cout << "群组界面\n";
+		Group_Ser(ID);
+		Group_UI();
+		printf("输入(0-2):");
+		cin >> choice;
+		if (choice == '0')
+		{
+			return;
+		}
+		if (choice != '1' && choice != '2')
+		{
+			continue;
+		}
+
+		switch (choice)
+		{
+		case '1':
+			// New_Grp_Ser(ID);
+			break;
+		case '2':
+			// Choose_Grp_Ser(ID);
+			break;
+		default:
+			cout << "啊？" << endl;
+			break;
+		}
+	} while (choice != '0');
+}
+
+void Group_UI()
+{
+	printf("1.新建群聊\n2.选择群聊\n0.退出\n");
 }

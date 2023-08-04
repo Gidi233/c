@@ -28,6 +28,11 @@ public:
     static bool Chat_In(int ID, string jso);
     static string Chat_Out(int ID);
 
+    static int Get_GrpID();
+    static bool Del_Grp(int ID);
+    static bool Grp_In(int ID, string jso);
+    static string Grp_Out(int ID);
+
     static void Close();
 };
 #endif

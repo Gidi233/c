@@ -323,4 +323,5 @@ void Search_Frd_Ser(int ID)
 void Group_Ser(int ID)
 {
     client::Send(From_Self(Grp_List, ID));
+    From_Json_Grplist(client::Recv());
 }

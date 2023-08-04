@@ -64,6 +64,7 @@ void Getfd(int *fd)
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         Send(*fd, To_UserBase(Database::User_Out(ID)), 0);
         break;
+
     case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
@@ -209,6 +210,13 @@ void Getfd(int *fd)
         Relay_To_User(msg.ReceiveID, msg);
         Database::Chat_In(chatID, Add_Msg(To_Json_Msg(msg), Database::Chat_Out(chatID)));
         cout << "追加" << msg.SendID << "发给" << msg.ReceiveID << "的消息" << endl;
+        break;
+
+    case Grp_List:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        Send(*fd, To_Json_Grplist(usr.grp), 0);
+        cout << "返回用户" << ID << "群组信息\n";
         break;
 
     default: // jump to case label???

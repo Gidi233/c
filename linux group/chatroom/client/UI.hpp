@@ -10,4 +10,5 @@ void User_UI_First(int ID);
 void Friend_UI_First(UserBase usr);
 void Friend_UI();
 void Group_UI_First(int ID);
+void Group_UI();
 #endif

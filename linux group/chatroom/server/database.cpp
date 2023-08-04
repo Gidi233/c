@@ -138,6 +138,53 @@ bool Database::Del_Chat(int ID)
     freeReplyObject(reply);
     return ans;
 }
+
+int Database::Get_GrpID()
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS GrpID");
+    bool flag = reply->integer;
+    freeReplyObject(reply);
+    if (flag)
+    {
+        reply = (redisReply *)redisCommand(Database::redis, "GET GrpID");
+        int ans = std::stoi(reply->str);
+        freeReplyObject(reply);
+        reply = (redisReply *)redisCommand(Database::redis, "SET GrpID %d", ans + 1);
+        freeReplyObject(reply);
+        return ans;
+    }
+    else
+    {
+        reply = (redisReply *)redisCommand(Database::redis, "SET GrpID %d", 2);
+        freeReplyObject(reply);
+        return 1;
+    }
+}
+
+bool Database::Del_Grp(int ID)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "DEL Grp:%d", ID);
+    int ans = reply->integer;
+    freeReplyObject(reply);
+    return ans;
+}
+
+bool Database::Grp_In(int ID, string jso)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Grp:%d %s", ID, jso.c_str());
+    string ans(reply->str);
+    freeReplyObject(reply);
+    return ans == "OK";
+}
+
+string Database::Grp_Out(int ID)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "GET Grp:%d", ID);
+    string ans(reply->str);
+    freeReplyObject(reply);
+    return ans;
+}
+
 void Database::Close()
 {
     redisFree(redis);

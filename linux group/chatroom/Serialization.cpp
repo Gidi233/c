@@ -101,6 +101,18 @@ void From_Json_Chat(string jso)
     }
 }
 
+void From_Json_Grplist(string jso)
+{
+    json grp_arr = json::parse(jso);
+    for (const auto &f : grp_arr["grp"])
+    {
+        Group grp(f["GID"], f["name"]);
+        grp.toString();
+    }
+    if (grp_arr["grp"].empty())
+        cout << "当前无群聊" << endl;
+}
+
 /*
 
 
@@ -343,5 +355,37 @@ string To_Json_Frdlist(const UserTotal usr)
     }
     j["frd"] = frd;
     j["frd_block"] = usr.frd_Block;
+    return j.dump();
+}
+
+string To_Json_Grplist(const unordered_map<int, int> grp_map)
+{
+    json j, frd, f;
+    for (const auto &GID : grp_map) // std::pair<int, int>
+    {
+        f = json::parse(To_GrpBase(Database::Grp_Out(GID.first)));
+        frd.push_back(f);
+    }
+    j["grp"] = frd;
+    return j.dump();
+}
+
+string To_GrpBase(string jso)
+{
+    json total = json::parse(jso);
+    json base{
+        {"GID", total["GID"]},
+        {"name", total["name"]},
+    };
+    return base.dump();
+}
+
+string To_Json_Grp(Group grp)
+{
+    json mem(grp.mem);
+    json j{
+        {"GID", grp.GID},
+        {"name", grp.name},
+        {"mem", mem}};
     return j.dump();
 }
