@@ -134,12 +134,15 @@ void Getfd(int *fd)
             break;
         }
         // 发送消息
+        Relay_To_User(oppositeID, Message(Del_Frd, ID, usr.account, oppositeID, gettime(), 0));
         Database::Del_Chat(usr.frd[oppositeID]); // 构造了删
         usr.frd.erase(oppositeID);
+        usr.frd_Block.erase(oppositeID);
         Database::User_In(ID, To_Json_User(usr));
         { //
             UserTotal opposite = From_Json_UserTotal(Database::User_Out(oppositeID));
             opposite.frd.erase(ID);
+            opposite.frd_Block.erase(ID);
             Database::User_In(oppositeID, To_Json_User(opposite));
         }
         SendInt(*fd, 0);

@@ -35,18 +35,22 @@ void Message::toString()
         }
         else
         {
-            cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条消息\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条消息\n";
         }
         break;
 
     case Send_Add_Frd:
-        cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条好友申请\n";
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条好友申请\n";
         break;
     case Recv_Add_Frd:
         if (num)
-            cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")接受了你的好友申请\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")接受了你的好友申请\n";
         else
-            cout << "\n用户:" << Send_Account << "(ID:" << SendID << ")拒绝了你的好友申请\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")拒绝了你的好友申请\n";
+        break;
+    case Del_Frd:
+
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")刪除了你\n";
         break;
     default:
         break;
