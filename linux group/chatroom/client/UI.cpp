@@ -160,7 +160,7 @@ void Friend_UI_First(UserBase usr)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5')
 		{
 			continue;
 		}

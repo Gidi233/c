@@ -8,7 +8,7 @@ void Getfd(int *fd);
 void Send(int fd, string jso, bool type);
 void SendInt(int fd, int num);
 string Recv(int fd);
-void Relay_To_User(int oppositeID, Message msg);
+void Relay_To_User(int otherUsrID, Message msg);
 UserTotal New_User(string account, string password);
 bool Change_isLogin_Ser(int ID);
 

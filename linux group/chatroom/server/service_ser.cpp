@@ -13,8 +13,8 @@ using std::string, std::cout, std::cin, std::endl;
 void Getfd(int *fd)
 {
     string jso = Recv(*fd);
-    string account, password, opposite_account;
-    int ID, oppositeID, chatID, num;
+    string account, password, otherUsr_account, grp_account;
+    int ID, otherUsrID, chatID, num, grpID;
     UserTotal usr, opposite_usr;
     Message msg;
     Group grp;
@@ -24,7 +24,7 @@ void Getfd(int *fd)
 
     case Register:
         // 判断是否重名
-        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr);
+        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr, nullptr, nullptr);
         if (Database::User_Exist_Account(account))
         {
             SendInt(*fd, 0);
@@ -39,7 +39,7 @@ void Getfd(int *fd)
         server::ID_To_Fd.emplace(usr.ID, *fd);
         break;
     case Login:
-        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr);
+        Get_Info(jso, nullptr, &account, &password, nullptr, nullptr, nullptr, nullptr);
 
         if (!Database::User_Exist_Account(account))
         {
@@ -62,124 +62,124 @@ void Getfd(int *fd)
         break;
 
     case User:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); //
         Send(*fd, To_UserBase(Database::User_Out(ID)), 0);
         break;
 
     case Frd_List:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         Send(*fd, To_Json_Frdlist(usr), 0);
         cout << "返回用户" << ID << "好友信息\n";
         break;
 
     case Get_ManageList:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         Send(*fd, Get_Manage(Database::User_Out(ID)), 0);
         cout << "返回用户" << ID << "待处理信息\n";
         break;
 
     case Exit:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         Change_isLogin_Ser(ID);
         server::ID_To_Fd.erase(ID); // 在server里再关一次
         cout << "用户" << ID << "退出\n";
         break;
 
     case Send_Add_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        if (!Database::User_Exist_ID(oppositeID))
+        if (!Database::User_Exist_ID(otherUsrID))
         {
             SendInt(*fd, 1);
             break;
         }
 
         // 检查是否找到了这个值
-        if (usr.frd.find(oppositeID) != usr.frd.end())
+        if (usr.frd.find(otherUsrID) != usr.frd.end())
         {
             SendInt(*fd, 2);
             break;
         }
         SendInt(*fd, 0);
-        msg = Message(Send_Add_Frd, ID, usr.account, oppositeID, gettime());
-        Database::User_In(oppositeID, Add_Manage(Database::User_Out(oppositeID), msg));
-        Relay_To_User(oppositeID, msg);
+        msg = Message(Send_Add_Frd, ID, usr.account, otherUsrID, gettime());
+        Database::User_In(otherUsrID, Add_Manage(Database::User_Out(otherUsrID), msg));
+        Relay_To_User(otherUsrID, msg);
 
         break;
 
     case Recv_Add_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr);
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
         Database::User_In(ID, Del_Manage(Database::User_Out(ID)));
         cout << "返回用户" << ID << "处理信息\n";
         if ((num = Get_Num(jso)))
         {
             chatID = Database::Get_ChatID();
-            Database::User_In(ID, Add_Friend(oppositeID, Database::User_Out(ID), chatID));
-            Database::User_In(oppositeID, Add_Friend(ID, Database::User_Out(oppositeID), chatID));
-            Relay_To_User(oppositeID, Message(Recv_Add_Frd, ID, usr.account, oppositeID, gettime(), 1));
+            Database::User_In(ID, Add_Friend(otherUsrID, Database::User_Out(ID), chatID));
+            Database::User_In(otherUsrID, Add_Friend(ID, Database::User_Out(otherUsrID), chatID));
+            Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 1));
         }
         else
         {
-            Relay_To_User(oppositeID, Message(Recv_Add_Frd, ID, usr.account, oppositeID, gettime(), 0));
+            Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 0));
         }
 
         break;
 
     case Del_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         // 检查是否找到了这个值
-        if (usr.frd.find(oppositeID) == usr.frd.end())
+        if (usr.frd.find(otherUsrID) == usr.frd.end())
         {
             SendInt(*fd, 1);
             break;
         }
         // 发送消息
-        Relay_To_User(oppositeID, Message(Del_Frd, ID, usr.account, oppositeID, gettime(), 0));
-        Database::Del_Chat(usr.frd[oppositeID]); // 构造了删
-        usr.frd.erase(oppositeID);
-        usr.frd_Block.erase(oppositeID);
+        Relay_To_User(otherUsrID, Message(Del_Frd, ID, usr.account, otherUsrID, gettime(), 0));
+        Database::Del_Chat(usr.frd[otherUsrID]); // 构造了删
+        usr.frd.erase(otherUsrID);
+        usr.frd_Block.erase(otherUsrID);
         Database::User_In(ID, To_Json_User(usr));
         { //
-            UserTotal opposite = From_Json_UserTotal(Database::User_Out(oppositeID));
+            UserTotal opposite = From_Json_UserTotal(Database::User_Out(otherUsrID));
             opposite.frd.erase(ID);
             opposite.frd_Block.erase(ID);
-            Database::User_In(oppositeID, To_Json_User(opposite));
+            Database::User_In(otherUsrID, To_Json_User(opposite));
         }
         SendInt(*fd, 0);
         break;
 
     case Block_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         // 检查是否找到了这个值
-        if (usr.frd.find(oppositeID) == usr.frd.end())
+        if (usr.frd.find(otherUsrID) == usr.frd.end())
         {
             SendInt(*fd, 1);
             break;
         }
-        usr.frd_Block[oppositeID] = !usr.frd_Block[oppositeID];
+        usr.frd_Block[otherUsrID] = !usr.frd_Block[otherUsrID];
         Database::User_In(ID, To_Json_User(usr));
         SendInt(*fd, 0);
         break;
 
     case Search_Frd:
-        Get_Info(jso, nullptr, nullptr, nullptr, nullptr, &opposite_account); //
-        if (Database::User_Exist_Account(opposite_account))
-            SendInt(*fd, Database::Get_Account_To_ID(opposite_account));
+        Get_Info(jso, nullptr, nullptr, nullptr, nullptr, &otherUsr_account, nullptr, nullptr); //
+        if (Database::User_Exist_Account(otherUsr_account))
+            SendInt(*fd, Database::Get_Account_To_ID(otherUsr_account));
         else
             SendInt(*fd, 0);
         break;
 
     case Able_To_Send_Frd:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        opposite_usr = From_Json_UserTotal(Database::User_Out(oppositeID));
+        opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
         // 检查是否找到了这个值
-        if (usr.frd.find(oppositeID) != usr.frd.end())
+        if (usr.frd.find(otherUsrID) != usr.frd.end())
         {
-            if (usr.frd_Block[oppositeID])
+            if (usr.frd_Block[otherUsrID])
             {
                 SendInt(*fd, 1);
                 break;
@@ -190,17 +190,17 @@ void Getfd(int *fd)
                 break;
             }
             SendInt(*fd, 0);
-            cout << "好友" << oppositeID << "可發送" << endl;
+            cout << "好友" << otherUsrID << "可發送" << endl;
             break;
         }
         SendInt(*fd, 3);
         break;
 
     case Get_frdChat:
-        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        Send(*fd, Database::Chat_Out(usr.frd[oppositeID]), 0);
-        cout << "返回" << ID << "和" << oppositeID << "的聊天记录" << endl;
+        Send(*fd, Database::Chat_Out(usr.frd[otherUsrID]), 0);
+        cout << "返回" << ID << "和" << otherUsrID << "的聊天记录" << endl;
         break;
 
     case Sendmsg_Tofrd:
@@ -214,27 +214,27 @@ void Getfd(int *fd)
         break;
 
     case Grp_List:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
         Send(*fd, To_Json_Grplist(usr.grp), 0);
         cout << "返回用户" << ID << "群组信息\n";
         break;
 
     case New_Grp:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, &opposite_account);
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, &grp_account);
         usr = From_Json_UserTotal(Database::User_Out(ID));
 
-        if (Database::Grp_Exist_name(opposite_account))
+        if (Database::Grp_Exist_name(grp_account))
         {
             SendInt(*fd, 0);
             break;
         }
         chatID = Database::Get_ChatID();
-        grp = Group(chatID, opposite_account);
+        grp = Group(chatID, grp_account);
         grp.mem.emplace(ID, 2);
         cout << "账号" << grp.GID << "注册\n";
         SendInt(*fd, 1);
-        Database::Set_Name_To_GID(grp.GID, opposite_account);
+        Database::Set_Name_To_GID(grp.GID, grp_account);
         Database::Grp_In(grp.GID, To_Json_Grp(grp));
         usr.grp.emplace(grp.GID, chatID);
         Database::User_In(ID, To_Json_User(usr));
@@ -276,12 +276,12 @@ string Recv(int fd)
     return string(buffer, reqLen);
 }
 
-void Relay_To_User(int oppositeID, Message msg)
+void Relay_To_User(int otherUsrID, Message msg)
 {
-    if (server::ID_To_Fd.find(oppositeID) != server::ID_To_Fd.end())
-        Send(server::ID_To_Fd[oppositeID], To_Json_Msg(msg), 1);
+    if (server::ID_To_Fd.find(otherUsrID) != server::ID_To_Fd.end())
+        Send(server::ID_To_Fd[otherUsrID], To_Json_Msg(msg), 1);
     else
-        Database::User_In(oppositeID, Add_Notice(Database::User_Out(oppositeID), msg));
+        Database::User_In(otherUsrID, Add_Notice(Database::User_Out(otherUsrID), msg));
 }
 
 UserTotal New_User(string account, string password)

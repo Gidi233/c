@@ -16,11 +16,11 @@ int Get_Num(string jso);
 void From_Json_Chat(string jso);
 string From_Main(int opt, string account, string password);
 string From_Self(int opt, int ID);
-string From_Manage(int opt, int ID, int oppositeID, int num);
+string From_Manage(int opt, int ID, int otherUsrID, int num);
 
 void From_Json_Frdlist(string jso);
 string From_Frd(int opt, int ID, int frdID);
-string From_Frd_Account(int opt, string opposite_account);
+string From_Frd_Account(int opt, string otherUsr_account);
 UserTotal From_Json_UserTotal(string j);
 UserBase From_Json_UserBase(string jso);
 
@@ -41,7 +41,7 @@ json To_Manage(string jso);
 Event getopt(const string &jso);
 string To_UserBase(string jso);
 string Change_isLogin(string jso);
-void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID, string *opposite_account);
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *otherUsrID, string *otherUsr_account, int *grpID, string *grp_account);
 string Add_Friend(int ID, string json, int chatID);
 Message From_Json_Msg(string jso);
 string To_Json_Msg(Message msg);

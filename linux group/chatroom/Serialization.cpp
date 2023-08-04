@@ -45,12 +45,12 @@ string From_Self(int opt, int ID)
     return j.dump();
 }
 
-string From_Manage(int opt, int ID, int oppositeID, int num)
+string From_Manage(int opt, int ID, int otherUsrID, int num)
 {
     json j = {
         {"event", opt},
         {"ID", ID},
-        {"oppositeID", oppositeID},
+        {"otherUsrID", otherUsrID},
         {"num", num}};
 
     return j.dump();
@@ -74,20 +74,20 @@ void From_Json_Frdlist(string jso)
         cout << "当前无好友" << endl;
 }
 
-string From_Frd(int opt, int ID, int oppositeID)
+string From_Frd(int opt, int ID, int otherUsrID)
 {
     json j = {
         {"event", opt},
         {"ID", ID},
-        {"oppositeID", oppositeID}};
+        {"otherUsrID", otherUsrID}};
     return j.dump();
 }
 
-string From_Frd_Account(int opt, string opposite_account)
+string From_Frd_Account(int opt, string otherUsr_account)
 {
     json j = {
         {"event", opt},
-        {"opposite_account", opposite_account}};
+        {"otherUsr_account", otherUsr_account}};
     return j.dump();
 }
 
@@ -106,7 +106,7 @@ string From_Grp(int opt, int ID, int gid)
     json j = {
         {"event", opt},
         {"ID", ID},
-        {"oppositeID", gid}};
+        {"grpID", gid}};
 
     return j.dump();
 }
@@ -116,7 +116,7 @@ string From_Grp_Name(int opt, int ID, string name)
     json j = {
         {"event", opt},
         {"ID", ID},
-        {"opposite_account", name}};
+        {"grp_account", name}};
 
     return j.dump();
 }
@@ -272,7 +272,7 @@ string Set_Num(int num)
     return j.dump();
 }
 
-void Get_Info(const string &jso, int *ID, string *account, string *password, int *oppositeID, string *opposite_account)
+void Get_Info(const string &jso, int *ID, string *account, string *password, int *otherUsrID, string *otherUsr_account, int *grpID, string *grp_account)
 {
     json j = json::parse(jso);
     if (ID != nullptr)
@@ -281,10 +281,14 @@ void Get_Info(const string &jso, int *ID, string *account, string *password, int
         *account = j.at("account");
     if (password != nullptr)
         *password = j.at("password");
-    if (oppositeID != nullptr)
-        *oppositeID = j.at("oppositeID");
-    if (opposite_account != nullptr)
-        *opposite_account = j.at("opposite_account");
+    if (otherUsrID != nullptr)
+        *otherUsrID = j.at("otherUsrID");
+    if (otherUsr_account != nullptr)
+        *otherUsr_account = j.at("otherUsr_account");
+    if (grpID != nullptr)
+        *grpID = j.at("grpID");
+    if (grp_account != nullptr)
+        *grp_account = j.at("grp_account");
 }
 
 string To_UserBase(string jso)
