@@ -177,6 +177,9 @@ void Friend_UI_First(UserBase usr)
 			Send_Msg_Ser(usr);
 			break;
 		case '4':
+			Block_Frd_Ser(usr.ID);
+			break;
+		case '5':
 			Search_Frd_Ser(usr.ID);
 			break;
 		default:
@@ -188,7 +191,7 @@ void Friend_UI_First(UserBase usr)
 
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.搜索账户对应ID\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

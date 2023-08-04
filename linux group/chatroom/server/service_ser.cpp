@@ -15,7 +15,7 @@ void Getfd(int *fd)
     string jso = Recv(*fd);
     string account, password, opposite_account;
     int ID, oppositeID, chatID, num;
-    UserTotal usr;
+    UserTotal usr, opposite_usr;
     Message msg;
     // cout << "得到事件：" << getopt(jso) << endl;
     switch (getopt(jso))
@@ -67,7 +67,7 @@ void Getfd(int *fd)
     case Frd_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        Send(*fd, To_Json_Frdlist(usr.frd), 0);
+        Send(*fd, To_Json_Frdlist(usr), 0);
         cout << "返回用户" << ID << "好友信息\n";
         break;
 
@@ -144,6 +144,21 @@ void Getfd(int *fd)
         }
         SendInt(*fd, 0);
         break;
+
+    case Block_Frd:
+        Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        // 检查是否找到了这个值
+        if (usr.frd.find(oppositeID) == usr.frd.end())
+        {
+            SendInt(*fd, 1);
+            break;
+        }
+        usr.frd_Block[oppositeID] = !usr.frd_Block[oppositeID];
+        Database::User_In(ID, To_Json_User(usr));
+        SendInt(*fd, 0);
+        break;
+
     case Search_Frd:
         Get_Info(jso, nullptr, nullptr, nullptr, nullptr, &opposite_account); //
         if (Database::User_Exist_Account(opposite_account))
@@ -152,18 +167,28 @@ void Getfd(int *fd)
             SendInt(*fd, 0);
         break;
 
-    case Exist_Frd:
+    case Able_To_Send_Frd:
         Get_Info(jso, &ID, nullptr, nullptr, &oppositeID, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-
+        opposite_usr = From_Json_UserTotal(Database::User_Out(oppositeID));
         // 检查是否找到了这个值
         if (usr.frd.find(oppositeID) != usr.frd.end())
         {
-            SendInt(*fd, 1);
-            cout << "存在好友" << oppositeID << endl;
+            if (usr.frd_Block[oppositeID])
+            {
+                SendInt(*fd, 1);
+                break;
+            }
+            if (opposite_usr.frd_Block[ID])
+            {
+                SendInt(*fd, 2);
+                break;
+            }
+            SendInt(*fd, 0);
+            cout << "好友" << oppositeID << "可發送" << endl;
             break;
         }
-        SendInt(*fd, 0);
+        SendInt(*fd, 3);
         break;
 
     case Get_frdChat:

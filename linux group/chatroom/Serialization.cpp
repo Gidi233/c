@@ -59,10 +59,15 @@ string From_Manage(int opt, int ID, int oppositeID, int num)
 void From_Json_Frdlist(string jso)
 {
     json frd_arr = json::parse(jso);
+    unordered_map<int, bool> block = frd_arr["frd_block"];
     for (const auto &f : frd_arr["frd"])
     {
         UserBase f_user(f["ID"], f["account"], f["islogin"]);
         f_user.toString();
+        if (block[f["ID"]])
+            cout << "屏蔽\n";
+        else
+            cout << "畅通\n";
         cout << "==================================================\n";
     }
     if (frd_arr["frd"].empty())
@@ -136,7 +141,7 @@ string To_Json_User(UserTotal usr)
         {"password", usr.password},
         {"islogin", usr.islogin},
         {"frd", frd_map},
-        {"frd_Block", block},
+        {"frd_block", block},
         {"grp", grp_map},
         {"notice", notice},
         {"manage", manage}};
@@ -194,7 +199,7 @@ UserTotal From_Json_UserTotal(string jso)
     json j = json::parse(jso);
     list<Message> notice = From_Json_MsgList(j["notice"]);
     list<Message> manage = From_Json_MsgList(j["manage"]);
-    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_Block"], j["grp"], notice, manage); //
+    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_block"], j["grp"], notice, manage);
 }
 
 UserBase From_Json_UserBase(string jso)
@@ -274,6 +279,7 @@ string Add_Friend(int ID, string jso, int chatID)
 {
     json j = json::parse(jso);
     j["frd"].push_back({ID, chatID}); //[]
+    j["frd_block"].push_back({ID, false});
     return j.dump();
 }
 
@@ -327,14 +333,15 @@ string Add_Msg(string msg, string chat)
     return Chat.dump();
 }
 
-string To_Json_Frdlist(const unordered_map<int, int> &frd_Map)
+string To_Json_Frdlist(const UserTotal usr)
 {
-    json j, frd;
-    for (const auto &FID : frd_Map) // std::pair<int, int>
+    json j, frd, f;
+    for (const auto &FID : usr.frd) // std::pair<int, int>
     {
-        json f = json::parse(To_UserBase(Database::User_Out(FID.first)));
+        f = json::parse(To_UserBase(Database::User_Out(FID.first)));
         frd.push_back(f);
     }
     j["frd"] = frd;
+    j["frd_block"] = usr.frd_Block;
     return j.dump();
 }

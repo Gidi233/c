@@ -109,9 +109,8 @@ void Manage_Apply_Ser(int ID, list<Message> manage)
 
 void Friend_Ser(int ID)
 {
-    list<UserBase> frd;
     client::Send(From_Self(Frd_List, ID));
-    From_Json_Frdlist(client::Recv()); // 把这改了就可以只在Send，Recv里改了
+    From_Json_Frdlist(client::Recv());
 }
 
 void Add_Frd_Ser(int ID)
@@ -202,6 +201,7 @@ void Del_Frd_Ser(int ID)
 void Send_Msg_Ser(UserBase usr)
 {
     int frdID;
+    int num;
     char choice;
     while (1)
     {
@@ -218,12 +218,16 @@ void Send_Msg_Ser(UserBase usr)
             else
                 continue;
         }
-        client::Send(From_Frd(Exist_Frd, usr.ID, frdID));
-        if (client::RecvInt())
-        {
+        client::Send(From_Frd(Able_To_Send_Frd, usr.ID, frdID));
+        num = client::RecvInt();
+        if (!num)
             break;
-        }
-        cout << "并无该好友\n";
+        if (num == 1)
+            cout << "你已將對方屏蔽\n";
+        if (num == 2)
+            cout << "對方已將你屏蔽\n";
+        if (num == 3)
+            cout << "并无该好友\n";
         cout << "1.重新输入\n0.返回\n";
         cin >> choice;
         if (choice == '0')
@@ -247,6 +251,47 @@ void Send_Msg_Ser(UserBase usr)
         msg.toString();
         client::Send(To_Json_Msg(msg)); //
         sigaction(SIGIO, &client::respond, 0);
+    }
+}
+
+void Block_Frd_Ser(int ID)
+{
+    int frdID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> frdID;
+        if (frdID == ID)
+        {
+            cout << "你小子酒吧进酒吧是吧（屏蔽自己)\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Frd(Block_Frd, ID, frdID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "修改成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "并无该好友\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
     }
 }
 

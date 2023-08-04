@@ -42,7 +42,7 @@ string Add_Msg(string msg, string chat);
 string Add_Notice(string jso, Message msg);
 string Add_Manage(string jso, Message msg);
 string Del_Manage(string jso);
-string To_Json_Frdlist(const unordered_map<int, int> &frd);
+string To_Json_Frdlist(const UserTotal usr);
 string Change_isLogin(string jso);
 // UserTotal New_User(string jso);
 
