@@ -216,7 +216,7 @@ void Group_UI_First(int ID)
 		switch (choice)
 		{
 		case '1':
-			// New_Grp_Ser(ID);
+			New_Grp_Ser(ID);
 			break;
 		case '2':
 			// Choose_Grp_Ser(ID);

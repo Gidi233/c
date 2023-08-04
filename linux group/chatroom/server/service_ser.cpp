@@ -17,6 +17,7 @@ void Getfd(int *fd)
     int ID, oppositeID, chatID, num;
     UserTotal usr, opposite_usr;
     Message msg;
+    Group grp;
     // cout << "得到事件：" << getopt(jso) << endl;
     switch (getopt(jso))
     {
@@ -217,6 +218,26 @@ void Getfd(int *fd)
         usr = From_Json_UserTotal(Database::User_Out(ID));
         Send(*fd, To_Json_Grplist(usr.grp), 0);
         cout << "返回用户" << ID << "群组信息\n";
+        break;
+
+    case New_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, &opposite_account);
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+
+        if (Database::Grp_Exist_name(opposite_account))
+        {
+            SendInt(*fd, 0);
+            break;
+        }
+        chatID = Database::Get_ChatID();
+        grp = Group(chatID, opposite_account);
+        grp.mem.emplace(ID, 2);
+        cout << "账号" << grp.GID << "注册\n";
+        SendInt(*fd, 1);
+        Database::Set_Name_To_GID(grp.GID, opposite_account);
+        Database::Grp_In(grp.GID, To_Json_Grp(grp));
+        usr.grp.emplace(grp.GID, chatID);
+        Database::User_In(ID, To_Json_User(usr));
         break;
 
     default: // jump to case label???

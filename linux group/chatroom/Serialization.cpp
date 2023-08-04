@@ -101,13 +101,34 @@ void From_Json_Chat(string jso)
     }
 }
 
+string From_Grp(int opt, int ID, int gid)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"oppositeID", gid}};
+
+    return j.dump();
+}
+
+string From_Grp_Name(int opt, int ID, string name)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"opposite_account", name}};
+
+    return j.dump();
+}
+
 void From_Json_Grplist(string jso)
 {
     json grp_arr = json::parse(jso);
     for (const auto &f : grp_arr["grp"])
     {
-        Group grp(f["GID"], f["name"]);
+        Group grp(f["GID"], f["chatID"], f["name"]);
         grp.toString();
+        cout << "==================================================\n";
     }
     if (grp_arr["grp"].empty())
         cout << "当前无群聊" << endl;
@@ -375,6 +396,7 @@ string To_GrpBase(string jso)
     json total = json::parse(jso);
     json base{
         {"GID", total["GID"]},
+        {"chatID", total["chatID"]},
         {"name", total["name"]},
     };
     return base.dump();
@@ -385,7 +407,10 @@ string To_Json_Grp(Group grp)
     json mem(grp.mem);
     json j{
         {"GID", grp.GID},
+        {"chatID", grp.ChatID},
         {"name", grp.name},
         {"mem", mem}};
     return j.dump();
 }
+
+// Group From_Json_Grp(string jso){}

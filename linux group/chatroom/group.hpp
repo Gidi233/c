@@ -2,6 +2,7 @@
 #define GROUP
 #include <iostream>
 #include <unordered_map>
+#include "server/database.hpp"
 
 using std::unordered_map, std::string;
 
@@ -13,7 +14,9 @@ public:
     unordered_map<int, int> mem; // 0:群员 1:管理员 2:群主
 
     Group();
-    Group(int gid, string name1);
+    Group(int chatID, string name1);
+    Group(int gid, int chatID, string name1);
+    Group(int gid, int chatID, string name1, unordered_map<int, int> mem);
 
     void toString();
 };

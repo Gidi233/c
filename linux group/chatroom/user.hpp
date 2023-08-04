@@ -28,7 +28,7 @@ public:
     unordered_map<int, int> frd; // 对象ID对聊天数据ID
     unordered_map<int, bool> frd_Block;
     unordered_map<int, int> grp;
-    list<Message> notice, manage;
+    list<Message> notice, manage; // manage换成set去重，构造时不加时间
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();

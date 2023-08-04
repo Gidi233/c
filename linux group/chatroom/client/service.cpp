@@ -325,3 +325,30 @@ void Group_Ser(int ID)
     client::Send(From_Self(Grp_List, ID));
     From_Json_Grplist(client::Recv());
 }
+
+void New_Grp_Ser(int ID)
+{
+    string name;
+    char flag;
+    while (1)
+    {
+        system("clear");
+        cout << "群名：";
+        cin >> name;
+        client::Send(From_Grp_Name(New_Grp, ID, name));
+        if ((client::RecvInt()))
+        {
+            cout << "建群成功" << endl;
+            sleep(1); //
+            return;
+        }
+        else
+        {
+            cout << "已存在该名称" << endl
+                 << "1.重新建\n0.退出\n";
+            cin >> flag;
+            if (flag == '0')
+                return;
+        }
+    }
+}

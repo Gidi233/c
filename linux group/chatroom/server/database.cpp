@@ -139,7 +139,7 @@ bool Database::Del_Chat(int ID)
     return ans;
 }
 
-int Database::Get_GrpID()
+int Database::Get_GID()
 {
     redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS GrpID");
     bool flag = reply->integer;
@@ -159,6 +159,26 @@ int Database::Get_GrpID()
         freeReplyObject(reply);
         return 1;
     }
+}
+
+bool Database::Set_Name_To_GID(int ID, string name)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "SET Grpname:%s %d", name.c_str(), ID);
+    string ans(reply->str);
+    freeReplyObject(reply);
+    return ans == "OK";
+}
+
+bool Database::Grp_Exist_name(string name)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS Grpname:%s", name.c_str());
+    if (reply == nullptr)
+    {
+        return false;
+    }
+    bool ans = reply->integer;
+    freeReplyObject(reply);
+    return ans;
 }
 
 bool Database::Del_Grp(int ID)

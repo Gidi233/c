@@ -17,12 +17,15 @@ void From_Json_Chat(string jso);
 string From_Main(int opt, string account, string password);
 string From_Self(int opt, int ID);
 string From_Manage(int opt, int ID, int oppositeID, int num);
+
 void From_Json_Frdlist(string jso);
 string From_Frd(int opt, int ID, int frdID);
 string From_Frd_Account(int opt, string opposite_account);
 UserTotal From_Json_UserTotal(string j);
 UserBase From_Json_UserBase(string jso);
 
+string From_Grp(int opt, int ID, int gid);
+string From_Grp_Name(int opt, int ID, string name);
 void From_Json_Grplist(string jso);
 
 string Set_Type(string jso, bool flag);
