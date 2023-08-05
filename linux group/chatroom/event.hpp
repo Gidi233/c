@@ -20,7 +20,9 @@ enum Event
     Get_grpChat,
     Sendmsg_Togrp,
     Grp_List,
-    New_Grp
+    New_Grp,
+    Choose_Grp,
+    Grp_Member_List
 };
 
 #endif

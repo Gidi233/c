@@ -121,6 +121,15 @@ string From_Grp_Name(int opt, int ID, string name)
     return j.dump();
 }
 
+string From_Grp_Only(int opt, int gid)
+{
+    json j = {
+        {"event", opt},
+        {"grpID", gid}};
+
+    return j.dump();
+}
+
 void From_Json_Grplist(string jso)
 {
     json grp_arr = json::parse(jso);
@@ -132,6 +141,30 @@ void From_Json_Grplist(string jso)
     }
     if (grp_arr["grp"].empty())
         cout << "当前无群聊" << endl;
+}
+
+void From_Json_Grp_Member_List(string jso)
+{
+    json mem = json::parse(jso);
+    unordered_map<int, int> map = mem["map"];
+    for (const auto &f : mem["mem"])
+    {
+        UserBase f_user(f["ID"], f["account"], f["islogin"]);
+        f_user.toString();
+        switch (map[f["ID"]])
+        {
+        case 0:
+            cout << "群员\n";
+            break;
+        case 1:
+            cout << "管理员\n";
+            break;
+        case 2:
+            cout << "群主\n";
+            break;
+        }
+        cout << "==================================================\n";
+    }
 }
 
 /*
@@ -395,6 +428,19 @@ string To_Json_Grplist(const unordered_map<int, int> grp_map)
     return j.dump();
 }
 
+string To_Json_Grp_Member_List(const unordered_map<int, int> mem_map)
+{
+    json j, mem, f, map(mem_map);
+    for (const auto &ID : mem_map) // std::pair<int, int>
+    {
+        f = json::parse(To_UserBase(Database::User_Out(ID.first)));
+        mem.push_back(f);
+    }
+    j["mem"] = mem;
+    j["map"] = map;
+    return j.dump();
+}
+
 string To_GrpBase(string jso)
 {
     json total = json::parse(jso);
@@ -417,4 +463,8 @@ string To_Json_Grp(Group grp)
     return j.dump();
 }
 
-// Group From_Json_Grp(string jso){}
+Group From_Json_Grp(string jso)
+{
+    json j = json::parse(jso);
+    return Group(j["GID"], j["chatID"], j["name"], j["mem"]);
+}

@@ -102,7 +102,7 @@ string client::Recv_Online()
 
 void sigioHandler(int sig)
 {
-    Message msg = From_Json_Msg(client::Recv_Online());
-    msg.toString(); // 在信号处理程序中输出（好像）会刷新输出流（还是什么来着）
+    Message msg = From_Json_Msg(client::Recv_Online()); // 改成非阻塞一直读？
+    msg.toString();                                     // 在信号处理程序中输出（好像）会刷新输出流（还是什么来着）
     // 在这里开个进程输出？？？
 }

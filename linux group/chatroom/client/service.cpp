@@ -329,7 +329,7 @@ void Group_Ser(int ID)
 void New_Grp_Ser(int ID)
 {
     string name;
-    char flag;
+    char choice;
     while (1)
     {
         system("clear");
@@ -346,9 +346,40 @@ void New_Grp_Ser(int ID)
         {
             cout << "已存在该名称" << endl
                  << "1.重新建\n0.退出\n";
-            cin >> flag;
-            if (flag == '0')
+            cin >> choice;
+            if (choice == '0')
                 return;
         }
     }
+}
+
+int Choose_Grp_Ser(int ID)
+{
+    int GID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "GID：";
+        cin >> GID;
+        client::Send(From_Grp(Choose_Grp, ID, GID));
+        if ((client::RecvInt()))
+        {
+            return GID;
+        }
+        else
+        {
+            cout << "无法进入该群" << endl
+                 << "1.重新输入\n0.退出\n";
+            cin >> choice;
+            if (choice == '0')
+                return 0;
+        }
+    }
+}
+
+void In_Grp_Ser(int GID)
+{
+    client::Send(From_Grp_Only(Grp_Member_List, GID));
+    From_Json_Grp_Member_List(client::Recv());
 }

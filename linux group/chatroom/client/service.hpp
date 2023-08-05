@@ -22,5 +22,7 @@ void Search_Frd_Ser(int ID);
 
 void Group_Ser(int ID);
 void New_Grp_Ser(int ID);
+int Choose_Grp_Ser(int ID);
+void In_Grp_Ser(int GID);
 
 #endif

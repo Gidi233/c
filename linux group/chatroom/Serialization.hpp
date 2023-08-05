@@ -26,7 +26,9 @@ UserBase From_Json_UserBase(string jso);
 
 string From_Grp(int opt, int ID, int gid);
 string From_Grp_Name(int opt, int ID, string name);
+string From_Grp_Only(int opt, int gid);
 void From_Json_Grplist(string jso);
+void From_Json_Grp_Member_List(string jso);
 
 string Set_Type(string jso, bool flag);
 string Set_Num(int num);
@@ -54,4 +56,6 @@ string To_Json_Frdlist(const UserTotal usr);
 string To_Json_Grplist(const unordered_map<int, int> grp_map);
 string To_GrpBase(string jso);
 string To_Json_Grp(Group grp);
+Group From_Json_Grp(string jso);
+string To_Json_Grp_Member_List(const unordered_map<int, int> mem_map);
 #endif

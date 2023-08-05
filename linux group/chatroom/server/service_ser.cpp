@@ -240,6 +240,22 @@ void Getfd(int *fd)
         Database::User_In(ID, To_Json_User(usr));
         break;
 
+    case Choose_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        if (usr.grp.find(grpID) != usr.grp.end())
+            SendInt(*fd, 1);
+        else
+            SendInt(*fd, 0);
+        break;
+
+    case Grp_Member_List:
+        Get_Info(jso, nullptr, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        Send(*fd, To_Json_Grp_Member_List(grp.mem), 0);
+        cout << "返回用户" << ID << "成员信息\n";
+        break;
+
     default: // jump to case label???
         cout << "啊？" << endl;
         break;

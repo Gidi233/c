@@ -195,6 +195,7 @@ void Friend_UI()
 }
 void Group_UI_First(int ID)
 {
+	int GID;
 	char choice;
 	do
 	{
@@ -219,8 +220,12 @@ void Group_UI_First(int ID)
 			New_Grp_Ser(ID);
 			break;
 		case '2':
-			// Choose_Grp_Ser(ID);
+			if ((GID = Choose_Grp_Ser(ID)))
+				In_Grp_UI_First(GID);
 			break;
+			// case '3':
+			// Choose_Grp_Ser(ID);
+			// break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -230,5 +235,49 @@ void Group_UI_First(int ID)
 
 void Group_UI()
 {
-	printf("1.新建群聊\n2.选择群聊\n0.退出\n");
+	printf("1.新建群聊\n2.选择群聊\n3.申请加入群聊\n0.退出\n");
+}
+
+void In_Grp_UI_First(int GID)
+{
+	char choice;
+	do
+	{
+		system("clear");
+		cout << "进入群组界面\n";
+		In_Grp_Ser(GID);
+		In_Grp_UI();
+		printf("输入(0-6):");
+		cin >> choice;
+		if (choice == '0')
+		{
+			return;
+		}
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6')
+		{
+			continue;
+		}
+
+		switch (choice)
+		{
+		// case '1':
+		// 	New_Grp_Ser(ID);
+		// 	break;
+		// case '2':
+		// 	if (Choose_Grp_Ser(ID))
+		// 		In_Grp_UI_First();
+		// 	break;
+		// case '3':
+		// Choose_Grp_Ser(ID);
+		// break;
+		default:
+			cout << "啊？" << endl;
+			break;
+		}
+	} while (choice != '0');
+}
+
+void In_Grp_UI()
+{
+	printf("1.进入唠嗑\n2.添加管理员\n3.删除管理员\n4.移除用户\n5.解散群聊\n6.退出该群\n0.返回\n");
 }
