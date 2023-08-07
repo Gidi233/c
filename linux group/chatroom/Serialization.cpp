@@ -454,17 +454,42 @@ string To_GrpBase(string jso)
 
 string To_Json_Grp(Group grp)
 {
-    json mem(grp.mem);
+    // json mem(grp.mem); //
+    json manage = To_Json_Manage_List(grp.manage);
     json j{
         {"GID", grp.GID},
         {"chatID", grp.ChatID},
         {"name", grp.name},
-        {"mem", mem}};
+        {"mem", grp.mem},
+        {"manage", manage}};
     return j.dump();
 }
 
 Group From_Json_Grp(string jso)
 {
     json j = json::parse(jso);
-    return Group(j["GID"], j["chatID"], j["name"], j["mem"]);
+    set<Message, MessageComparator> manage = From_Json_Manage_List(j["manage"]);
+    return Group(j["GID"], j["chatID"], j["name"], j["mem"], manage);
+}
+
+json To_Json_Manage_List(set<Message, MessageComparator> qu)
+{
+    json que;
+    for (const auto &q : qu)
+    {
+        json j = json::parse(To_Json_Msg(q));
+        que.push_back(j);
+    }
+    return que;
+}
+
+set<Message, MessageComparator> From_Json_Manage_List(json j)
+{
+    set<Message, MessageComparator> li;
+    for (const auto &l : j)
+    {
+        Message msg(l["event"], l["sendID"], l["send_account"], l["receiveID"], l["receiveID_account"], l["str"], l["time"], l["num"]);
+        li.emplace(msg);
+    }
+    return li;
 }

@@ -58,4 +58,7 @@ string To_GrpBase(string jso);
 string To_Json_Grp(Group grp);
 Group From_Json_Grp(string jso);
 string To_Json_Grp_Member_List(const unordered_map<int, int> mem_map);
+json To_Json_Manage_List(set<Message, MessageComparator> qu);
+set<Message, MessageComparator> From_Json_Manage_List(json j);
+
 #endif
