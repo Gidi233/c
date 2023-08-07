@@ -181,6 +181,18 @@ bool Database::Grp_Exist_name(string name)
     return ans;
 }
 
+bool Database::Grp_Exist_ID(int ID)
+{
+    redisReply *reply = (redisReply *)redisCommand(Database::redis, "EXISTS Grp:%d", ID);
+    if (reply == nullptr)
+    {
+        return false;
+    }
+    bool ans = reply->integer;
+    freeReplyObject(reply);
+    return ans;
+}
+
 bool Database::Del_Grp(int ID)
 {
     redisReply *reply = (redisReply *)redisCommand(Database::redis, "DEL Grp:%d", ID);

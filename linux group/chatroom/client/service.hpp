@@ -8,7 +8,7 @@
 int Main_Menu_Ser_Register();
 int Main_Menu_Ser_Login();
 
-list<Message> Get_ManageList_Ser(int ID);
+list<Message> Get_Frd_ManageList_Ser(int ID);
 void Manage_Apply_Ser(int ID, list<Message> manage);
 
 UserBase Get_User_Ser(int ID);
@@ -23,6 +23,9 @@ void Search_Frd_Ser(int ID);
 void Group_Ser(int ID);
 void New_Grp_Ser(int ID);
 int Choose_Grp_Ser(int ID);
+void Add_Grp_Ser(int ID);
 void In_Grp_Ser(int GID);
+set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID);
+void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage);
 
 #endif

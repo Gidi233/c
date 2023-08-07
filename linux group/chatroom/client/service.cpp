@@ -82,13 +82,13 @@ void User_Ser_Exit(int ID)
     client::Send(From_Self(Exit, ID));
 }
 
-list<Message> Get_ManageList_Ser(int ID)
+list<Message> Get_Frd_ManageList_Ser(int ID)
 {
-    client::Send(From_Self(Get_ManageList, ID));
+    client::Send(From_Self(Get_Frd_ManageList, ID));
     return From_Json_MsgList(To_Manage(client::Recv()));
 }
 
-void Manage_Apply_Ser(int ID, list<Message> manage)
+void Manage_Apply_Ser(int ID, list<Message> manage) // 之后要删掉
 {
     int num;
     char choice;
@@ -353,6 +353,38 @@ void New_Grp_Ser(int ID)
     }
 }
 
+void Add_Grp_Ser(int ID)
+{
+    int GID, ans;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "输入申请要加入的群：";
+        cin >> GID;
+        client::Send(From_Grp(Send_Add_Grp, ID, GID));
+        ans = client::RecvInt();
+        if (!ans)
+        {
+            cout << "成功发送申请" << endl;
+            sleep(1);
+            return;
+        }
+        if (ans == 1)
+        {
+            cout << "不存在该群" << endl;
+        }
+        if (ans == 2)
+        {
+            cout << "已加入该群" << endl;
+        }
+        cout << "1.重新输入\n0.退出\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+}
+
 int Choose_Grp_Ser(int ID)
 {
     int GID;
@@ -369,7 +401,7 @@ int Choose_Grp_Ser(int ID)
         }
         else
         {
-            cout << "无法进入该群" << endl
+            cout << "未加入该群" << endl
                  << "1.重新输入\n0.退出\n";
             cin >> choice;
             if (choice == '0')
@@ -382,4 +414,29 @@ void In_Grp_Ser(int GID)
 {
     client::Send(From_Grp_Only(Grp_Member_List, GID));
     From_Json_Grp_Member_List(client::Recv());
+}
+
+set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID)
+{
+    client::Send(From_Self(Get_Grp_ManageList, GID));
+    return From_Json_Manage_List(To_Manage(client::Recv()));
+}
+
+void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage)
+{
+    int num;
+    char choice;
+    for (auto &m : manage)
+    {
+        system("clear");
+        m.toString();
+        cout << "1.同意\n0.拒绝\n";
+        cin >> num;
+        client::Send(From_Manage(m.event + 1, ID, m.SendID, num)); // 也可以加上处理用户的信息
+        sigaction(SIGIO, &client::respond, 0);
+        cout << "1.继续处理\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            break;
+    }
 }

@@ -454,7 +454,6 @@ string To_GrpBase(string jso)
 
 string To_Json_Grp(Group grp)
 {
-    // json mem(grp.mem); //
     json manage = To_Json_Manage_List(grp.manage);
     json j{
         {"GID", grp.GID},

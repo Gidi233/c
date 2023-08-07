@@ -21,7 +21,7 @@ Message::Message(Event event1, int sendID1, string send_account1, int receiveID1
 {
 }
 
-void Message::toString()
+void Message::toString() const
 {
     // cout << "用户" << Send_Account << "(ID:" << SendID << ")向你发送了";
     switch (event)
@@ -35,22 +35,32 @@ void Message::toString()
         }
         else
         {
-            cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条消息\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条消息 " << Time << endl;
         }
         break;
 
     case Send_Add_Frd:
-        cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条好友申请\n";
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一条好友申请 " << Time << endl;
         break;
     case Recv_Add_Frd:
         if (num)
-            cout << "用户:" << Send_Account << "(ID:" << SendID << ")接受了你的好友申请\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")接受了你的好友申请 " << Time << endl;
         else
-            cout << "用户:" << Send_Account << "(ID:" << SendID << ")拒绝了你的好友申请\n";
+            cout << "用户:" << Send_Account << "(ID:" << SendID << ")拒绝了你的好友申请 " << Time << endl;
         break;
     case Del_Frd:
 
-        cout << "用户:" << Send_Account << "(ID:" << SendID << ")刪除了你\n";
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")刪除了你   " << Time << endl;
+        break;
+
+    case Send_Add_Grp:
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你管理的该群:" << Receive_Account << "(GID:" << ReceiveID << ")发送了一条加群申请    " << Time << endl;
+        break;
+    case Recv_Add_Grp:
+        if (num)
+            cout << "群:" << Send_Account << "(GID:" << SendID << ")接受了你的加群申请  " << Time << endl;
+        else
+            cout << "群:" << Send_Account << "(GID:" << SendID << ")拒绝了你的加群申请  " << Time << endl;
         break;
     default:
         break;

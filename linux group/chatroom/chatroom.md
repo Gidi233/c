@@ -151,7 +151,7 @@
 
 
 
-数据库存储用户（id，username,password,online,list<好友、群>，等待接收队列）、群组信息(ID,map<用户名、ID,权限>，list<加入申请>)和聊天记录(每个用户各自存各自的)（的json）
+数据库存储用户（id，username,password,online,list<好友、群>，等待接收队列）、群组信息(ID,map<用户名、ID,权限>，set<加入申请>)和聊天记录(每个用户各自存各自的)（的json）
 
 
 
@@ -169,25 +169,15 @@ SA_RESTART
 
 
 
+Manage_Apply_UI(int ID) // 移到friend里
+
+
+
 将选项发给服务器；
 
 聊天信息包括个人信息（用户名，时间）（包装成消息类），对端信息（用json序列化）
 
-用对端信息找完接收对象，存储时再删掉对端信息
-
-```c++
-auto json = nlohmann::json{<your json>}; 
-
-auto path = nlohmann::json_pointer<nlohmann::json>{"TEST"}; 
-
-auto& someTest = json[path]; // Erase from the 'someTest' node by key name 
-
-someTest.erase("Name");
-```
-
 或者先发一个对端信息再发序列化的消息类
-
-留着也行啊 是吧
 
 
 
@@ -199,19 +189,7 @@ someTest.erase("Name");
 
 组
 
-成员：map<userID,权限>，chatID
-
-方法：加、减人，定权限
-
-
-
-聊天成员类
-
-属性：聊天数据，成员信息
-
-方法：收消息（追加）
-
-取消息（50、所有）
+成员：map<userID,权限>，chatID，set<message\>待处理信息
 
 
 

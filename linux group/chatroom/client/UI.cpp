@@ -102,7 +102,7 @@ void User_UI_First(int ID) // 都改成引用
 			Group_UI_First(self.ID);
 			break;
 		case '3':
-			Manage_Apply_UI(self.ID);
+			Manage_Frd_Apply_UI(self.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
@@ -116,7 +116,7 @@ void User_UI()
 	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
 }
 
-void Manage_Apply_UI(int ID)
+void Manage_Frd_Apply_UI(int ID) // 移到friend里
 {
 	char choice;
 	int num;
@@ -124,7 +124,7 @@ void Manage_Apply_UI(int ID)
 	while (1)
 	{
 		system("clear");
-		manage = Get_ManageList_Ser(ID);
+		manage = Get_Frd_ManageList_Ser(ID);
 		if (manage.empty())
 		{
 			cout << "当前无任何请求\n";
@@ -209,7 +209,7 @@ void Group_UI_First(int ID)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != '1' && choice != '2' && choice != '3')
 		{
 			continue;
 		}
@@ -223,9 +223,9 @@ void Group_UI_First(int ID)
 			if ((GID = Choose_Grp_Ser(ID)))
 				In_Grp_UI_First(GID);
 			break;
-			// case '3':
-			// Choose_Grp_Ser(ID);
-			// break;
+		case '3':
+			Add_Grp_Ser(ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -270,6 +270,9 @@ void In_Grp_UI_First(int GID)
 		// case '3':
 		// Choose_Grp_Ser(ID);
 		// break;
+		case '5':
+			Manage_Grp_Apply_UI(GID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -279,5 +282,34 @@ void In_Grp_UI_First(int GID)
 
 void In_Grp_UI()
 {
-	printf("1.进入唠嗑\n2.添加管理员\n3.删除管理员\n4.移除用户\n5.解散群聊\n6.退出该群\n0.返回\n");
+	printf("1.进入唠嗑\n2.添加管理员\n3.删除管理员\n4.移除用户\n5.处理信息\n6.解散群聊\n7.退出该群\n0.返回\n");
+}
+
+void Manage_Grp_Apply_UI(int GID) // 移到friend里
+{
+	char choice;
+	int num;
+	set<Message, MessageComparator> manage;
+	while (1)
+	{
+		system("clear");
+		manage = Get_Grp_ManageList_Ser(GID);
+		if (manage.empty())
+		{
+			cout << "当前无任何请求\n";
+			sleep(1);
+			return;
+		}
+		for (auto &m : manage)
+		{
+			m.toString();
+		}
+		cout << "1.逐个处理\n0.返回\n";
+		cin >> choice;
+		if (choice == '0')
+		{
+			return;
+		}
+		Manage_Apply_Ser(GID, manage);
+	}
 }

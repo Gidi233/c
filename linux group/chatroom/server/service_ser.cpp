@@ -73,7 +73,7 @@ void Getfd(int *fd)
         cout << "返回用户" << ID << "好友信息\n";
         break;
 
-    case Get_ManageList:
+    case Get_Frd_ManageList:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         Send(*fd, Get_Manage(Database::User_Out(ID)), 0);
         cout << "返回用户" << ID << "待处理信息\n";
@@ -112,7 +112,7 @@ void Getfd(int *fd)
         Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
         Database::User_In(ID, Del_Manage(Database::User_Out(ID)));
         cout << "返回用户" << ID << "处理信息\n";
-        if ((num = Get_Num(jso)))
+        if (Get_Num(jso))
         {
             chatID = Database::Get_ChatID();
             Database::User_In(ID, Add_Friend(otherUsrID, Database::User_Out(ID), chatID));
@@ -232,7 +232,7 @@ void Getfd(int *fd)
         chatID = Database::Get_ChatID();
         grp = Group(chatID, grp_account);
         grp.mem.emplace(ID, 2);
-        cout << "账号" << grp.GID << "注册\n";
+        cout << "新建" << grp.GID << "群聊\n";
         SendInt(*fd, 1);
         Database::Set_Name_To_GID(grp.GID, grp_account);
         Database::Grp_In(grp.GID, To_Json_Grp(grp));
@@ -253,7 +253,66 @@ void Getfd(int *fd)
         Get_Info(jso, nullptr, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
         grp = From_Json_Grp(Database::Grp_Out(grpID));
         Send(*fd, To_Json_Grp_Member_List(grp.mem), 0);
-        cout << "返回用户" << ID << "成员信息\n";
+        cout << "返回群组" << grpID << "成员信息\n";
+        break;
+
+    case Get_Grp_ManageList:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        Send(*fd, Get_Manage(Database::Grp_Out(ID)), 0);
+        cout << "返回群组" << ID << "待处理信息\n";
+        break;
+
+    case Send_Add_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        if (!Database::Grp_Exist_ID(grpID))
+        {
+            SendInt(*fd, 1);
+            break;
+        }
+
+        // 检查是否找到了这个值
+        if (usr.grp.find(grpID) != usr.grp.end())
+        {
+            SendInt(*fd, 2);
+            break;
+        }
+        SendInt(*fd, 0);
+        cout << "用户" << ID << "发送加群申请\n";
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        msg = Message(Send_Add_Grp, ID, usr.account, grpID, gettime());
+        msg.Receive_Account = grp.name;
+        grp.manage.emplace(msg);
+        Database::Grp_In(grpID, To_Json_Grp(grp));
+        for (const auto &p : grp.mem)
+        {
+            if (p.second != 0)
+            {
+                Relay_To_User(p.first, msg);
+            }
+        }
+
+        break;
+
+    case Recv_Add_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
+        grp = From_Json_Grp(Database::Grp_Out(ID));
+        grp.manage.erase(grp.manage.begin());
+        cout << "返回组" << ID << "处理信息\n";
+        if (Get_Num(jso))
+        {
+            opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
+            opposite_usr.grp.emplace(grp.GID, grp.ChatID);
+            grp.mem.emplace(otherUsrID, 0);
+            Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+            Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, grp.name, otherUsrID, gettime(), 1));
+        }
+        else
+        {
+            Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 0));
+        }
+        Database::Grp_In(ID, To_Json_Grp(grp));
+
         break;
 
     default: // jump to case label???

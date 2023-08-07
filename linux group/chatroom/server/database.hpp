@@ -31,6 +31,7 @@ public:
     static int Get_GID();
     static bool Set_Name_To_GID(int ID, string name);
     static bool Grp_Exist_name(string name);
+    static bool Grp_Exist_ID(int ID);
     static bool Del_Grp(int ID);
     static bool Grp_In(int ID, string jso);
     static string Grp_Out(int ID);

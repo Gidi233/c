@@ -7,7 +7,7 @@ enum Event
     Login,
     Exit,
     User,
-    Get_ManageList,
+    Get_Frd_ManageList,
     Frd_List,
     Send_Add_Frd,
     Recv_Add_Frd,
@@ -22,7 +22,10 @@ enum Event
     Grp_List,
     New_Grp,
     Choose_Grp,
-    Grp_Member_List
+    Grp_Member_List,
+    Send_Add_Grp,
+    Recv_Add_Grp,
+    Get_Grp_ManageList,
 };
 
 #endif
