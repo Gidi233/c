@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <set>
 #include "../Message.hpp"
 #include "client.hpp"
 #include "service.hpp"
@@ -88,7 +89,7 @@ void User_UI_First(int ID) // 都改成引用
 
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3')
+		if (choice != '1' && choice != '2')
 		{
 			continue;
 		}
@@ -101,9 +102,6 @@ void User_UI_First(int ID) // 都改成引用
 		case '2':
 			Group_UI_First(self.ID);
 			break;
-		case '3':
-			Manage_Frd_Apply_UI(self.ID);
-			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -113,14 +111,14 @@ void User_UI_First(int ID) // 都改成引用
 
 void User_UI()
 {
-	printf("1.好友\n2.群组\n3.处理通知\n9.注销\n0.退出\n");
+	printf("1.好友\n2.群组\n9.注销\n0.退出\n");
 }
 
 void Manage_Frd_Apply_UI(int ID) // 移到friend里
 {
 	char choice;
 	int num;
-	list<Message> manage;
+	set<Message, MessageComparator> manage;
 	while (1)
 	{
 		system("clear");
@@ -160,7 +158,7 @@ void Friend_UI_First(UserBase usr)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5')
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6')
 		{
 			continue;
 		}
@@ -182,6 +180,9 @@ void Friend_UI_First(UserBase usr)
 		case '5':
 			Search_Frd_Ser(usr.ID);
 			break;
+		case '6':
+			Manage_Frd_Apply_UI(usr.ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -191,7 +192,7 @@ void Friend_UI_First(UserBase usr)
 
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n6.处理好友请求\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

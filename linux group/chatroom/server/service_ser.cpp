@@ -110,12 +110,14 @@ void Getfd(int *fd)
 
     case Recv_Add_Frd:
         Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
-        Database::User_In(ID, Del_Manage(Database::User_Out(ID)));
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        usr.manage.erase(usr.manage.begin());
         cout << "返回用户" << ID << "处理信息\n";
         if (Get_Num(jso))
         {
             chatID = Database::Get_ChatID();
-            Database::User_In(ID, Add_Friend(otherUsrID, Database::User_Out(ID), chatID));
+            usr.frd.emplace(otherUsrID, chatID);
+            usr.frd_Block.emplace(otherUsrID, 0);
             Database::User_In(otherUsrID, Add_Friend(ID, Database::User_Out(otherUsrID), chatID));
             Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 1));
         }
@@ -123,6 +125,7 @@ void Getfd(int *fd)
         {
             Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 0));
         }
+        Database::User_In(ID, To_Json_User(usr));
 
         break;
 

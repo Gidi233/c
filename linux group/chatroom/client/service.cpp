@@ -82,29 +82,10 @@ void User_Ser_Exit(int ID)
     client::Send(From_Self(Exit, ID));
 }
 
-list<Message> Get_Frd_ManageList_Ser(int ID)
+set<Message, MessageComparator> Get_Frd_ManageList_Ser(int ID)
 {
     client::Send(From_Self(Get_Frd_ManageList, ID));
-    return From_Json_MsgList(To_Manage(client::Recv()));
-}
-
-void Manage_Apply_Ser(int ID, list<Message> manage) // 之后要删掉
-{
-    int num;
-    char choice;
-    for (auto &m : manage)
-    {
-        system("clear");
-        m.toString();
-        cout << "1.同意\n0.拒绝\n";
-        cin >> num;
-        client::Send(From_Manage(m.event + 1, ID, m.SendID, num));
-        sigaction(SIGIO, &client::respond, 0);
-        cout << "1.继续处理\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
-            break;
-    }
+    return From_Json_Manage_List(To_Manage(client::Recv()));
 }
 
 void Friend_Ser(int ID)

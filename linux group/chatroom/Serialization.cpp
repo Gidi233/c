@@ -200,7 +200,7 @@ string To_Json_User(UserTotal usr)
     json grp_map(usr.grp);
     json block(usr.frd_Block);
     json notice = To_Json_MsgList(usr.notice);
-    json manage = To_Json_MsgList(usr.manage);
+    json manage = To_Json_Manage_List(usr.manage);
     json j = {
         {"ID", usr.ID},
         {"account", usr.account},
@@ -264,7 +264,7 @@ UserTotal From_Json_UserTotal(string jso)
 {
     json j = json::parse(jso);
     list<Message> notice = From_Json_MsgList(j["notice"]);
-    list<Message> manage = From_Json_MsgList(j["manage"]);
+    set<Message, MessageComparator> manage = From_Json_Manage_List(j["manage"]);
     return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_block"], j["grp"], notice, manage);
 }
 
@@ -366,13 +366,6 @@ string Add_Manage(string jso, Message msg)
     json j = json::parse(jso);
     json m = json::parse(To_Json_Msg(msg));
     j["manage"].push_back(m);
-    return j.dump();
-}
-
-string Del_Manage(string jso)
-{
-    json j = json::parse(jso);
-    j["manage"].erase(0);
     return j.dump();
 }
 

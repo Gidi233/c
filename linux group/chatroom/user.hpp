@@ -1,6 +1,7 @@
 #ifndef USER
 #define USER
 #include <list>
+#include <set>
 #include <unordered_map>
 #include <iostream>
 #include "Message.hpp"
@@ -28,12 +29,13 @@ public:
     unordered_map<int, int> frd; // 对象ID对聊天数据ID
     unordered_map<int, bool> frd_Block;
     unordered_map<int, int> grp;
-    list<Message> notice, manage; // manage换成set去重，构造时不加时间
+    list<Message> notice;
+    set<Message, MessageComparator> manage;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();
     UserTotal(const UserBase &base);
-    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, bool> frd_Block, unordered_map<int, int> grp, list<Message> notice, list<Message> manage);
+    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, bool> frd_Block, unordered_map<int, int> grp, list<Message> notice, set<Message, MessageComparator> manage);
     ~UserTotal();
 };
 
