@@ -308,13 +308,40 @@ void Getfd(int *fd)
             opposite_usr.grp.emplace(grp.GID, grp.ChatID);
             grp.mem.emplace(otherUsrID, 0);
             Database::User_In(otherUsrID, To_Json_User(opposite_usr));
-            Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, grp.name, otherUsrID, gettime(), 1));
+            Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 1));
         }
         else
         {
             Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 0));
         }
         Database::Grp_In(ID, To_Json_Grp(grp));
+
+        break;
+
+    case Quit_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        if (grp.mem[ID] == 2)
+        {
+            SendInt(*fd, 0);
+            break;
+        }
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        grp.mem.erase(ID);
+        usr.grp.erase(grpID);
+        Database::User_In(ID, To_Json_User(usr));
+        Database::Grp_In(grpID, To_Json_Grp(grp));
+        msg = Message(Quit_Grp, ID, usr.account, grpID, gettime());
+        msg.Receive_Account = grp.name;
+        cout << "用户" << ID << "退出群聊" << grpID << endl;
+        for (const auto &p : grp.mem)
+        {
+            if (p.second != 0)
+            {
+                Relay_To_User(p.first, msg);
+            }
+        }
+        SendInt(*fd, 1);
 
         break;
 

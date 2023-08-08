@@ -62,6 +62,9 @@ void Message::toString() const
         else
             cout << "群:" << Send_Account << "(GID:" << SendID << ")拒绝了你的加群申请  " << Time << endl;
         break;
+    case Quit_Grp:
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")从你管理的该群:" << Receive_Account << "(GID:" << ReceiveID << ")退出了    " << Time << endl;
+        break;
     default:
         break;
     }

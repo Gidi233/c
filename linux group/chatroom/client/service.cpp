@@ -421,3 +421,29 @@ void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage)
             break;
     }
 }
+
+bool Quit_Ser(int GID)
+{
+    int num;
+    while (1)
+    {
+        system("clear");
+        cout << "1.确认\n0.后悔\n";
+        cin >> num;
+        if (num != 1 && num != 0)
+        {
+            continue;
+        }
+        if (!num)
+            return num;
+        client::Send(From_Grp(Quit_Grp, client::ID, GID));
+        if (client::RecvInt())
+            return 1;
+        else
+        {
+            cout << "不能没有群主啊" << endl;
+            sleep(1);
+            return 0;
+        }
+    }
+}

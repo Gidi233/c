@@ -26,6 +26,7 @@ enum Event
     Send_Add_Grp,
     Recv_Add_Grp,
     Get_Grp_ManageList,
+    Quit_Grp
 };
 
 #endif

@@ -248,13 +248,13 @@ void In_Grp_UI_First(int GID)
 		cout << "进入群组界面\n";
 		In_Grp_Ser(GID);
 		In_Grp_UI();
-		printf("输入(0-6):");
+		printf("输入(0-7):");
 		cin >> choice;
 		if (choice == '0')
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6')
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6' && choice != '7')
 		{
 			continue;
 		}
@@ -273,6 +273,10 @@ void In_Grp_UI_First(int GID)
 		// break;
 		case '5':
 			Manage_Grp_Apply_UI(GID);
+			break;
+		case '7':
+			if (Quit_Ser(GID))
+				return;
 			break;
 		default:
 			cout << "啊？" << endl;
