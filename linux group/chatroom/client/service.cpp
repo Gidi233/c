@@ -397,9 +397,15 @@ void In_Grp_Ser(int GID)
     From_Json_Grp_Member_List(client::Recv());
 }
 
+int Check_Authority_Ser(int GID)
+{
+    client::Send(From_Grp(Check_Authority, client::ID, GID));
+    return client::RecvInt();
+}
+
 set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID)
 {
-    client::Send(From_Self(Get_Grp_ManageList, GID));
+    client::Send(From_Grp_Only(Get_Grp_ManageList, GID));
     return From_Json_Manage_List(To_Manage(client::Recv()));
 }
 

@@ -259,9 +259,15 @@ void Getfd(int *fd)
         cout << "返回群组" << grpID << "成员信息\n";
         break;
 
+    case Check_Authority:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        SendInt(*fd, grp.mem[ID]);
+        break;
+
     case Get_Grp_ManageList:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
-        Send(*fd, Get_Manage(Database::Grp_Out(ID)), 0);
+        Get_Info(jso, nullptr, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
+        Send(*fd, Get_Manage(Database::Grp_Out(grpID)), 0);
         cout << "返回群组" << ID << "待处理信息\n";
         break;
 

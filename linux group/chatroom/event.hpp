@@ -20,6 +20,7 @@ enum Event
     Grp_List,
     New_Grp,
     Choose_Grp,
+    Check_Authority,
     Grp_Member_List,
     Send_Add_Grp,
     Recv_Add_Grp,

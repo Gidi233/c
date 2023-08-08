@@ -266,12 +266,11 @@ void In_Grp_UI_First(int GID)
 			Send_Msg_Grp_Ser(GID);
 			break;
 		// case '2':
-		// 	if (Choose_Grp_Ser(ID))
-		// 		In_Grp_UI_First();
+		// 	Add_Manager_Ser(GID);
 		// 	break;
 		// case '3':
-		// Choose_Grp_Ser(ID);
-		// break;
+		// 	Del_Manager_Ser(GID);
+		// 	break;
 		case '5':
 			Manage_Grp_Apply_UI(GID);
 			break;
@@ -297,6 +296,13 @@ void In_Grp_UI()
 
 void Manage_Grp_Apply_UI(int GID) // 移到friend里
 {
+	system("clear");
+	if (!Check_Authority_Ser(GID))
+	{
+		cout << "你什么身份！" << endl;
+		sleep(1);
+		return;
+	}
 	char choice;
 	int num;
 	set<Message, MessageComparator> manage;
