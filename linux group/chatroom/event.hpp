@@ -17,8 +17,6 @@ enum Event
     Able_To_Send_Frd,
     Get_frdChat,
     Sendmsg_Tofrd,
-    Get_grpChat,
-    Sendmsg_Togrp,
     Grp_List,
     New_Grp,
     Choose_Grp,
@@ -26,7 +24,9 @@ enum Event
     Send_Add_Grp,
     Recv_Add_Grp,
     Get_Grp_ManageList,
-    Quit_Grp
+    Quit_Grp,
+    Get_grpChat,
+    Sendmsg_Togrp,
 };
 
 #endif

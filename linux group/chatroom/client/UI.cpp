@@ -68,6 +68,7 @@ void User_UI_First(int ID) // 都改成引用
 	{
 		system("clear");
 		self = Get_User_Ser(ID);
+		client::account = self.account;
 		cout << "个人界面\n";
 		self.toString();
 		User_UI();
@@ -261,9 +262,9 @@ void In_Grp_UI_First(int GID)
 
 		switch (choice)
 		{
-		// case '1':
-		// 	New_Grp_Ser(ID);
-		// 	break;
+		case '1':
+			Send_Msg_Grp_Ser(GID);
+			break;
 		// case '2':
 		// 	if (Choose_Grp_Ser(ID))
 		// 		In_Grp_UI_First();

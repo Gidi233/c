@@ -11,6 +11,7 @@
 using namespace std;
 
 int client::cfd = -1, client::frdID = -1, client::grpID = -1, client::ID = -1;
+string client::account = "";
 struct sigaction client::ign, client::respond;
 
 client::client()

@@ -447,3 +447,28 @@ bool Quit_Ser(int GID)
         }
     }
 }
+
+void Send_Msg_Grp_Ser(int GID)
+{
+    system("clear");
+    int num;
+    char choice;
+    client::grpID = GID;
+    client::Send(From_Grp(Get_grpChat, client::ID, GID));
+    From_Json_Chat(client::Recv());
+    string str;
+    while (1)
+    {
+        cin >> str;
+        if (str == "\\q")
+        {
+            client::grpID = -1;
+            return;
+        }
+        cout << "\033[1A\x1b[2K\r";
+        Message msg(Sendmsg_Togrp, client::ID, client::account, GID, str, gettime());
+        msg.toString();
+        client::Send(To_Json_Msg(msg)); //
+        sigaction(SIGIO, &client::respond, 0);
+    }
+}

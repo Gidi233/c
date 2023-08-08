@@ -11,6 +11,7 @@ class client
 {
 public:
     static int cfd, ID, frdID, grpID;
+    static string account;
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     static struct sigaction ign, respond;

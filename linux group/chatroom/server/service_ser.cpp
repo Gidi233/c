@@ -342,7 +342,30 @@ void Getfd(int *fd)
             }
         }
         SendInt(*fd, 1);
+        break;
 
+    case Get_grpChat:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        Send(*fd, Database::Chat_Out(usr.grp[grpID]), 0);
+        cout << "返回群" << grpID << "的聊天记录" << endl;
+        break;
+
+    case Sendmsg_Togrp:
+        msg = From_Json_Msg(jso);
+        grp = From_Json_Grp(Database::Grp_Out(msg.ReceiveID));
+        chatID = grp.ChatID;
+        msg.Receive_Account = grp.name;
+        // 发实时
+        for (const auto &p : grp.mem)
+        {
+            if (p.first != msg.SendID)
+            {
+                Relay_To_User(p.first, msg);
+            }
+        }
+        Database::Chat_In(chatID, Add_Msg(To_Json_Msg(msg), Database::Chat_Out(chatID)));
+        cout << "追加" << msg.SendID << "发给群" << msg.ReceiveID << "的消息" << endl;
         break;
 
     default: // jump to case label???
