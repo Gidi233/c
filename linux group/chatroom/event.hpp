@@ -22,6 +22,8 @@ enum Event
     Choose_Grp,
     Check_Authority,
     Grp_Member_List,
+    Add_Manager,
+    Del_Manager,
     Send_Add_Grp,
     Recv_Add_Grp,
     Get_Grp_ManageList,

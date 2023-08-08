@@ -23,6 +23,8 @@ void New_Grp_Ser(int ID);
 int Choose_Grp_Ser(int ID);
 void Add_Grp_Ser(int ID);
 void In_Grp_Ser(int GID);
+void Add_Manager_Ser(int GID);
+void Del_Manager_Ser(int GID);
 int Check_Authority_Ser(int GID);
 set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID);
 void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage);

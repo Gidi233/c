@@ -107,7 +107,6 @@ string From_Grp(int opt, int ID, int gid)
         {"event", opt},
         {"ID", ID},
         {"grpID", gid}};
-
     return j.dump();
 }
 
@@ -117,7 +116,6 @@ string From_Grp_Name(int opt, int ID, string name)
         {"event", opt},
         {"ID", ID},
         {"grp_account", name}};
-
     return j.dump();
 }
 
@@ -126,7 +124,16 @@ string From_Grp_Only(int opt, int gid)
     json j = {
         {"event", opt},
         {"grpID", gid}};
+    return j.dump();
+}
 
+string From_Grp_Usr(int opt, int ID, int gid, int uid)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"grpID", gid},
+        {"otherUsrID", uid}};
     return j.dump();
 }
 

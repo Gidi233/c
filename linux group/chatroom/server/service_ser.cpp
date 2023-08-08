@@ -126,7 +126,6 @@ void Getfd(int *fd)
             Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 0));
         }
         Database::User_In(ID, To_Json_User(usr));
-
         break;
 
     case Del_Frd:
@@ -270,6 +269,59 @@ void Getfd(int *fd)
         Send(*fd, Get_Manage(Database::Grp_Out(grpID)), 0);
         cout << "返回群组" << ID << "待处理信息\n";
         break;
+
+    case Add_Manager:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        if (!Database::Grp_Exist_ID(grpID))
+        {
+            SendInt(*fd, 1);
+            break;
+        }
+
+        // 检查是否找到了这个值
+        if (usr.grp.find(grpID) != usr.grp.end())
+        {
+            SendInt(*fd, 2);
+            break;
+        }
+        SendInt(*fd, 0);
+        cout << "用户" << ID << "发送加群申请\n";
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        msg = Message(Send_Add_Grp, ID, usr.account, grpID, gettime());
+        msg.Receive_Account = grp.name;
+        grp.manage.emplace(msg);
+        Database::Grp_In(grpID, To_Json_Grp(grp));
+        for (const auto &p : grp.mem)
+        {
+            if (p.second != 0)
+            {
+                Relay_To_User(p.first, msg);
+            }
+        }
+
+        break;
+
+        // case Del_Manager:
+        //     Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
+        //     grp = From_Json_Grp(Database::Grp_Out(ID));
+        //     grp.manage.erase(grp.manage.begin());
+        //     cout << "返回组" << ID << "处理信息\n";
+        //     if (Get_Num(jso))
+        //     {
+        //         opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
+        //         opposite_usr.grp.emplace(grp.GID, grp.ChatID);
+        //         grp.mem.emplace(otherUsrID, 0);
+        //         Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+        //         Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 1));
+        //     }
+        //     else
+        //     {
+        //         Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 0));
+        //     }
+        //     Database::Grp_In(ID, To_Json_Grp(grp));
+
+        //     break;
 
     case Send_Add_Grp:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //

@@ -397,6 +397,91 @@ void In_Grp_Ser(int GID)
     From_Json_Grp_Member_List(client::Recv());
 }
 
+void Add_Manager_Ser(int GID)
+{
+    int otherUsrID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> otherUsrID;
+        if (otherUsrID == client::ID)
+        {
+            cout << "第一次见给自己降权的\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Grp_Usr(Add_Manager, client::ID, GID, otherUsrID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "发送申请成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "查无此人\n";
+            break;
+        case 2:
+            cout << "你小子酒吧点炒菜是吧（重复添加)\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+}
+
+void Del_Manager_Ser(int GID)
+{
+    int otherUsrID;
+    char choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> otherUsrID;
+        if (otherUsrID == client::ID)
+        {
+            cout << "第一次见给自己降权的\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Grp_Usr(Del_Manager, client::ID, GID, otherUsrID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "发送申请成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "无该管理员\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
+    }
+}
+
 int Check_Authority_Ser(int GID)
 {
     client::Send(From_Grp(Check_Authority, client::ID, GID));
