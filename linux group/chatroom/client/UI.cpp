@@ -275,6 +275,10 @@ void In_Grp_UI_First(int GID)
 		case '5':
 			Manage_Grp_Apply_UI(GID);
 			break;
+		case '6':
+			if (Dissolve_Ser(GID))
+				return;
+			break;
 		case '7':
 			if (Quit_Ser(GID))
 				return;

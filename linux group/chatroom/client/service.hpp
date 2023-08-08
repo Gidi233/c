@@ -26,6 +26,7 @@ void In_Grp_Ser(int GID);
 set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID);
 void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage);
 bool Quit_Ser(int GID);
+bool Dissolve_Ser(int GID);
 void Send_Msg_Grp_Ser(int GID);
 
 #endif

@@ -472,3 +472,29 @@ void Send_Msg_Grp_Ser(int GID)
         sigaction(SIGIO, &client::respond, 0);
     }
 }
+
+bool Dissolve_Ser(int GID)
+{
+    int num;
+    while (1)
+    {
+        system("clear");
+        cout << "1.确认\n0.后悔\n";
+        cin >> num;
+        if (num != 1 && num != 0)
+        {
+            continue;
+        }
+        if (!num)
+            return num;
+        client::Send(From_Grp(Dissolve_Grp, client::ID, GID));
+        if (client::RecvInt())
+            return 1;
+        else
+        {
+            cout << "我寻思你也不是群主啊" << endl;
+            sleep(1);
+            return 0;
+        }
+    }
+}

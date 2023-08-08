@@ -368,6 +368,36 @@ void Getfd(int *fd)
         cout << "追加" << msg.SendID << "发给群" << msg.ReceiveID << "的消息" << endl;
         break;
 
+    case Dissolve_Grp:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        if (grp.mem[ID] != 2)
+        {
+            SendInt(*fd, 0);
+            break;
+        }
+
+        msg = Message(Dissolve_Grp, ID, usr.account, grpID, gettime());
+        msg.Receive_Account = grp.name;
+        cout << "群聊" << grpID << "解散" << endl;
+
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        grp.mem.erase(ID);
+        usr.grp.erase(grpID);
+        Database::User_In(ID, To_Json_User(usr));
+        for (const auto &p : grp.mem)
+        {
+            usr = From_Json_UserTotal(Database::User_Out(p.first));
+            usr.grp.erase(grpID);
+            Database::User_In(p.first, To_Json_User(usr));
+            Relay_To_User(p.first, msg);
+        }
+        Database::Del_Chat(grp.ChatID);
+        Database::Del_Grp(grpID);
+        Database::Del_GrpName(grp.name);
+        SendInt(*fd, 1);
+        break;
+
     default: // jump to case label???
         cout << "啊？" << endl;
         break;

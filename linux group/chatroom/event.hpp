@@ -27,6 +27,7 @@ enum Event
     Quit_Grp,
     Get_grpChat,
     Sendmsg_Togrp,
+    Dissolve_Grp,
 };
 
 #endif

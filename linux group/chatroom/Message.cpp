@@ -82,6 +82,9 @@ void Message::toString() const
             cout << "用户:" << Send_Account << "(ID:" << SendID << ")在群:" << Receive_Account << "(GID:" << ReceiveID << ")发送了一条消息 " << Time << endl;
         }
         break;
+    case Dissolve_Grp:
+        cout << "该群:" << Receive_Account << "(GID:" << ReceiveID << ")已解散    " << Time << endl;
+        break;
     default:
         break;
     }
