@@ -399,8 +399,15 @@ void In_Grp_Ser(int GID)
 
 void Add_Manager_Ser(int GID)
 {
+    system("clear");
     int otherUsrID;
     char choice;
+    if (Check_Authority_Ser(GID) != 2)
+    {
+        cout << "你什么身份！？\n";
+        sleep(1);
+        return;
+    }
     while (1)
     {
         system("clear");
@@ -420,15 +427,15 @@ void Add_Manager_Ser(int GID)
         switch (client::RecvInt())
         {
         case 0:
-            cout << "发送申请成功\n";
+            cout << "添加管理员成功\n";
             sleep(1);
             return;
             break;
         case 1:
-            cout << "查无此人\n";
+            cout << "无此群员\n";
             break;
         case 2:
-            cout << "你小子酒吧点炒菜是吧（重复添加)\n";
+            cout << "该成员并非管理员\n";
             break;
         default:
             cout << "啊？" << endl;
@@ -443,8 +450,15 @@ void Add_Manager_Ser(int GID)
 
 void Del_Manager_Ser(int GID)
 {
+    system("clear");
     int otherUsrID;
     char choice;
+    if (Check_Authority_Ser(GID) != 2)
+    {
+        cout << "你什么身份！？\n";
+        sleep(1);
+        return;
+    }
     while (1)
     {
         system("clear");
@@ -464,12 +478,15 @@ void Del_Manager_Ser(int GID)
         switch (client::RecvInt())
         {
         case 0:
-            cout << "发送申请成功\n";
+            cout << "撤销管理员成功\n";
             sleep(1);
             return;
             break;
         case 1:
-            cout << "无该管理员\n";
+            cout << "无此群员\n";
+            break;
+        case 2:
+            cout << "该成员并非管理员\n";
             break;
         default:
             cout << "啊？" << endl;
@@ -542,6 +559,7 @@ bool Quit_Ser(int GID)
 void Send_Msg_Grp_Ser(int GID)
 {
     system("clear");
+    cout << "群聊界面\n";
     int num;
     char choice;
     client::grpID = GID;

@@ -271,57 +271,48 @@ void Getfd(int *fd)
         break;
 
     case Add_Manager:
-        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
-        usr = From_Json_UserTotal(Database::User_Out(ID));
-        if (!Database::Grp_Exist_ID(grpID))
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, &grpID, nullptr); //
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        if (grp.mem.find(otherUsrID) == grp.mem.end())
         {
             SendInt(*fd, 1);
             break;
         }
-
-        // 检查是否找到了这个值
-        if (usr.grp.find(grpID) != usr.grp.end())
+        if (grp.mem[otherUsrID] == 1)
         {
             SendInt(*fd, 2);
             break;
         }
         SendInt(*fd, 0);
-        cout << "用户" << ID << "发送加群申请\n";
-        grp = From_Json_Grp(Database::Grp_Out(grpID));
-        msg = Message(Send_Add_Grp, ID, usr.account, grpID, gettime());
+        cout << "添加" << otherUsrID << "为管理员\n";
+        msg = Message(Add_Manager, ID, "", grpID, gettime());
         msg.Receive_Account = grp.name;
-        grp.manage.emplace(msg);
+        grp.mem[otherUsrID] = 1;
         Database::Grp_In(grpID, To_Json_Grp(grp));
-        for (const auto &p : grp.mem)
-        {
-            if (p.second != 0)
-            {
-                Relay_To_User(p.first, msg);
-            }
-        }
-
+        Relay_To_User(otherUsrID, msg);
         break;
 
-        // case Del_Manager:
-        //     Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
-        //     grp = From_Json_Grp(Database::Grp_Out(ID));
-        //     grp.manage.erase(grp.manage.begin());
-        //     cout << "返回组" << ID << "处理信息\n";
-        //     if (Get_Num(jso))
-        //     {
-        //         opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
-        //         opposite_usr.grp.emplace(grp.GID, grp.ChatID);
-        //         grp.mem.emplace(otherUsrID, 0);
-        //         Database::User_In(otherUsrID, To_Json_User(opposite_usr));
-        //         Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 1));
-        //     }
-        //     else
-        //     {
-        //         Relay_To_User(otherUsrID, Message(Recv_Add_Grp, ID, grp.name, otherUsrID, gettime(), 0));
-        //     }
-        //     Database::Grp_In(ID, To_Json_Grp(grp));
-
-        //     break;
+    case Del_Manager:
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, &grpID, nullptr); //
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        if (grp.mem.find(otherUsrID) == grp.mem.end())
+        {
+            SendInt(*fd, 1);
+            break;
+        }
+        if (grp.mem[otherUsrID] == 0)
+        {
+            SendInt(*fd, 2);
+            break;
+        }
+        SendInt(*fd, 0);
+        cout << "去除" << otherUsrID << "的管理员\n";
+        msg = Message(Del_Manager, ID, "", grpID, gettime());
+        msg.Receive_Account = grp.name;
+        grp.mem[otherUsrID] = 0;
+        Database::Grp_In(grpID, To_Json_Grp(grp));
+        Relay_To_User(otherUsrID, msg);
+        break;
 
     case Send_Add_Grp:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr); //
