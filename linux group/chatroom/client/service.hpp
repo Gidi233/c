@@ -28,6 +28,7 @@ void Del_Manager_Ser(int GID);
 int Check_Authority_Ser(int GID);
 set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID);
 void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage);
+void Del_Member_Ser(int GID);
 bool Quit_Ser(int GID);
 bool Dissolve_Ser(int GID);
 void Send_Msg_Grp_Ser(int GID);

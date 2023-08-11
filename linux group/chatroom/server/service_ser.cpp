@@ -267,7 +267,7 @@ void Getfd(int *fd)
     case Get_Grp_ManageList:
         Get_Info(jso, nullptr, nullptr, nullptr, nullptr, nullptr, &grpID, nullptr);
         Send(*fd, Get_Manage(Database::Grp_Out(grpID)), 0);
-        cout << "返回群组" << ID << "待处理信息\n";
+        cout << "返回群组" << grpID << "待处理信息\n";
         break;
 
     case Add_Manager:
@@ -415,6 +415,31 @@ void Getfd(int *fd)
         }
         Database::Chat_In(chatID, Add_Msg(To_Json_Msg(msg), Database::Chat_Out(chatID)));
         cout << "追加" << msg.SendID << "发给群" << msg.ReceiveID << "的消息" << endl;
+        break;
+
+    case Del_Member:
+        Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, &grpID, nullptr);
+        grp = From_Json_Grp(Database::Grp_Out(grpID));
+        if (grp.mem.find(otherUsrID) == grp.mem.end())
+        {
+            SendInt(*fd, 1);
+            break;
+        }
+        if (grp.mem[otherUsrID] >= grp.mem[ID])
+        {
+            SendInt(*fd, 2);
+            break;
+        }
+        SendInt(*fd, 0);
+        cout << "移除用户" << otherUsrID << endl;
+        msg = Message(Del_Member, ID, "", grpID, gettime());
+        msg.Receive_Account = grp.name;
+        grp.mem.erase(otherUsrID);
+        opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
+        opposite_usr.grp.erase(grpID);
+        Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+        Database::Grp_In(grpID, To_Json_Grp(grp));
+        Relay_To_User(otherUsrID, msg);
         break;
 
     case Dissolve_Grp:

@@ -435,7 +435,7 @@ void Add_Manager_Ser(int GID)
             cout << "无此群员\n";
             break;
         case 2:
-            cout << "该成员并非管理员\n";
+            cout << "该成员就是管理员\n";
             break;
         default:
             cout << "啊？" << endl;
@@ -579,6 +579,58 @@ void Send_Msg_Grp_Ser(int GID)
         msg.toString();
         client::Send(To_Json_Msg(msg)); //
         sigaction(SIGIO, &client::respond, 0);
+    }
+}
+
+void Del_Member_Ser(int GID)
+{
+
+    system("clear");
+    int otherUsrID;
+    char choice;
+    if (Check_Authority_Ser(GID) == 0)
+    {
+        cout << "你什么身份！？\n";
+        sleep(1);
+        return;
+    }
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        cin >> otherUsrID;
+        if (otherUsrID == client::ID)
+        {
+            cout << "把计算机放入垃圾桶是吧你\n";
+            cout << "1.重新输入\n0.返回\n";
+            cin >> choice;
+            if (choice == '0')
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Grp_Usr(Del_Member, client::ID, GID, otherUsrID));
+        switch (client::RecvInt())
+        {
+        case 0:
+            cout << "移除成功\n";
+            sleep(1);
+            return;
+            break;
+        case 1:
+            cout << "无此群员\n";
+            break;
+        case 2:
+            cout << "越位了昂\n";
+            break;
+        default:
+            cout << "啊？" << endl;
+            break;
+        }
+        cout << "1.重新输入\n0.返回\n";
+        cin >> choice;
+        if (choice == '0')
+            return;
     }
 }
 

@@ -271,6 +271,9 @@ void In_Grp_UI_First(int GID)
 		case '3':
 			Del_Manager_Ser(GID);
 			break;
+		case '4':
+			Del_Member_Ser(GID);
+			break;
 		case '5':
 			Manage_Grp_Apply_UI(GID);
 			break;

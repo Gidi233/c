@@ -74,6 +74,10 @@ void Message::toString() const
         cout << "该群:" << Receive_Account << "(GID:" << ReceiveID << ")撤销了你的管理员    " << Time << endl;
         break;
 
+    case Del_Member:
+        cout << "该群:" << Receive_Account << "(GID:" << ReceiveID << ")已将你移除群聊    " << Time << endl;
+        break;
+
     case Quit_Grp:
         cout << "用户:" << Send_Account << "(ID:" << SendID << ")从你管理的该群:" << Receive_Account << "(GID:" << ReceiveID << ")退出了    " << Time << endl;
         break;

@@ -27,6 +27,7 @@ enum Event
     Send_Add_Grp,
     Recv_Add_Grp,
     Get_Grp_ManageList,
+    Del_Member,
     Quit_Grp,
     Get_grpChat,
     Sendmsg_Togrp,
