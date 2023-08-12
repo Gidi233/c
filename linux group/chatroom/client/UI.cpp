@@ -13,22 +13,22 @@ void Main_UI_First()
 {
 	client cil;
 	bool flag;
-	char choice;
+	int choice;
 	int ID;
 	do
 	{
 		system("clear");
 		Main_Menu();
 		printf("输入(0-2):(初始界面)");
-		cin >> choice;
+		choice = Get_Int();
 		system("clear");
-		if (choice == '0')
+		if (!choice)
 		{
 
 			printf("BYE HAVE A GREAT TIME\n");
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != 1 && choice != 2)
 		{
 			continue;
 		}
@@ -36,11 +36,11 @@ void Main_UI_First()
 		switch (choice)
 		{
 
-		case '1':
+		case 1:
 			if ((ID = Main_Menu_Ser_Register()))
 				User_UI_First(ID);
 			break;
-		case '2':
+		case 2:
 			if ((ID = Main_Menu_Ser_Login()))
 				User_UI_First(ID);
 
@@ -49,7 +49,7 @@ void Main_UI_First()
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void Main_Menu()
@@ -62,7 +62,7 @@ void User_UI_First(int ID) // 都改成引用
 	list<Message> Offline_Msg = From_Json_MsgList(To_Notice(client::Recv())); // 还是得构造list
 	bool set = 1;
 	client::ID = ID;
-	char choice;
+	int choice;
 	UserBase self;
 	do
 	{
@@ -83,31 +83,31 @@ void User_UI_First(int ID) // 都改成引用
 			set = 0;
 		}
 
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			User_Ser_Exit(self.ID);
 
 			return;
 		}
-		if (choice != '1' && choice != '2')
+		if (choice != 1 && choice != 2)
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case '1':
+		case 1:
 			Friend_UI_First(self);
 			break;
-		case '2':
+		case 2:
 			Group_UI_First(self.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void User_UI()
@@ -117,7 +117,7 @@ void User_UI()
 
 void Manage_Frd_Apply_UI(int ID) // 移到friend里
 {
-	char choice;
+	int choice;
 	int num;
 	set<Message, MessageComparator> manage;
 	while (1)
@@ -135,8 +135,8 @@ void Manage_Frd_Apply_UI(int ID) // 移到friend里
 			m.toString();
 		}
 		cout << "1.逐个处理\n0.返回\n";
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			return;
 		}
@@ -146,7 +146,7 @@ void Manage_Frd_Apply_UI(int ID) // 移到friend里
 
 void Friend_UI_First(UserBase usr)
 {
-	char choice;
+	int choice;
 	do
 	{
 		system("clear");
@@ -154,41 +154,41 @@ void Friend_UI_First(UserBase usr)
 		Friend_Ser(usr.ID);
 		Friend_UI();
 		printf("输入(0-2):");
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6')
+		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6)
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case '1':
+		case 1:
 			Add_Frd_Ser(usr.ID);
 			break;
-		case '2':
+		case 2:
 			Del_Frd_Ser(usr.ID);
 			break;
-		case '3':
+		case 3:
 			Send_Msg_Ser(usr);
 			break;
-		case '4':
+		case 4:
 			Block_Frd_Ser(usr.ID);
 			break;
-		case '5':
+		case 5:
 			Search_Frd_Ser(usr.ID);
 			break;
-		case '6':
+		case 6:
 			Manage_Frd_Apply_UI(usr.ID);
 			break;
 		default:
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void Friend_UI()
@@ -198,7 +198,7 @@ void Friend_UI()
 void Group_UI_First(int ID)
 {
 	int GID;
-	char choice;
+	int choice;
 	do
 	{
 		system("clear");
@@ -206,33 +206,33 @@ void Group_UI_First(int ID)
 		Group_Ser(ID);
 		Group_UI();
 		printf("输入(0-2):");
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3')
+		if (choice != 1 && choice != 2 && choice != 3)
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case '1':
+		case 1:
 			New_Grp_Ser(ID);
 			break;
-		case '2':
+		case 2:
 			if ((GID = Choose_Grp_Ser(ID)))
 				In_Grp_UI_First(GID);
 			break;
-		case '3':
+		case 3:
 			Add_Grp_Ser(ID);
 			break;
 		default:
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void Group_UI()
@@ -242,7 +242,7 @@ void Group_UI()
 
 void In_Grp_UI_First(int GID)
 {
-	char choice;
+	int choice;
 	do
 	{
 		system("clear");
@@ -250,38 +250,38 @@ void In_Grp_UI_First(int GID)
 		In_Grp_Ser(GID);
 		In_Grp_UI();
 		printf("输入(0-7):");
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			return;
 		}
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5' && choice != '6' && choice != '7')
+		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6 && choice != 7)
 		{
 			continue;
 		}
 
 		switch (choice)
 		{
-		case '1':
+		case 1:
 			Send_Msg_Grp_Ser(GID);
 			break;
-		case '2':
+		case 2:
 			Add_Manager_Ser(GID);
 			break;
-		case '3':
+		case 3:
 			Del_Manager_Ser(GID);
 			break;
-		case '4':
+		case 4:
 			Del_Member_Ser(GID);
 			break;
-		case '5':
+		case 5:
 			Manage_Grp_Apply_UI(GID);
 			break;
-		case '6':
+		case 6:
 			if (Dissolve_Ser(GID))
 				return;
 			break;
-		case '7':
+		case 7:
 			if (Quit_Ser(GID))
 				return;
 			break;
@@ -289,7 +289,7 @@ void In_Grp_UI_First(int GID)
 			cout << "啊？" << endl;
 			break;
 		}
-	} while (choice != '0');
+	} while (choice != 0);
 }
 
 void In_Grp_UI()
@@ -306,7 +306,7 @@ void Manage_Grp_Apply_UI(int GID) // 移到friend里
 		sleep(1);
 		return;
 	}
-	char choice;
+	int choice;
 	int num;
 	set<Message, MessageComparator> manage;
 	while (1)
@@ -324,8 +324,8 @@ void Manage_Grp_Apply_UI(int GID) // 移到friend里
 			m.toString();
 		}
 		cout << "1.逐个处理\n0.返回\n";
-		cin >> choice;
-		if (choice == '0')
+		choice = Get_Int();
+		if (!choice)
 		{
 			return;
 		}

@@ -6,14 +6,36 @@
 #include <list>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <iostream>
 using namespace std;
+
+int Get_Int()
+{
+    string str;
+    char *endptr;
+    int num;
+    while (1)
+    {
+        cin >> str;
+        num = strtol(str.c_str(), &endptr, 10);
+
+        if (*endptr != '\0')
+        {
+            cout << "你输得什么东西！嗯？\n再给你次机会：";
+        }
+        else
+        {
+            return num;
+        }
+    }
+}
 
 int Main_Menu_Ser_Register()
 {
     string account, password;
     int ID;
-    char flag;
+    int choice;
     while (1)
     {
         system("clear");
@@ -35,8 +57,8 @@ int Main_Menu_Ser_Register()
         {
             cout << "已注册" << endl
                  << "1.重新注册\n0.退出\n";
-            cin >> flag;
-            if (flag == '0')
+            choice = Get_Int();
+            if (!choice)
                 return 0;
         }
     }
@@ -97,18 +119,18 @@ void Friend_Ser(int ID)
 void Add_Frd_Ser(int ID)
 {
     int frdID;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> frdID;
+        frdID = Get_Int();
         if (frdID == ID)
         {
             cout << "你小子酒吧进酒吧是吧（添加自己)\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -132,8 +154,8 @@ void Add_Frd_Ser(int ID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -141,18 +163,18 @@ void Add_Frd_Ser(int ID)
 void Del_Frd_Ser(int ID)
 {
     int frdID;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> frdID;
+        frdID = Get_Int();
         if (frdID == ID)
         {
             cout << "你小子酒吧进酒吧是吧（删自己)\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -173,8 +195,8 @@ void Del_Frd_Ser(int ID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -183,18 +205,18 @@ void Send_Msg_Ser(UserBase usr)
 {
     int frdID;
     int num;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> frdID;
+        frdID = Get_Int();
         if (frdID == usr.ID)
         {
             cout << "你小子跟自己唠是吧\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -210,12 +232,13 @@ void Send_Msg_Ser(UserBase usr)
         if (num == 3)
             cout << "并无该好友\n";
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
-
     client::frdID = frdID;
+    system("clear");
+    cout << "聊天界面\n";
     client::Send(From_Frd(Get_frdChat, usr.ID, frdID));
     From_Json_Chat(client::Recv());
     string str;
@@ -230,7 +253,7 @@ void Send_Msg_Ser(UserBase usr)
         cout << "\033[1A\x1b[2K\r";
         Message msg(Sendmsg_Tofrd, usr.ID, usr.account, frdID, str, gettime());
         msg.toString();
-        client::Send(To_Json_Msg(msg)); //
+        client::Send(To_Json_Msg(msg)); // 在这里收回应是否把你屏蔽
         sigaction(SIGIO, &client::respond, 0);
     }
 }
@@ -238,18 +261,18 @@ void Send_Msg_Ser(UserBase usr)
 void Block_Frd_Ser(int ID)
 {
     int frdID;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> frdID;
+        frdID = Get_Int();
         if (frdID == ID)
         {
             cout << "你小子酒吧进酒吧是吧（屏蔽自己)\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -270,8 +293,8 @@ void Block_Frd_Ser(int ID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -279,7 +302,7 @@ void Block_Frd_Ser(int ID)
 void Search_Frd_Ser(int ID)
 {
     string account;
-    char choice;
+    int choice;
     int ans;
     while (1)
     {
@@ -295,8 +318,8 @@ void Search_Frd_Ser(int ID)
         }
         cout << "该用户不存在\n";
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -310,7 +333,7 @@ void Group_Ser(int ID)
 void New_Grp_Ser(int ID)
 {
     string name;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
@@ -327,8 +350,8 @@ void New_Grp_Ser(int ID)
         {
             cout << "已存在该名称" << endl
                  << "1.重新建\n0.退出\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
         }
     }
@@ -337,12 +360,12 @@ void New_Grp_Ser(int ID)
 void Add_Grp_Ser(int ID)
 {
     int GID, ans;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "输入申请要加入的群：";
-        cin >> GID;
+        GID = Get_Int();
         client::Send(From_Grp(Send_Add_Grp, ID, GID));
         ans = client::RecvInt();
         if (!ans)
@@ -360,8 +383,8 @@ void Add_Grp_Ser(int ID)
             cout << "已加入该群" << endl;
         }
         cout << "1.重新输入\n0.退出\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -369,12 +392,12 @@ void Add_Grp_Ser(int ID)
 int Choose_Grp_Ser(int ID)
 {
     int GID;
-    char choice;
+    int choice;
     while (1)
     {
         system("clear");
         cout << "GID：";
-        cin >> GID;
+        GID = Get_Int();
         client::Send(From_Grp(Choose_Grp, ID, GID));
         if ((client::RecvInt()))
         {
@@ -384,8 +407,8 @@ int Choose_Grp_Ser(int ID)
         {
             cout << "未加入该群" << endl
                  << "1.重新输入\n0.退出\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return 0;
         }
     }
@@ -401,7 +424,7 @@ void Add_Manager_Ser(int GID)
 {
     system("clear");
     int otherUsrID;
-    char choice;
+    int choice;
     if (Check_Authority_Ser(GID) != 2)
     {
         cout << "你什么身份！？\n";
@@ -412,13 +435,13 @@ void Add_Manager_Ser(int GID)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> otherUsrID;
+        otherUsrID = Get_Int();
         if (otherUsrID == client::ID)
         {
             cout << "第一次见给自己降权的\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -442,8 +465,8 @@ void Add_Manager_Ser(int GID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -452,7 +475,7 @@ void Del_Manager_Ser(int GID)
 {
     system("clear");
     int otherUsrID;
-    char choice;
+    int choice;
     if (Check_Authority_Ser(GID) != 2)
     {
         cout << "你什么身份！？\n";
@@ -463,13 +486,13 @@ void Del_Manager_Ser(int GID)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> otherUsrID;
+        otherUsrID = Get_Int();
         if (otherUsrID == client::ID)
         {
             cout << "第一次见给自己降权的\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -493,8 +516,8 @@ void Del_Manager_Ser(int GID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -514,18 +537,18 @@ set<Message, MessageComparator> Get_Grp_ManageList_Ser(int GID)
 void Manage_Apply_Ser(int ID, set<Message, MessageComparator> manage)
 {
     int num;
-    char choice;
+    int choice;
     for (auto &m : manage)
     {
         system("clear");
         m.toString();
         cout << "1.同意\n0.拒绝\n";
-        cin >> num;
+        num = Get_Int();
         client::Send(From_Manage(m.event + 1, ID, m.SendID, num)); // 也可以加上处理用户的信息
         sigaction(SIGIO, &client::respond, 0);
         cout << "1.继续处理\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             break;
     }
 }
@@ -537,7 +560,7 @@ bool Quit_Ser(int GID)
     {
         system("clear");
         cout << "1.确认\n0.后悔\n";
-        cin >> num;
+        num = Get_Int();
         if (num != 1 && num != 0)
         {
             continue;
@@ -561,7 +584,7 @@ void Send_Msg_Grp_Ser(int GID)
     system("clear");
     cout << "群聊界面\n";
     int num;
-    char choice;
+    int choice;
     client::grpID = GID;
     client::Send(From_Grp(Get_grpChat, client::ID, GID));
     From_Json_Chat(client::Recv());
@@ -587,7 +610,7 @@ void Del_Member_Ser(int GID)
 
     system("clear");
     int otherUsrID;
-    char choice;
+    int choice;
     if (Check_Authority_Ser(GID) == 0)
     {
         cout << "你什么身份！？\n";
@@ -598,13 +621,13 @@ void Del_Member_Ser(int GID)
     {
         system("clear");
         cout << "对方ID:";
-        cin >> otherUsrID;
+        otherUsrID = Get_Int();
         if (otherUsrID == client::ID)
         {
             cout << "把计算机放入垃圾桶是吧你\n";
             cout << "1.重新输入\n0.返回\n";
-            cin >> choice;
-            if (choice == '0')
+            choice = Get_Int();
+            if (!choice)
                 return;
             else
                 continue;
@@ -628,8 +651,8 @@ void Del_Member_Ser(int GID)
             break;
         }
         cout << "1.重新输入\n0.返回\n";
-        cin >> choice;
-        if (choice == '0')
+        choice = Get_Int();
+        if (!choice)
             return;
     }
 }
@@ -641,7 +664,7 @@ bool Dissolve_Ser(int GID)
     {
         system("clear");
         cout << "1.确认\n0.后悔\n";
-        cin >> num;
+        num = Get_Int();
         if (num != 1 && num != 0)
         {
             continue;

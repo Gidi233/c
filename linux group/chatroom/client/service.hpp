@@ -5,6 +5,8 @@
 #include "../Message.hpp"
 #include <list>
 
+int Get_Int();
+
 int Main_Menu_Ser_Register();
 int Main_Menu_Ser_Login();
 
