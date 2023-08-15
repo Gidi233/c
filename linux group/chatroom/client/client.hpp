@@ -20,7 +20,7 @@ public:
     ~client();
 
     static void Send(string jso);
-    static int RecvInt(); // 只有一个recv 收的是json 函数分为num str
+    static long long RecvInt();
     static string Recv();
     static string Recv_Online();
 };

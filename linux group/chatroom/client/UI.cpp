@@ -112,10 +112,10 @@ void User_UI_First(int ID) // 都改成引用
 
 void User_UI()
 {
-	printf("1.好友\n2.群组\n9.注销\n0.退出\n");
+	printf("1.好友\n2.群组\n0.退出\n"); // 9.注销\n
 }
 
-void Manage_Frd_Apply_UI(int ID) // 移到friend里
+void Manage_Frd_Apply_UI(int ID)
 {
 	int choice;
 	int num;
@@ -153,13 +153,13 @@ void Friend_UI_First(UserBase usr)
 		cout << "好友界面\n";
 		Friend_Ser(usr.ID);
 		Friend_UI();
-		printf("输入(0-2):");
+		printf("输入(0-7):");
 		choice = Get_Int();
 		if (!choice)
 		{
 			return;
 		}
-		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6)
+		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6 && choice != 7)
 		{
 			continue;
 		}
@@ -184,6 +184,9 @@ void Friend_UI_First(UserBase usr)
 		case 6:
 			Manage_Frd_Apply_UI(usr.ID);
 			break;
+		case 7:
+			Sendfile_Ser(usr.ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -193,7 +196,7 @@ void Friend_UI_First(UserBase usr)
 
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n6.处理好友请求\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n6.处理好友请求\n7.发送文件\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

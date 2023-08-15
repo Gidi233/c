@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <list>
 #include "user.hpp"
+#include "File.hpp"
 #include "event.hpp"
 #include "Message.hpp"
 #include "group.hpp"
@@ -12,7 +13,7 @@
 using std::string, nlohmann::json;
 
 string Get_Type(string jso);
-int Get_Num(string jso);
+long long Get_Num(string jso);
 void From_Json_Chat(string jso);
 string From_Main(int opt, string account, string password);
 string From_Self(int opt, int ID);
@@ -20,6 +21,7 @@ string From_Manage(int opt, int ID, int otherUsrID, int num);
 
 void From_Json_Frdlist(string jso);
 string From_Frd(int opt, int ID, int frdID);
+string From_Frd_File(int opt, int ID, int frdID, string filename, size_t size, string filehash);
 string From_Frd_Account(int opt, string otherUsr_account);
 UserTotal From_Json_UserTotal(string j);
 UserBase From_Json_UserBase(string jso);
@@ -32,7 +34,7 @@ void From_Json_Grplist(string jso);
 void From_Json_Grp_Member_List(string jso);
 
 string Set_Type(string jso, bool flag);
-string Set_Num(int num);
+string Set_Num(long long num);
 string To_Json_User(UserTotal usr);
 json To_Json_MsgList(list<Message> qu);
 list<Message> From_Json_MsgList(json j);
@@ -45,6 +47,12 @@ Event getopt(const string &jso);
 string To_UserBase(string jso);
 string Change_isLogin(string jso);
 
+File From_Json_File(string jso);
+string To_Json_File(File f);
+list<File> From_Json_FileList(json j);
+json To_Json_FileList(list<File> qu);
+
+void Get_File(const string &jso, string *filename, size_t *size, string *filehash);
 void Get_Info(const string &jso, int *ID, string *account, string *password, int *otherUsrID, string *otherUsr_account, int *grpID, string *grp_account);
 string Add_Friend(int ID, string json, int chatID);
 Message From_Json_Msg(string jso);

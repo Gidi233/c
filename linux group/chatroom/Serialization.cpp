@@ -21,7 +21,7 @@ string Get_Type(string jso)
         return jso; // 回应
 }
 
-int Get_Num(string jso)
+long long Get_Num(string jso)
 {
     json j = json::parse(jso);
     return j["num"]; // 回应
@@ -80,6 +80,18 @@ string From_Frd(int opt, int ID, int otherUsrID)
         {"event", opt},
         {"ID", ID},
         {"otherUsrID", otherUsrID}};
+    return j.dump();
+}
+
+string From_Frd_File(int opt, int ID, int otherUsrID, string filename, size_t size, string filehash)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"otherUsrID", otherUsrID},
+        {"filename", filename},
+        {"size", size},
+        {"filehash", filehash}};
     return j.dump();
 }
 
@@ -201,6 +213,17 @@ json To_Json_MsgList(list<Message> qu)
     return que;
 }
 
+json To_Json_FileList(list<File> qu)
+{
+    json que;
+    for (const auto &q : qu)
+    {
+        json j = json::parse(To_Json_File(q));
+        que.push_back(j);
+    }
+    return que;
+}
+
 string To_Json_User(UserTotal usr)
 {
     json frd_map(usr.frd);
@@ -208,6 +231,7 @@ string To_Json_User(UserTotal usr)
     json block(usr.frd_Block);
     json notice = To_Json_MsgList(usr.notice);
     json manage = To_Json_Manage_List(usr.manage);
+    json file = To_Json_FileList(usr.file);
     json j = {
         {"ID", usr.ID},
         {"account", usr.account},
@@ -217,7 +241,8 @@ string To_Json_User(UserTotal usr)
         {"frd_block", block},
         {"grp", grp_map},
         {"notice", notice},
-        {"manage", manage}};
+        {"manage", manage},
+        {"file", file}};
     return j.dump();
 }
 
@@ -267,12 +292,23 @@ list<Message> From_Json_MsgList(json j)
     return li;
 }
 
+list<File> From_Json_FileList(json j)
+{
+    list<File> li;
+    for (const auto &l : j)
+    {
+        li.push_back(File(l["sendID"], l["send_name"], l["filename"], l["size"], l["filehash"]));
+    }
+    return li;
+}
+
 UserTotal From_Json_UserTotal(string jso)
 {
     json j = json::parse(jso);
     list<Message> notice = From_Json_MsgList(j["notice"]);
+    list<File> file = From_Json_FileList(j["file"]);
     set<Message, MessageComparator> manage = From_Json_Manage_List(j["manage"]);
-    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_block"], j["grp"], notice, manage);
+    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_block"], j["grp"], notice, manage, file);
 }
 
 UserBase From_Json_UserBase(string jso)
@@ -305,7 +341,7 @@ string Set_Type(string jso, bool type)
     return j.dump();
 }
 
-string Set_Num(int num)
+string Set_Num(long long num)
 {
     json j{
         {"num", num}};
@@ -329,6 +365,17 @@ void Get_Info(const string &jso, int *ID, string *account, string *password, int
         *grpID = j.at("grpID");
     if (grp_account != nullptr)
         *grp_account = j.at("grp_account");
+}
+
+void Get_File(const string &jso, string *filename, size_t *size, string *filehash)
+{
+    json j = json::parse(jso);
+    if (filename != nullptr)
+        *filename = j.at("filename");
+    if (size != nullptr)
+        *size = j.at("size");
+    if (filehash != nullptr)
+        *filehash = j.at("filehash");
 }
 
 string To_UserBase(string jso)
@@ -393,6 +440,23 @@ string To_Json_Msg(Message msg)
     j["str"] = msg.Str;
     j["time"] = msg.Time;
     j["num"] = msg.num;
+    return j.dump();
+}
+
+File From_Json_File(string jso)
+{
+    json j = json::parse(jso);
+    return File(j["sendID"], j["send_name"], j["filename"], j["size"], j["filehash"]);
+}
+
+string To_Json_File(File f)
+{
+    json j;
+    j["sendID"] = f.sendID;
+    j["send_name"] = f.send_name;
+    j["filename"] = f.filename;
+    j["size"] = f.size;
+    j["filehash"] = f.filehash;
     return j.dump();
 }
 

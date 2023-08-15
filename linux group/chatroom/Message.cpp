@@ -97,6 +97,9 @@ void Message::toString() const
     case Dissolve_Grp:
         cout << "该群:" << Receive_Account << "(GID:" << ReceiveID << ")已解散    " << Time << endl;
         break;
+    case Sendfile:
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一个文件 " << Time << endl;
+        break;
     default:
         break;
     }

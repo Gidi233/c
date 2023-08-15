@@ -41,7 +41,7 @@ client::client()
 
         close(fd);
     }
-    cfd = fd;
+    cfd = fd; //???
     freeaddrinfo(result);
 
     sigemptyset(&ign.sa_mask);
@@ -69,10 +69,10 @@ void client::Send(string jso)
     memcpy(buffer + 4, jso.c_str(), numRead);
     send(cfd, buffer, numRead + 4, 0);
     // cout << send(cfd, buffer, numRead + 4, 0) << endl;
-    delete buffer;
+    delete[] buffer;
 }
 
-int client::RecvInt()
+long long client::RecvInt()
 {
     return Get_Num(Recv());
 }
@@ -84,7 +84,7 @@ string client::Recv()
     char *buffer = new char[reqLen];
     recv(cfd, buffer, reqLen, 0);
     string res(buffer, reqLen);
-    delete buffer;
+    delete[] buffer;
     string ans = Get_Type(res);    // 在这里检测是实时信息还是回应，实时消息再调Recv
     sigaction(SIGIO, &respond, 0); // 重复调用，改成迭代？
     return ans;
@@ -97,7 +97,7 @@ string client::Recv_Online()
     char *buffer = new char[reqLen];
     recv(cfd, buffer, reqLen, 0);
     string res(buffer, reqLen);
-    delete buffer;
+    delete[] buffer;
     return res;
 }
 

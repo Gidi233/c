@@ -4,6 +4,7 @@
 #include <set>
 #include <unordered_map>
 #include <iostream>
+#include "File.hpp"
 #include "Message.hpp"
 using namespace std;
 
@@ -13,7 +14,7 @@ public:
     int ID = 0;
     string account;
     string password;
-    bool islogin; // protect?
+    bool islogin;
 
     UserBase();
     UserBase(string account1, string password1);
@@ -30,12 +31,13 @@ public:
     unordered_map<int, bool> frd_Block;
     unordered_map<int, int> grp;
     list<Message> notice;
+    list<File> file;
     set<Message, MessageComparator> manage;
 
     // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
     UserTotal();
     UserTotal(const UserBase &base);
-    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, bool> frd_Block, unordered_map<int, int> grp, list<Message> notice, set<Message, MessageComparator> manage);
+    UserTotal(const UserBase &base, unordered_map<int, int> frd, unordered_map<int, bool> frd_Block, unordered_map<int, int> grp, list<Message> notice, set<Message, MessageComparator> manage, list<File> file);
     ~UserTotal();
 };
 

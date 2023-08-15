@@ -113,7 +113,7 @@ void server::Wait_In()
         }
         for (int i = 0; i < num; i++)
         {
-            if (evget[i].events == EPOLLIN)
+            if (evget[i].events == EPOLLIN) // 不应该是&吗
             {
                 // Getfd(evget[i].data.fd);
                 pool.submit(Getfd, &evget[i].data.fd); // 直接传值的话有这个问题：error: cannot bind packed field ‘((server*)this)->server::evget[i].epoll_event::data.epoll_data::fd’ to ‘int&’

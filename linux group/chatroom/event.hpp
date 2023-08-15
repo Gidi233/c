@@ -32,6 +32,8 @@ enum Event
     Get_grpChat,
     Sendmsg_Togrp,
     Dissolve_Grp,
+    Sendfile,
+    Recvfile
 };
 
 #endif

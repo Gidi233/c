@@ -3,6 +3,8 @@
 #include "service.hpp"
 #include "../Message.hpp"
 #include "../event.hpp"
+#include <sys/stat.h>
+#include <sys/sendfile.h>
 #include <list>
 #include <unistd.h>
 #include <signal.h>
@@ -256,6 +258,126 @@ void Send_Msg_Ser(UserBase usr)
         client::Send(To_Json_Msg(msg)); // 在这里收回应是否把你屏蔽
         sigaction(SIGIO, &client::respond, 0);
     }
+
+    //     class ExitException{};
+    // void signalHandler(int signum){
+    //   throw ExitException();
+    // }
+
+    // int main() {
+
+    //   std::signal(SIGINT, signalHandler);
+
+    //   try {
+    //     while(1) {
+    //       //循环逻辑
+    //     }
+    //   }catch(ExitException) {
+    //     //跳出循环
+    //   }
+
+    //     jmp_buf env; // 保存跳转环境
+    // void signalHandler(int signum) {
+    //   longjmp(env, 1); // 跳转回 env 点
+    // }
+
+    // int main() {
+
+    //   std::signal(SIGINT, signalHandler);
+
+    //   if(setjmp(env) == 0) { // 第一次返回 0
+    //     while(1) {
+    //       // 循环体
+    //     }
+    //   }
+    //   // longjmp 后再次返回到这里,但返回值不为 0,所以退出循环
+}
+
+void Sendfile_Ser(int ID)
+{
+    int frdID;
+    int num;
+    int choice;
+    while (1)
+    {
+        system("clear");
+        cout << "对方ID:";
+        frdID = Get_Int();
+        if (frdID == ID)
+        {
+            cout << "你小子给自己发是吧\n";
+            cout << "1.重新输入\n0.返回\n";
+            choice = Get_Int();
+            if (!choice)
+                return;
+            else
+                continue;
+        }
+        client::Send(From_Frd(Able_To_Send_Frd, ID, frdID));
+        num = client::RecvInt();
+        if (!num)
+            break;
+        if (num == 1)
+            cout << "你已將對方屏蔽\n";
+        if (num == 2)
+            cout << "對方已將你屏蔽\n";
+        if (num == 3)
+            cout << "并无该好友\n";
+        cout << "1.重新输入\n0.返回\n";
+        choice = Get_Int();
+        if (!choice)
+            return;
+    }
+
+    struct stat s;
+    string filename;
+    while (1)
+    {
+        system("clear");
+        cout << "输入要发送的文件名：";
+        cin >> filename;
+        stat(filename.c_str(), &s);
+        if (!S_ISREG(s.st_mode))
+        {
+            cout << "非常规文件" << endl;
+            sleep(1);
+            continue;
+        }
+        else
+            break;
+    }
+    client::Send(From_Frd_File(Sendfile, ID, frdID, filename, s.st_size, getFileHash(filename)));
+    off_t offset = 0;
+    if ((offset = client::RecvInt()) == s.st_size)
+    {
+        cout << "发送成功" << endl;
+        sleep(1);
+        return;
+    }
+    int fd;
+    fd = open(filename.c_str(), O_RDONLY);
+
+    // while (1)
+    // {
+
+    //     off_t offset = client::RecvInt();
+    //     if (offset == size)
+    //     {
+    //         sleep(1);
+    //         break;
+    //     }
+    //     cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
+    // }
+    sigaction(SIGIO, &client::ign, 0);
+    cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
+    if (client::RecvInt() == s.st_size)
+    {
+        cout << "发送成功" << endl;
+    }
+    else
+        cout << "发送失败" << endl;
+    sleep(1);
+    close(fd);
 }
 
 void Block_Frd_Ser(int ID)
