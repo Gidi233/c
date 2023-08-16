@@ -17,6 +17,8 @@ void Add_Frd_Ser(int ID);
 void Del_Frd_Ser(int ID);
 void Send_Msg_Ser(UserBase usr);
 void Sendfile_Ser(int ID);
+list<File> Recvfile_List_Ser(int ID);
+void Recvfile_Ser(list<File>);
 void Block_Frd_Ser(int ID);
 void Search_Frd_Ser(int ID);
 set<Message, MessageComparator> Get_Frd_ManageList_Ser(int ID);

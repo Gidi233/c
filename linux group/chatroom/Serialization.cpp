@@ -27,6 +27,12 @@ long long Get_Num(string jso)
     return j["num"]; // 回应
 }
 
+long Get_Offset(string jso)
+{
+    json j = json::parse(jso);
+    return j["offset"];
+}
+
 string From_Main(int opt, string account, string password)
 {
     json j = {
@@ -41,6 +47,17 @@ string From_Self(int opt, int ID)
     json j = {
         {"event", opt},
         {"ID", ID}};
+
+    return j.dump();
+}
+
+string From_File(int opt, int ID, int num, long offset)
+{
+    json j = {
+        {"event", opt},
+        {"ID", ID},
+        {"num", num},
+        {"offset", offset}};
 
     return j.dump();
 }
@@ -302,6 +319,20 @@ list<File> From_Json_FileList(json j)
     return li;
 }
 
+string Get_File(string jso)
+{
+    json j = json::parse(jso);
+    json n;
+    n["file"] = j["file"];
+    return n.dump();
+}
+
+json To_File(string jso)
+{
+    json j = json::parse(jso);
+    return j["file"];
+}
+
 UserTotal From_Json_UserTotal(string jso)
 {
     json j = json::parse(jso);
@@ -367,7 +398,7 @@ void Get_Info(const string &jso, int *ID, string *account, string *password, int
         *grp_account = j.at("grp_account");
 }
 
-void Get_File(const string &jso, string *filename, size_t *size, string *filehash)
+void Get_Fileinfo(const string &jso, string *filename, size_t *size, string *filehash)
 {
     json j = json::parse(jso);
     if (filename != nullptr)

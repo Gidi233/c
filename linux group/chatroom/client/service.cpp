@@ -10,7 +10,8 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
+// using namespace std;
+using std::string, std::cout, std::cin, std::endl;
 
 int Get_Int()
 {
@@ -378,6 +379,90 @@ void Sendfile_Ser(int ID)
         cout << "发送失败" << endl;
     sleep(1);
     close(fd);
+}
+
+list<File> Recvfile_List_Ser(int ID)
+{
+    client::Send(From_Self(File_List, ID));
+    return From_Json_FileList(To_File(client::Recv()));
+}
+
+void Recvfile_Ser(list<File> file)
+{
+    int choice;
+    while (1)
+    {
+        printf("输入第几个:");
+        choice = Get_Int();
+        if (choice < 0 || choice >= file.size())
+        {
+            cout << "？\n";
+            continue;
+        }
+        break;
+    }
+    off_t offset;
+    auto it = std::next(file.begin(), choice);
+    File f = *it;
+    struct stat s;
+    int fd;
+    bool set = 1;
+
+    if (stat(f.filename.c_str(), &s) == -1)
+    {
+        offset = 0;
+        fd = open(f.filename.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
+    }
+    else
+    {
+        offset = s.st_size;
+        if (offset == f.size)
+        {
+            cout << "接收完成" << endl;
+            sleep(1);
+            return;
+        }
+        fd = open(f.filename.c_str(), O_WRONLY | O_APPEND, 0660);
+    }
+
+    client::Send(From_File(Recvfile, client::ID, choice, offset));
+
+    size_t this_size = f.size - offset;
+    char *buff = new char[this_size];
+    size_t this_offset = 0;
+
+    while (this_offset < this_size)
+    {
+        int received = recv(client::cfd, buff + this_offset, this_size, 0);
+        if (received == 0)
+        {
+            // 发生错误或连接关闭
+            cout << "连接断开" << endl;
+            break;
+        }
+        if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //&& set
+        {
+            continue;
+        }
+        // set = 0;
+        this_offset += received;
+        cout << this_offset << endl;
+    }
+    sigaction(SIGIO, &client::respond, 0);
+    this_offset = write(fd, buff, this_size);
+    offset += this_offset;
+    close(fd);
+    // chmod(filehash.c_str(), 0660);
+    delete[] buff;
+    cout << offset << endl;
+    if (offset == f.size)
+    {
+        cout << "接收完成" << endl;
+    }
+    else
+        cout << "接收失败" << endl;
+    sleep(1);
+    return;
 }
 
 void Block_Frd_Ser(int ID)

@@ -33,7 +33,8 @@ enum Event
     Sendmsg_Togrp,
     Dissolve_Grp,
     Sendfile,
-    Recvfile
+    Recvfile,
+    File_List,
 };
 
 #endif

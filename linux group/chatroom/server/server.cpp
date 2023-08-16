@@ -67,6 +67,60 @@ server::server()
     epfd = epoll_create(EPOLL_SIZE);
 }
 
+server::server(char *addr, char *port)
+{
+
+    memset(&hints, 0, sizeof(addrinfo));
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = AF_UNSPEC;                  /*IPv4 or IPv6 */
+    hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV; // 通配地址
+    /* Wildcard IP address; service name is numeric */
+
+    if (getaddrinfo(addr, port, &hints, &result) != 0)
+        std::cout << strerror(errno);
+
+    optval = 1;
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        lfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (lfd == -1)
+            continue; /* On error, try next address */
+
+        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1)
+            std::cout << strerror(errno);
+        if (setsockopt(lfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+        {
+            perror("setsockopt error");
+            exit(1);
+        }
+        if (setsockopt(lfd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0)
+        {
+            perror("setsockopt error");
+            exit(1);
+        }
+        // 重用ip地址
+        if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
+            break; /* Success */
+
+        /* bind() failed: close this socket and try next address */
+
+        close(lfd);
+    }
+
+    if (rp == NULL)
+        cout << strerror(errno);
+
+    if (listen(lfd, 100) == -1)
+        cout << strerror(errno);
+
+    freeaddrinfo(result);
+
+    epfd = epoll_create(EPOLL_SIZE);
+}
+
 server::~server()
 {
     Database::Close(); // 关闭数据库

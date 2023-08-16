@@ -11,7 +11,6 @@ using namespace std;
 
 void Main_UI_First()
 {
-	client cil;
 	bool flag;
 	int choice;
 	int ID;
@@ -153,13 +152,13 @@ void Friend_UI_First(UserBase usr)
 		cout << "好友界面\n";
 		Friend_Ser(usr.ID);
 		Friend_UI();
-		printf("输入(0-7):");
+		printf("输入(0-8):");
 		choice = Get_Int();
 		if (!choice)
 		{
 			return;
 		}
-		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6 && choice != 7)
+		if (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6 && choice != 7 && choice != 8)
 		{
 			continue;
 		}
@@ -187,6 +186,9 @@ void Friend_UI_First(UserBase usr)
 		case 7:
 			Sendfile_Ser(usr.ID);
 			break;
+		case 8:
+			Recvfile_UI(usr.ID);
+			break;
 		default:
 			cout << "啊？" << endl;
 			break;
@@ -194,9 +196,43 @@ void Friend_UI_First(UserBase usr)
 	} while (choice != 0);
 }
 
+void Recvfile_UI(int ID)
+{
+	int GID;
+	int choice;
+	list<File> file;
+	do
+	{
+		int i = 0;
+		system("clear");
+		file = Recvfile_List_Ser(ID);
+		if (file.empty())
+		{
+			cout << "当前无文件" << endl;
+			sleep(1);
+			return;
+		}
+		cout << "全部文件\n";
+		for (const auto &f : file)
+		{
+			cout << i++ << endl;
+			f.toString();
+			cout << "==================================================\n";
+		}
+		cout << "1.选择接收\n0.返回\n";
+		printf("输入(0-1):");
+		choice = Get_Int();
+		if (!choice)
+		{
+			return;
+		}
+		Recvfile_Ser(file);
+	} while (1);
+}
+
 void Friend_UI()
 {
-	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n6.处理好友请求\n7.发送文件\n0.退出\n");
+	printf("1.加好友\n2.删好友\n3.选择好友聊天(输入\\q退出)\n4.改变屏蔽状态\n5.搜索账户对应ID\n6.处理好友请求\n7.发送文件\n8.接收文件\n0.退出\n");
 }
 void Group_UI_First(int ID)
 {

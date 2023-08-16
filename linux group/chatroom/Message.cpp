@@ -100,6 +100,9 @@ void Message::toString() const
     case Sendfile:
         cout << "用户:" << Send_Account << "(ID:" << SendID << ")向你发送了一个文件 " << Time << endl;
         break;
+    case Recvfile:
+        cout << "用户:" << Send_Account << "(ID:" << SendID << ")接收了你发送的文件 " << Time << endl;
+        break;
     default:
         break;
     }

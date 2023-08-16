@@ -22,3 +22,8 @@ std::string getFileHash(const std::string &filename)
     std::string hash_str = std::to_string(hasher(content));
     return hash_str;
 }
+
+void File::toString() const
+{
+    cout << "文件名:" << filename << "大小:" << size / 1048576 << "MB\n发送用户:" << send_name << "(ID:" << sendID << ")" << endl;
+}

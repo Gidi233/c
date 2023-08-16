@@ -53,6 +53,56 @@ client::client()
     fcntl(cfd, F_SETOWN, getpid());
     int flags = fcntl(cfd, F_GETFL);
     fcntl(cfd, F_SETFL, flags | O_ASYNC);
+    // fcntl(cfd, F_NOTIFY, DN_ACCESS | DN_CREATE | DN_MULTISHOT);
+}
+
+client::client(char *addr, char *port)
+{
+    int fd;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
+    hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_NUMERICSERV; //
+
+    getaddrinfo(addr, port, &hints, &result);
+
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+
+        fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (fd == -1)
+            continue; /* On error, try next address */
+
+        if (connect(fd, rp->ai_addr, rp->ai_addrlen) != -1)
+            break; /* Success */
+
+        /* Connect failed: close this socket and try next address */
+
+        close(fd);
+    }
+    if (rp == NULL)
+    {
+        cout << "输的什么东西";
+        sleep(1);
+        exit(1);
+    }
+
+    cfd = fd; //???
+    freeaddrinfo(result);
+
+    sigemptyset(&ign.sa_mask);
+    ign.sa_handler = SIG_IGN;
+    sigemptyset(&respond.sa_mask);
+    respond.sa_flags = SA_RESTART;
+    respond.sa_handler = sigioHandler;
+    sigaction(SIGIO, &ign, 0);
+    fcntl(cfd, F_SETOWN, getpid());
+    int flags = fcntl(cfd, F_GETFL);
+    fcntl(cfd, F_SETFL, flags | O_ASYNC);
+    // fcntl(cfd, F_NOTIFY, DN_ACCESS | DN_CREATE | DN_MULTISHOT);
 }
 
 client::~client()

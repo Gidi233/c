@@ -17,6 +17,7 @@ public:
     static struct sigaction ign, respond;
 
     client();
+    client(char *, char *);
     ~client();
 
     static void Send(string jso);

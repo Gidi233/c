@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
-using std::string, std::cout;
+using std::string, std::cout, std::endl;
 // #define _FILE_OFFSET_BITS 64
 class File
 {
@@ -16,6 +16,8 @@ public:
 
     File();
     File(int sendID, string send_name, string filename, size_t size, string filehash);
+
+    void toString() const;
 };
 
 std::string getFileHash(const std::string &filename);

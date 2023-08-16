@@ -7,6 +7,8 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/sendfile.h>
 #include <sys/ioctl.h>
 #include <iostream>
 using std::string, std::cout, std::cin, std::endl;
@@ -18,14 +20,16 @@ void Getfd(int *sfd)
     bool set = 1;
     string jso = Recv(*sfd);
     string account, password, otherUsr_account, grp_account, filename, filehash;
-    size_t size, offset = 0;
+    size_t size, this_size, offset = 0, this_offset = 0;
     int ID, otherUsrID, chatID, num, grpID, flags, n;
     int fd;
     UserTotal usr, opposite_usr;
     File file;
     Message msg;
     Group grp;
-    // cout << "得到事件：" << getopt(jso) << endl;
+    // cout << "得到事件：" << endl;
+    // cout << jso << endl;
+    // cout << getopt(jso) << endl;
     switch (getopt(jso))
     {
 
@@ -215,21 +219,17 @@ void Getfd(int *sfd)
 
     case Sendfile:
         Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
-        Get_File(jso, &filename, &size, &filehash);
+        Get_Fileinfo(jso, &filename, &size, &filehash);
         usr = From_Json_UserTotal(Database::User_Out(ID));
         opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
         file = File(ID, usr.account, filename, size, filehash);
-        opposite_usr.file.emplace_front(file);
-        Database::User_In(otherUsrID, To_Json_User(opposite_usr));
-        msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
-        Relay_To_User(otherUsrID, msg);
 
         if (!Database::File_Exist(filehash)) // 其实可以直接检测文件对吧
         {
             Database::File_In(filehash, 0);
             offset = 0;
             SendInt(*sfd, 0);
-            fd = open(filehash.c_str(), O_WRONLY | O_CREAT); //| O_EXCL
+            fd = open(filehash.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
         }
         else
         {
@@ -237,30 +237,38 @@ void Getfd(int *sfd)
             SendInt(*sfd, offset);
             if (offset == size)
             {
+                opposite_usr.file.emplace_back(file);
+                Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+                msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
+                Relay_To_User(otherUsrID, msg);
                 break;
             }
-            fd = open(filehash.c_str(), O_WRONLY | O_APPEND);
+            fd = open(filehash.c_str(), O_WRONLY | O_APPEND, 0660);
         }
 
-        buff = new char[size];
+        this_size = size - offset;
+        buff = new char[this_size];
+        this_offset = 0;
 
-        while (offset < size)
+        while (this_offset < this_size)
         {
-            int received = recv(*sfd, buff + offset, size - offset, 0);
+            int received = recv(*sfd, buff + this_offset, this_size, 0);
             if (received == 0)
             {
                 // 发生错误或连接关闭
                 cout << "连接断开" << endl;
                 break;
             }
-            if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK)))
+            if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //&& set
             {
                 continue;
             }
-            offset += received;
+            // set = 0;
+            this_offset += received;
+            cout << this_offset << endl;
         }
-        offset = write(fd, buff, size);
-
+        this_offset = write(fd, buff, this_size);
+        offset += this_offset;
         // while (offset < size)
         // {
         //     memset(buf, 0, sizeof(buf));
@@ -285,14 +293,54 @@ void Getfd(int *sfd)
         //     offset += write(fd, buf, n);
         //     cout << offset << endl;
         // }
+        close(fd);
+        // chmod(filehash.c_str(), 0660);
+        delete[] buff;
         cout << offset << endl;
 
         SendInt(*sfd, offset);
-
         Database::File_In(filehash, offset);
-        close(fd);
-        delete[] buff;
+
+        if (offset == size)
+        {
+            opposite_usr.file.emplace_back(file);
+            Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+            msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
+            Relay_To_User(otherUsrID, msg);
+            break;
+        }
         break;
+
+    case File_List:
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); //
+        Send(*sfd, Get_File(Database::User_Out(ID)), 0);
+        cout << "返回用户" << ID << "文件信息\n";
+        break;
+
+    case Recvfile:
+    {
+        Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        num = Get_Num(jso);
+        off_t offset = Get_Offset(jso);
+        usr = From_Json_UserTotal(Database::User_Out(ID));
+        auto it = std::next(usr.file.begin(), num);
+        file = *it;
+        int fd = open(file.filehash.c_str(), O_RDONLY);
+        while (offset < file.size)
+            cout << sendfile(*sfd, fd, &offset, file.size) << endl;
+        if (offset == file.size)
+        {
+            cout << "发送成功" << endl;
+
+            msg = Message(Recvfile, ID, usr.account, file.sendID, gettime());
+            Relay_To_User(file.sendID, msg);
+        }
+        else
+            cout << "发送失败" << endl;
+        close(fd);
+    }
+
+    break;
 
     case Sendmsg_Tofrd:
         msg = From_Json_Msg(jso);
