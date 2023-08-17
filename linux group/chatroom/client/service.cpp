@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/sendfile.h>
 #include <list>
+#include <termios.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@ int Get_Int()
     int num;
     while (1)
     {
-        cin >> str;
+        str = Scan();
         num = strtol(str.c_str(), &endptr, 10);
 
         if (*endptr != '\0')
@@ -36,26 +37,27 @@ int Get_Int()
 
 string Scan()
 {
-    // std::ios::iostate oldState = std::cin.rdstate();
+    int stdin_fd = fileno(stdin);
 
-    // std::string input;
-    // while (1)
-    // {
+    // 保存当前的终端设置
+    struct termios old_term;
+    tcgetattr(stdin_fd, &old_term);
 
-    //     std::cin >> input;
+    // 创建一个新的终端设置副本
+    struct termios new_term = old_term;
 
-    //     // 检查EOF
-    //     if (std::cin.fail())
-    //     {
-    //         // 还原flags
-    //         std::cin.clear(oldState);
-    //         continue;
-    //     }
-    //     break;
-    // }
+    // 禁用Ctrl+D（EOF）字符的特殊行为
+    new_term.c_cc[VEOF] = 0;
 
-    // // 其他处理逻辑
-    // return input;
+    // 将新的终端设置应用到标准输入
+    tcsetattr(stdin_fd, TCSANOW, &new_term);
+
+    // 读取用户输入
+    std::string input;
+    std::getline(std::cin, input);
+    // 恢复原始的终端设置
+    tcsetattr(stdin_fd, TCSANOW, &old_term);
+    return input;
 }
 
 int Main_Menu_Ser_Register()
@@ -67,9 +69,9 @@ int Main_Menu_Ser_Register()
     {
         system("clear");
         cout << "账户：";
-        cin >> account;
+        account = Scan();
         cout << "密码：";
-        cin >> password;
+        password = Scan();
         // 加个再次输入密码
         client::Send(From_Main(Register, account, password));
         if ((ID = client::RecvInt()))
@@ -100,9 +102,9 @@ int Main_Menu_Ser_Login()
     {
         // system("clear");
         cout << "账户：";
-        cin >> account;
+        account = Scan();
         cout << "密码：";
-        cin >> password;
+        password = Scan();
         client::Send(From_Main(Login, account, password));
         if ((ID = client::RecvInt()))
         {
@@ -271,7 +273,7 @@ void Send_Msg_Ser(UserBase usr)
     string str;
     while (1)
     {
-        cin >> str;
+        str = Scan();
         if (str == "\\q")
         {
             client::frdID = -1;
@@ -360,7 +362,7 @@ void Sendfile_Ser(int ID)
     {
         system("clear");
         cout << "输入要发送的文件名：";
-        cin >> filename;
+        filename = Scan();
         stat(filename.c_str(), &s);
         if (!S_ISREG(s.st_mode))
         {
@@ -547,7 +549,7 @@ void Search_Frd_Ser(int ID)
     {
         system("clear");
         cout << "对方账户:";
-        cin >> account;
+        account = Scan();
         client::Send(From_Frd_Account(Search_Frd, account));
         if ((ans = client::RecvInt()))
         {
@@ -577,7 +579,7 @@ void New_Grp_Ser(int ID)
     {
         system("clear");
         cout << "群名：";
-        cin >> name;
+        name = Scan();
         client::Send(From_Grp_Name(New_Grp, ID, name));
         if ((client::RecvInt()))
         {
@@ -830,7 +832,7 @@ void Send_Msg_Grp_Ser(int GID)
     string str;
     while (1)
     {
-        cin >> str;
+        str = Scan();
         if (str == "\\q")
         {
             client::grpID = -1;
