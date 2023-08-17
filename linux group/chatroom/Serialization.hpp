@@ -1,8 +1,8 @@
 #ifndef JSON
 #define JSON
 #include <iostream>
-#include <json.hpp>
-// #include <nlohmann/json.hpp>//for arch
+// #include <json.hpp>
+#include <nlohmann/json.hpp> //for arch
 #include <unordered_map>
 #include <list>
 #include "user.hpp"

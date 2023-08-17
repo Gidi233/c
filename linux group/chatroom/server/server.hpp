@@ -11,7 +11,8 @@ class server
 {
 public:
     static std::unordered_map<int, int> ID_To_Fd; // User_To_Fd
-    int lfd, cfd, optval, reqLen, epfd;
+    static int epfd;
+    int lfd, cfd, optval, reqLen;
     char host[100], service[100];
     int hostlen = sizeof(host), servlen = sizeof(service);
 
@@ -21,10 +22,7 @@ public:
     struct sockaddr addr; // 接收到的
     socklen_t addrlen = sizeof(addr);
 
-    struct epoll_event evadd = {
-        .events = EPOLLHUP | EPOLLRDHUP | EPOLLIN | EPOLLET,
-        .data = {0},
-    };
+    static struct epoll_event evadd;
     struct epoll_event evget[EPOLL_SIZE] = {};
 
     server();

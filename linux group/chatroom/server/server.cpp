@@ -12,6 +12,11 @@
 using std::string, std::cout, std::cin, std::endl;
 
 std::unordered_map<int, int> server::ID_To_Fd = {};
+int server::epfd = -1;
+struct epoll_event server::evadd = {
+    .events = EPOLLHUP | EPOLLRDHUP | EPOLLIN | EPOLLET,
+    .data = {0},
+};
 
 server::server()
 {
@@ -181,7 +186,7 @@ void server::Wait_In()
                                   { return p.second == evget[i].data.fd; });
                 if (it != ID_To_Fd.end())
                 {
-                    Change_isLogin_Ser(it->first);
+                    // Change_isLogin_Ser(it->first);
                     server::ID_To_Fd.erase(it);
                 }
                 close(evget[i].data.fd);

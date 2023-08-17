@@ -395,8 +395,8 @@ void Sendfile_Ser(int ID)
     //     cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
     // }
     sigaction(SIGIO, &client::ign, 0);
-    while (offset < s.st_size) // 不是非阻塞的话有没有应该都行
-        cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
+    // while (offset < s.st_size) // 不是非阻塞的话有没有应该都行
+    cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
     if (client::RecvInt() == s.st_size)
     {
         cout << "发送成功" << endl;

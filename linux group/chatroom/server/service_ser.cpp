@@ -219,6 +219,18 @@ void Getfd(int *sfd)
         break;
 
     case Sendfile:
+    {
+        epoll_ctl(server::epfd, EPOLL_CTL_DEL, *sfd, nullptr);
+
+        auto it = find_if(server::ID_To_Fd.begin(), server::ID_To_Fd.end(),
+                          [&sfd](const pair<int, int> &p)
+                          { return p.second == *sfd; });
+        if (it != server::ID_To_Fd.end())
+        {
+            // Change_isLogin_Ser(it->first);
+            server::ID_To_Fd.erase(it);
+        }
+
         Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr);
         Get_Fileinfo(jso, &filename, &size, &filehash);
         usr = From_Json_UserTotal(Database::User_Out(ID));
@@ -324,7 +336,11 @@ void Getfd(int *sfd)
         delete[] buff;
         cout << offset << endl;
 
+        epoll_ctl(server::epfd, EPOLL_CTL_ADD, *sfd, &server::evadd);
+
         SendInt(*sfd, offset);
+
+        server::ID_To_Fd.emplace(usr.ID, *sfd);
 
         if (offset == size)
         {
@@ -335,7 +351,7 @@ void Getfd(int *sfd)
             break;
         }
         break;
-
+    }
     case File_List:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr); //
         Send(*sfd, Get_File(Database::User_Out(ID)), 0);
@@ -344,12 +360,22 @@ void Getfd(int *sfd)
 
     case Recvfile:
     {
+        auto it = find_if(server::ID_To_Fd.begin(), server::ID_To_Fd.end(),
+                          [&sfd](const pair<int, int> &p)
+                          { return p.second == *sfd; });
+        if (it != server::ID_To_Fd.end())
+        {
+            // Change_isLogin_Ser(it->first);
+            server::ID_To_Fd.erase(it);
+        }
+
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         num = Get_Num(jso);
         off_t offset = Get_Offset(jso);
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        auto it = std::next(usr.file.begin(), num);
-        file = *it;
+        auto i = std::next(usr.file.begin(), num);
+        file = *i;
+
         int fd = open(file.filehash.c_str(), O_RDONLY);
         while (offset < file.size)
             cout << sendfile(*sfd, fd, &offset, file.size) << endl;
@@ -363,6 +389,8 @@ void Getfd(int *sfd)
         else
             cout << "发送失败" << endl;
         close(fd);
+
+        server::ID_To_Fd.emplace(usr.ID, *sfd);
     }
 
     break;
