@@ -7,6 +7,7 @@
 
 int Get_Int();
 string Scan();
+void Pause();
 
 int Main_Menu_Ser_Register();
 int Main_Menu_Ser_Login();

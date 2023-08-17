@@ -126,7 +126,7 @@ void Manage_Frd_Apply_UI(int ID)
 		if (manage.empty())
 		{
 			cout << "当前无任何请求\n";
-			sleep(1);
+			Pause();
 			return;
 		}
 		for (auto &m : manage)
@@ -209,7 +209,7 @@ void Recvfile_UI(int ID)
 		if (file.empty())
 		{
 			cout << "当前无文件" << endl;
-			sleep(1);
+			Pause();
 			return;
 		}
 		cout << "全部文件\n";
@@ -343,7 +343,7 @@ void Manage_Grp_Apply_UI(int GID) // 移到friend里
 	if (!Check_Authority_Ser(GID))
 	{
 		cout << "你什么身份！" << endl;
-		sleep(1);
+		Pause();
 		return;
 	}
 	int choice;
@@ -356,7 +356,7 @@ void Manage_Grp_Apply_UI(int GID) // 移到friend里
 		if (manage.empty())
 		{
 			cout << "当前无任何请求\n";
-			sleep(1);
+			Pause();
 			return;
 		}
 		for (auto &m : manage)

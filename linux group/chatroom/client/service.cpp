@@ -60,6 +60,14 @@ string Scan()
     return input;
 }
 
+void Pause()
+{
+    cout << "按任意键返回" << endl;
+    char c;
+    while (std::cin.get(c) && c != '\n')
+        ;
+}
+
 int Main_Menu_Ser_Register()
 {
     string account, password;
@@ -78,7 +86,7 @@ int Main_Menu_Ser_Register()
         {
             sigaction(SIGIO, &client::ign, 0);
             cout << "注册成功" << endl;
-            sleep(1); //
+            Pause(); //
             return ID;
         }
 
@@ -169,7 +177,7 @@ void Add_Frd_Ser(int ID)
         {
         case 0:
             cout << "发送申请成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -213,7 +221,7 @@ void Del_Frd_Ser(int ID)
         {
         case 0:
             cout << "删除成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -367,7 +375,7 @@ void Sendfile_Ser(int ID)
         if (!S_ISREG(s.st_mode))
         {
             cout << "非常规文件" << endl;
-            sleep(1);
+            Pause();
             continue;
         }
         else
@@ -378,7 +386,7 @@ void Sendfile_Ser(int ID)
     if ((offset = client::RecvInt()) == s.st_size)
     {
         cout << "发送成功" << endl;
-        sleep(1);
+        Pause();
         return;
     }
     // cout << offset << endl;
@@ -391,7 +399,7 @@ void Sendfile_Ser(int ID)
     //     off_t offset = client::RecvInt();
     //     if (offset == size)
     //     {
-    //         sleep(1);
+    //         Pause();
     //         break;
     //     }
     //     cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
@@ -405,7 +413,7 @@ void Sendfile_Ser(int ID)
     }
     else
         cout << "发送失败" << endl;
-    sleep(1);
+    Pause();
     close(fd);
 }
 
@@ -425,7 +433,7 @@ void Recvfile_Ser(list<File> file)
         if (choice < 0 || choice >= file.size())
         {
             cout << "？\n";
-            sleep(1);
+            Pause();
             return;
         }
         break;
@@ -448,7 +456,7 @@ void Recvfile_Ser(list<File> file)
         if (offset == f.size)
         {
             cout << "接收完成" << endl;
-            sleep(1);
+            Pause();
             return;
         }
         fd = open(f.filename.c_str(), O_WRONLY | O_APPEND, 0660);
@@ -495,7 +503,7 @@ void Recvfile_Ser(list<File> file)
     }
     else
         cout << "接收失败" << endl;
-    sleep(1);
+    Pause();
     return;
 }
 
@@ -523,7 +531,7 @@ void Block_Frd_Ser(int ID)
         {
         case 0:
             cout << "修改成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -554,7 +562,7 @@ void Search_Frd_Ser(int ID)
         if ((ans = client::RecvInt()))
         {
             cout << account << "的ID为" << ans << endl;
-            sleep(1);
+            Pause();
             return;
         }
         cout << "该用户不存在\n";
@@ -584,7 +592,7 @@ void New_Grp_Ser(int ID)
         if ((client::RecvInt()))
         {
             cout << "建群成功" << endl;
-            sleep(1); //
+            Pause(); //
             return;
         }
         else
@@ -612,7 +620,7 @@ void Add_Grp_Ser(int ID)
         if (!ans)
         {
             cout << "成功发送申请" << endl;
-            sleep(1);
+            Pause();
             return;
         }
         if (ans == 1)
@@ -669,7 +677,7 @@ void Add_Manager_Ser(int GID)
     if (Check_Authority_Ser(GID) != 2)
     {
         cout << "你什么身份！？\n";
-        sleep(1);
+        Pause();
         return;
     }
     while (1)
@@ -692,7 +700,7 @@ void Add_Manager_Ser(int GID)
         {
         case 0:
             cout << "添加管理员成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -720,7 +728,7 @@ void Del_Manager_Ser(int GID)
     if (Check_Authority_Ser(GID) != 2)
     {
         cout << "你什么身份！？\n";
-        sleep(1);
+        Pause();
         return;
     }
     while (1)
@@ -743,7 +751,7 @@ void Del_Manager_Ser(int GID)
         {
         case 0:
             cout << "撤销管理员成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -814,7 +822,7 @@ bool Quit_Ser(int GID)
         else
         {
             cout << "不能没有群主啊" << endl;
-            sleep(1);
+            Pause();
             return 0;
         }
     }
@@ -855,7 +863,7 @@ void Del_Member_Ser(int GID)
     if (Check_Authority_Ser(GID) == 0)
     {
         cout << "你什么身份！？\n";
-        sleep(1);
+        Pause();
         return;
     }
     while (1)
@@ -878,7 +886,7 @@ void Del_Member_Ser(int GID)
         {
         case 0:
             cout << "移除成功\n";
-            sleep(1);
+            Pause();
             return;
             break;
         case 1:
@@ -918,7 +926,7 @@ bool Dissolve_Ser(int GID)
         else
         {
             cout << "我寻思你也不是群主啊" << endl;
-            sleep(1);
+            Pause();
             return 0;
         }
     }

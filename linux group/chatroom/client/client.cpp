@@ -86,7 +86,6 @@ client::client(char *addr, char *port)
     if (rp == NULL)
     {
         cout << "输的什么东西";
-        sleep(1);
         exit(1);
     }
 
