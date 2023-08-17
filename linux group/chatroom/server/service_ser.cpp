@@ -296,16 +296,16 @@ void Getfd(int *sfd)
             }
             if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //?   && set
             {
-                if (!set)
-                    break;
+                // if (!set)
+                //     break;
                 cout << "啊？" << endl;
                 continue;
             }
-            set = 0; //?
+            // set = 0; //?
             this_offset += received;
             cout << this_offset << endl;
         }
-        this_offset = write(fd, buff, this_size);
+        this_offset = write(fd, buff, this_offset);
         offset += this_offset;
         // while (offset < size)
         // {

@@ -451,6 +451,10 @@ void Recvfile_Ser(list<File> file)
         }
         fd = open(f.filename.c_str(), O_WRONLY | O_APPEND, 0660);
     }
+    if (fd == -1)
+    {
+        perror("open");
+    }
 
     client::Send(From_File(Recvfile, client::ID, choice, offset));
 
@@ -469,6 +473,7 @@ void Recvfile_Ser(list<File> file)
         }
         if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //&& set
         {
+            cout << "啊？" << endl;
             continue;
         }
         // set = 0;
@@ -476,7 +481,7 @@ void Recvfile_Ser(list<File> file)
         cout << this_offset << endl;
     }
     sigaction(SIGIO, &client::respond, 0);
-    this_offset = write(fd, buff, this_size);
+    this_offset = write(fd, buff, this_offset);
     offset += this_offset;
     close(fd);
     // chmod(filehash.c_str(), 0660);
