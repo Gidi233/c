@@ -27,6 +27,7 @@ void Getfd(int *sfd)
     File file;
     Message msg;
     Group grp;
+    struct stat s;
     // cout << "得到事件：" << endl;
     // cout << jso << endl;
     // cout << getopt(jso) << endl;
@@ -224,16 +225,37 @@ void Getfd(int *sfd)
         opposite_usr = From_Json_UserTotal(Database::User_Out(otherUsrID));
         file = File(ID, usr.account, filename, size, filehash);
 
-        if (!Database::File_Exist(filehash)) // 其实可以直接检测文件对吧
+        // if (!Database::File_Exist(filehash)) // 其实可以直接检测文件对吧
+        // {
+        //     Database::File_In(filehash, 0);
+        //     offset = 0;
+        //     SendInt(*sfd, 0);
+        //     fd = open(filehash.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
+        // }
+        // else
+        // {
+        //     offset = Database::File_Out(filehash);
+        // SendInt(*sfd, offset);
+        //     if (offset == size)
+        //     {
+        //         opposite_usr.file.emplace_back(file);
+        //         Database::User_In(otherUsrID, To_Json_User(opposite_usr));
+        //         msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
+        //         Relay_To_User(otherUsrID, msg);
+        //         break;
+        //     }
+        //     fd = open(filehash.c_str(), O_WRONLY | O_APPEND, 0660);
+        // }
+
+        if (stat(filehash.c_str(), &s) == -1)
         {
-            Database::File_In(filehash, 0);
             offset = 0;
             SendInt(*sfd, 0);
             fd = open(filehash.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
         }
         else
         {
-            offset = Database::File_Out(filehash);
+            offset = s.st_size;
             SendInt(*sfd, offset);
             if (offset == size)
             {
@@ -241,7 +263,8 @@ void Getfd(int *sfd)
                 Database::User_In(otherUsrID, To_Json_User(opposite_usr));
                 msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
                 Relay_To_User(otherUsrID, msg);
-                break;
+                cout << "接收完成" << endl;
+                return;
             }
             fd = open(filehash.c_str(), O_WRONLY | O_APPEND, 0660);
         }
@@ -259,11 +282,14 @@ void Getfd(int *sfd)
                 cout << "连接断开" << endl;
                 break;
             }
-            if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //&& set
+            if (received == -1 && (errno == (EAGAIN | EWOULDBLOCK))) //?   && set
             {
+                if (!set)
+                    break;
+                cout << "啊？" << endl;
                 continue;
             }
-            // set = 0;
+            set = 0; //?
             this_offset += received;
             cout << this_offset << endl;
         }
@@ -299,7 +325,6 @@ void Getfd(int *sfd)
         cout << offset << endl;
 
         SendInt(*sfd, offset);
-        Database::File_In(filehash, offset);
 
         if (offset == size)
         {

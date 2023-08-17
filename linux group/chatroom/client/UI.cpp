@@ -226,7 +226,8 @@ void Recvfile_UI(int ID)
 		{
 			return;
 		}
-		Recvfile_Ser(file);
+		if (choice == 1)
+			Recvfile_Ser(file);
 	} while (1);
 }
 

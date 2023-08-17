@@ -355,6 +355,7 @@ void Sendfile_Ser(int ID)
         sleep(1);
         return;
     }
+    // cout << offset << endl;
     int fd;
     fd = open(filename.c_str(), O_RDONLY);
 
@@ -370,7 +371,8 @@ void Sendfile_Ser(int ID)
     //     cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
     // }
     sigaction(SIGIO, &client::ign, 0);
-    cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
+    while (offset < s.st_size) // 不是非阻塞的话有没有应该都行
+        cout << sendfile(client::cfd, fd, &offset, s.st_size) << endl;
     if (client::RecvInt() == s.st_size)
     {
         cout << "发送成功" << endl;
@@ -397,7 +399,8 @@ void Recvfile_Ser(list<File> file)
         if (choice < 0 || choice >= file.size())
         {
             cout << "？\n";
-            continue;
+            sleep(1);
+            return;
         }
         break;
     }
