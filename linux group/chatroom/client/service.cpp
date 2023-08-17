@@ -34,6 +34,30 @@ int Get_Int()
     }
 }
 
+string Scan()
+{
+    // std::ios::iostate oldState = std::cin.rdstate();
+
+    // std::string input;
+    // while (1)
+    // {
+
+    //     std::cin >> input;
+
+    //     // 检查EOF
+    //     if (std::cin.fail())
+    //     {
+    //         // 还原flags
+    //         std::cin.clear(oldState);
+    //         continue;
+    //     }
+    //     break;
+    // }
+
+    // // 其他处理逻辑
+    // return input;
+}
+
 int Main_Menu_Ser_Register()
 {
     string account, password;

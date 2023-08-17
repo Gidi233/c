@@ -6,6 +6,7 @@
 #include <list>
 
 int Get_Int();
+string Scan();
 
 int Main_Menu_Ser_Register();
 int Main_Menu_Ser_Login();

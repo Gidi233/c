@@ -140,20 +140,21 @@ string client::Recv()
     return ans;
 }
 
-string client::Recv_Online()
-{
-    int reqLen;
-    recv(cfd, (void *)&reqLen, sizeof(int), 0);
-    char *buffer = new char[reqLen];
-    recv(cfd, buffer, reqLen, 0);
-    string res(buffer, reqLen);
-    delete[] buffer;
-    return res;
-}
-
 void sigioHandler(int sig)
 {
-    Message msg = From_Json_Msg(client::Recv_Online()); // 改成非阻塞一直读？
-    msg.toString();                                     // 在信号处理程序中输出（好像）会刷新输出流（还是什么来着）
+
+    while (1)
+    {
+        int reqLen;
+        if (recv(client::cfd, (void *)&reqLen, sizeof(int), MSG_DONTWAIT) == -1)
+            break;
+        char *buffer = new char[reqLen];
+        recv(client::cfd, buffer, reqLen, 0);
+        string res(buffer, reqLen);
+        delete[] buffer;
+        Message msg = From_Json_Msg(res); // 改成非阻塞一直读？
+        msg.toString();
+    }
+    // 在信号处理程序中输出（好像）会刷新输出流（还是什么来着）
     // 在这里开个进程输出？？？
 }

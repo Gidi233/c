@@ -23,7 +23,6 @@ public:
     static void Send(string jso);
     static long long RecvInt();
     static string Recv();
-    static string Recv_Online();
 };
 
 void sigioHandler(int sig);
