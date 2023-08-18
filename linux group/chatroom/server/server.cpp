@@ -11,7 +11,8 @@
 #include <fcntl.h>
 using std::string, std::cout, std::cin, std::endl;
 
-std::unordered_map<int, int> server::ID_To_Fd = {};
+// std::unordered_map<int, int> server::ID_To_Fd = {};//有的话多重定义？？？  要不然拿函数包一层
+
 int server::epfd = -1;
 struct epoll_event server::evadd = {
     .events = EPOLLHUP | EPOLLRDHUP | EPOLLIN | EPOLLET,
@@ -186,7 +187,6 @@ void server::Wait_In()
                                   { return p.second == evget[i].data.fd; });
                 if (it != ID_To_Fd.end())
                 {
-                    // Change_isLogin_Ser(it->first);
                     server::ID_To_Fd.erase(it);
                 }
                 close(evget[i].data.fd);

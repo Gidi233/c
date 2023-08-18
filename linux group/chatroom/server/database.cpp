@@ -90,32 +90,6 @@ bool Database::User_Exist_ID(int ID)
     return ans;
 }
 
-bool Database::File_Exist(string name)
-{
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "HEXISTS File %s", name.c_str());
-    if (reply == nullptr)
-    {
-        return false;
-    }
-    bool ans = reply->integer;
-    freeReplyObject(reply);
-    return ans;
-}
-bool Database::File_In(string name, size_t offset)
-{
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "HSET File %s %lld", name.c_str(), offset);
-    int ans = reply->integer;
-    freeReplyObject(reply);
-    return ans;
-}
-size_t Database::File_Out(string name)
-{
-    redisReply *reply = (redisReply *)redisCommand(Database::redis, "HGET File %s", name.c_str());
-    size_t ans = std::stoul(reply->str);
-    freeReplyObject(reply);
-    return ans;
-}
-
 int Database::Get_ChatID()
 {
     redisReply *reply = (redisReply *)redisCommand(Database::redis, "HEXISTS Chat ChatID");

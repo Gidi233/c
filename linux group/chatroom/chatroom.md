@@ -194,9 +194,9 @@ Manage_Apply_UI(int ID) // 移到friend里
 
 问题： // UserTotal(int ID, string account, string password, bool islogin);//说在UserTotal类中找不到这些成员
 
-输ID时输入字符会死循环，在客户端输入ID等数字时用string接收传输时转成int
+2.收文件时，若已存在，先读文件的hash，不一样的话再新建文件
 
-//生成ID后转为string，之后都只用string
+3.返回聊天记录时返回一定数量，客户端收时收完头循环收体
 
 已解决：
 
@@ -211,3 +211,7 @@ bool flag = !flag;
 4.undefined reference to XXX，某个类中成员声明时没有（类名::），少头文件，cmake配置不全
 
 5.jump to case label 不要在case里定义变量，或者加个{}限制生命周期
+
+6.输ID时输入字符会死循环，在客户端输入ID等数字时用string接收传输时转成int
+
+//生成ID后转为string，之后都只用string

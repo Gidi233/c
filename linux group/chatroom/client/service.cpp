@@ -115,18 +115,25 @@ int Main_Menu_Ser_Login()
         cout << "密码：";
         password = Scan();
         client::Send(From_Main(Login, account, password));
-        if ((ID = client::RecvInt()))
-        {
-            sigaction(SIGIO, &client::ign, 0);
-            return ID;
-        }
-        else
+        ID = client::RecvInt();
+        if (!ID)
         {
             cnt--;
             if (!cnt)
                 return 0;
             cout << "还能尝试" << cnt << "次" << endl;
             continue;
+        }
+        if (ID == -1)
+        {
+            cout << "当前已有人登陆\n";
+            Pause();
+            return 0;
+        }
+        if (ID)
+        {
+            sigaction(SIGIO, &client::ign, 0);
+            return ID;
         }
     }
 }
@@ -372,7 +379,7 @@ void Sendfile_Ser(int ID)
     {
         system("clear");
         cout << "输入要发送的文件路径：";
-        filePath = Scan(); // 在这里提取最后一个斜杠后的filename
+        filePath = Scan();
         filename = filePath.filename().string();
         stat(filePath.c_str(), &s);
         if (!S_ISREG(s.st_mode))

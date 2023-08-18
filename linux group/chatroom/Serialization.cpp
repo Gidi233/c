@@ -6,6 +6,8 @@
 #include "client/client.hpp"
 using std::string, std::cout, std::endl, nlohmann::json;
 
+extern std::unordered_map<int, int> server::ID_To_Fd;
+
 string Get_Type(string jso)
 {
     json j = json::parse(jso);
@@ -252,7 +254,6 @@ string To_Json_User(UserTotal usr)
         {"ID", usr.ID},
         {"account", usr.account},
         {"password", usr.password},
-        {"islogin", usr.islogin},
         {"frd", frd_map},
         {"frd_block", block},
         {"grp", grp_map},
@@ -338,7 +339,8 @@ UserTotal From_Json_UserTotal(string jso)
     list<Message> notice = From_Json_MsgList(j["notice"]);
     list<File> file = From_Json_FileList(j["file"]);
     set<Message, MessageComparator> manage = From_Json_Manage_List(j["manage"]);
-    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], j["islogin"]), j["frd"], j["frd_block"], j["grp"], notice, manage, file);
+    bool islogin = server::ID_To_Fd.find(j.at("ID")) != server::ID_To_Fd.end();
+    return UserTotal(UserBase(j.at("ID"), j["account"], j["password"], islogin), j["frd"], j["frd_block"], j["grp"], notice, manage, file);
 }
 
 UserBase From_Json_UserBase(string jso)
@@ -411,10 +413,11 @@ void Get_Fileinfo(const string &jso, string *filename, size_t *size, string *fil
 string To_UserBase(string jso)
 {
     json total = json::parse(jso);
+    bool islogin = server::ID_To_Fd.find(total["ID"]) != server::ID_To_Fd.end();
     json base{
         {"ID", total["ID"]},
         {"account", total["account"]},
-        {"islogin", total["islogin"]},
+        {"islogin", islogin},
     };
     return base.dump();
 }

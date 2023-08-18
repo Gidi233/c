@@ -23,10 +23,6 @@ public:
     static bool User_Exist_Account(string account);
     static bool User_Exist_ID(int ID);
 
-    static bool File_Exist(string name);
-    static bool File_In(string name, size_t offset);
-    static size_t File_Out(string name);
-
     static int Get_ChatID();
     static bool Del_Chat(int ID);
     static bool Chat_In(int ID, string jso);

@@ -10,6 +10,5 @@ void SendInt(int fd, long long num);
 string Recv(int fd);
 void Relay_To_User(int otherUsrID, Message msg);
 UserTotal New_User(string account, string password);
-bool Change_isLogin_Ser(int ID);
 
 #endif

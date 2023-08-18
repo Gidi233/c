@@ -59,10 +59,15 @@ void Getfd(int *sfd)
             break;
         }
         usr = From_Json_UserTotal(Database::User_Out(Database::Get_Account_To_ID(account)));
+
+        if (server::ID_To_Fd.find(usr.ID) != server::ID_To_Fd.end())
+        {
+            SendInt(*sfd, -1);
+            break;
+        }
         if (usr.password == password)
         {
             cout << "账号" << usr.ID << "登录\n";
-            Change_isLogin_Ser(usr.ID);
             SendInt(*sfd, usr.ID);
             server::ID_To_Fd.emplace(usr.ID, *sfd);
             Send(*sfd, Get_Notice(Database::User_Out(usr.ID)), 0);
@@ -93,7 +98,6 @@ void Getfd(int *sfd)
 
     case Exit:
         Get_Info(jso, &ID, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
-        Change_isLogin_Ser(ID);
         server::ID_To_Fd.erase(ID); // 在server里再关一次
         cout << "用户" << ID << "退出\n";
         break;
@@ -214,7 +218,7 @@ void Getfd(int *sfd)
     case Get_frdChat:
         Get_Info(jso, &ID, nullptr, nullptr, &otherUsrID, nullptr, nullptr, nullptr); //
         usr = From_Json_UserTotal(Database::User_Out(ID));
-        Send(*sfd, Database::Chat_Out(usr.frd[otherUsrID]), 0);
+        Send(*sfd, Database::Chat_Out(usr.frd[otherUsrID]), 0); // 固定条数
         cout << "返回" << ID << "和" << otherUsrID << "的聊天记录" << endl;
         break;
 
@@ -227,7 +231,6 @@ void Getfd(int *sfd)
                           { return p.second == *sfd; });
         if (it != server::ID_To_Fd.end())
         {
-            // Change_isLogin_Ser(it->first);
             server::ID_To_Fd.erase(it);
         }
 
@@ -367,7 +370,6 @@ void Getfd(int *sfd)
                           { return p.second == *sfd; });
         if (it != server::ID_To_Fd.end())
         {
-            // Change_isLogin_Ser(it->first);
             server::ID_To_Fd.erase(it);
         }
 
@@ -714,10 +716,4 @@ void Relay_To_User(int otherUsrID, Message msg)
 UserTotal New_User(string account, string password)
 {
     return UserBase(account, password);
-}
-
-bool Change_isLogin_Ser(int ID)
-{
-    string jso = Change_isLogin(Database::User_Out(ID));
-    return Database::User_In(ID, jso);
 }
