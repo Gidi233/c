@@ -131,7 +131,13 @@ string client::Recv()
     int reqLen;
     recv(cfd, (void *)&reqLen, sizeof(int), 0);
     char *buffer = new char[reqLen];
-    recv(cfd, buffer, reqLen, 0);
+    recv(cfd, buffer, reqLen, MSG_WAITALL);
+    size_t offset = 0;
+    // while (offset < reqLen)
+    // {
+    //     offset += recv(cfd, buffer, reqLen, MSG_WAITALL);
+    //     cout << offset << endl;
+    // } // 在这里while（）
     string res(buffer, reqLen);
     delete[] buffer;
     string ans = Get_Type(res);    // 在这里检测是实时信息还是回应，实时消息再调Recv

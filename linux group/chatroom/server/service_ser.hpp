@@ -7,7 +7,6 @@ using std::string;
 void Getfd(int *fd);
 void Send(int fd, string jso, bool type);
 void SendInt(int fd, long long num);
-string Recv(int fd);
 void Relay_To_User(int otherUsrID, Message msg);
 UserTotal New_User(string account, string password);
 
