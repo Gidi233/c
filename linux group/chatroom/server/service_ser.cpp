@@ -139,19 +139,22 @@ void Getfd(int *sfd)
             usr = From_Json_UserTotal(Database::User_Out(ID));
             usr.manage.erase(usr.manage.begin());
             cout << "返回用户" << ID << "处理信息\n";
-            if (Get_Num(jso))
+            if (usr.frd.find(otherUsrID) == usr.frd.end())
             {
-                chatID = Database::Get_ChatID();
-                usr.frd.emplace(otherUsrID, chatID);
-                usr.frd_Block.emplace(otherUsrID, 0);
-                Database::User_In(otherUsrID, Add_Friend(ID, Database::User_Out(otherUsrID), chatID));
-                Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 1));
+                if (Get_Num(jso))
+                {
+                    chatID = Database::Get_ChatID();
+                    usr.frd.emplace(otherUsrID, chatID);
+                    usr.frd_Block.emplace(otherUsrID, 0);
+                    Database::User_In(otherUsrID, Add_Friend(ID, Database::User_Out(otherUsrID), chatID));
+                    Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 1));
+                }
+                else
+                {
+                    Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 0));
+                }
+                Database::User_In(ID, To_Json_User(usr));
             }
-            else
-            {
-                Relay_To_User(otherUsrID, Message(Recv_Add_Frd, ID, usr.account, otherUsrID, gettime(), 0));
-            }
-            Database::User_In(ID, To_Json_User(usr));
             break;
 
         case Del_Frd:
