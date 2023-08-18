@@ -271,6 +271,7 @@ void Getfd(int *sfd)
             SendInt(*sfd, offset);
             if (offset == size)
             {
+                epoll_ctl(server::epfd, EPOLL_CTL_ADD, *sfd, &server::evadd);
                 opposite_usr.file.emplace_back(file);
                 Database::User_In(otherUsrID, To_Json_User(opposite_usr));
                 msg = Message(Sendfile, ID, usr.account, otherUsrID, gettime());
@@ -298,7 +299,7 @@ void Getfd(int *sfd)
             {
                 // if (!set)
                 //     break;
-                cout << "啊？" << endl;
+                // cout << "啊？" << endl;
                 continue;
             }
             // set = 0; //?
