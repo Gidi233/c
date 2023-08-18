@@ -61,6 +61,33 @@ string Scan()
     return input;
 }
 
+string ScanPass()
+{
+    int stdin_fd = fileno(stdin);
+
+    // 保存当前的终端设置
+    struct termios old_term;
+    tcgetattr(stdin_fd, &old_term);
+
+    // 创建一个新的终端设置副本
+    struct termios new_term = old_term;
+
+    // 禁用Ctrl+D（EOF）字符的特殊行为
+    new_term.c_cc[VEOF] = 0;
+
+    new_term.c_lflag &= ~(ECHO | ICANON);
+
+    // 将新的终端设置应用到标准输入
+    tcsetattr(stdin_fd, TCSANOW, &new_term);
+
+    // 读取用户输入
+    std::string input;
+    std::getline(std::cin, input);
+    // 恢复原始的终端设置
+    tcsetattr(stdin_fd, TCSANOW, &old_term);
+    return input;
+}
+
 void Pause()
 {
     cout << "按任意键返回" << endl;
@@ -71,7 +98,7 @@ void Pause()
 
 int Main_Menu_Ser_Register()
 {
-    string account, password;
+    string account, password, password1;
     int ID;
     int choice;
     while (1)
@@ -79,8 +106,18 @@ int Main_Menu_Ser_Register()
         system("clear");
         cout << "账户：";
         account = Scan();
-        cout << "密码：";
-        password = Scan();
+        while (1)
+        {
+            cout << "密码：";
+            password = ScanPass();
+            cout << endl;
+            cout << "再次输入密码：";
+            password1 = ScanPass();
+            cout << endl;
+            if (password1 == password)
+                break;
+            cout << "两次不一样，再来！\n";
+        }
         // 加个再次输入密码
         client::Send(From_Main(Register, account, password));
         if ((ID = client::RecvInt()))
