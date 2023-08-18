@@ -53,6 +53,14 @@ server::server()
             perror("setsockopt error");
             exit(1);
         }
+        int keepIdle = 30;    // 如果30秒内没有数据交流,则发送心跳包
+        int keepInterval = 5; // 每5秒发送一次心跳包
+        int keepCount = 3;    // 最多发送3次心跳包
+
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPIDLE, (void *)&keepIdle, sizeof(keepIdle));
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval));
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPCNT, (void *)&keepCount, sizeof(keepCount));
+
         // 重用ip地址
         if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
             break; /* Success */
@@ -107,6 +115,15 @@ server::server(char *addr, char *port)
             perror("setsockopt error");
             exit(1);
         }
+
+        int keepIdle = 30;    // 如果30秒内没有数据交流,则发送心跳包
+        int keepInterval = 5; // 每5秒发送一次心跳包
+        int keepCount = 3;    // 最多发送3次心跳包
+
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPIDLE, (void *)&keepIdle, sizeof(keepIdle));
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval));
+        setsockopt(lfd, IPPROTO_TCP, TCP_KEEPCNT, (void *)&keepCount, sizeof(keepCount));
+
         // 重用ip地址
         if (bind(lfd, rp->ai_addr, rp->ai_addrlen) == 0)
             break; /* Success */

@@ -1,6 +1,8 @@
 #ifndef SERVER
 #define SERVER
 #include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <iostream>
 #include <sys/epoll.h>
