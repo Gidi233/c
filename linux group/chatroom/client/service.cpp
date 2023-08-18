@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <iostream>
+#include <filesystem>
 // using namespace std;
 using std::string, std::cout, std::cin, std::endl;
 
@@ -366,12 +367,14 @@ void Sendfile_Ser(int ID)
 
     struct stat s;
     string filename;
+    std::filesystem::path filePath;
     while (1)
     {
         system("clear");
-        cout << "输入要发送的文件名：";
-        filename = Scan();
-        stat(filename.c_str(), &s);
+        cout << "输入要发送的文件路径：";
+        filePath = Scan(); // 在这里提取最后一个斜杠后的filename
+        filename = filePath.filename().string();
+        stat(filePath.c_str(), &s);
         if (!S_ISREG(s.st_mode))
         {
             cout << "非常规文件" << endl;
@@ -381,7 +384,7 @@ void Sendfile_Ser(int ID)
         else
             break;
     }
-    client::Send(From_Frd_File(Sendfile, ID, frdID, filename, s.st_size, getFileHash(filename)));
+    client::Send(From_Frd_File(Sendfile, ID, frdID, filename, s.st_size, getFileHash(filePath)));
     off_t offset = 0;
     if ((offset = client::RecvInt()) == s.st_size)
     {
@@ -391,7 +394,7 @@ void Sendfile_Ser(int ID)
     }
     // cout << offset << endl;
     int fd;
-    fd = open(filename.c_str(), O_RDONLY);
+    fd = open(filePath.c_str(), O_RDONLY);
 
     // while (1)
     // {
@@ -445,12 +448,14 @@ void Recvfile_Ser(list<File> file)
     int fd;
     bool set = 1;
 
-    if (stat(f.filename.c_str(), &s) == -1)
+    string path = "file/";
+    string real_path = path + f.filename; //
+    if (stat(real_path.c_str(), &s) == -1)
     {
         offset = 0;
-        fd = open(f.filename.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
+        fd = open(real_path.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
     }
-    else
+    else // 若已存在，先读文件的hash，不一样的话再新建文件
     {
         offset = s.st_size;
         if (offset == f.size)
@@ -459,7 +464,7 @@ void Recvfile_Ser(list<File> file)
             Pause();
             return;
         }
-        fd = open(f.filename.c_str(), O_WRONLY | O_APPEND, 0660);
+        fd = open(real_path.c_str(), O_WRONLY | O_APPEND, 0660);
     }
     if (fd == -1)
     {

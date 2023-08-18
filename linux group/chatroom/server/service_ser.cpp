@@ -258,12 +258,13 @@ void Getfd(int *sfd)
         //     }
         //     fd = open(filehash.c_str(), O_WRONLY | O_APPEND, 0660);
         // }
-
-        if (stat(filehash.c_str(), &s) == -1)
+        string path = "file/";
+        string real_path = path + filehash; //
+        if (stat(real_path.c_str(), &s) == -1)
         {
             offset = 0;
             SendInt(*sfd, 0);
-            fd = open(filehash.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
+            fd = open(real_path.c_str(), O_WRONLY | O_CREAT, 0660); //| O_EXCL
         }
         else
         {
@@ -279,7 +280,7 @@ void Getfd(int *sfd)
                 cout << "接收完成" << endl;
                 return;
             }
-            fd = open(filehash.c_str(), O_WRONLY | O_APPEND, 0660);
+            fd = open(real_path.c_str(), O_WRONLY | O_APPEND, 0660);
         }
 
         this_size = size - offset;
@@ -377,7 +378,9 @@ void Getfd(int *sfd)
         auto i = std::next(usr.file.begin(), num);
         file = *i;
 
-        int fd = open(file.filehash.c_str(), O_RDONLY);
+        string path = "file/";
+        string real_path = path + file.filehash; //
+        int fd = open(real_path.c_str(), O_RDONLY);
         while (offset < file.size)
             cout << sendfile(*sfd, fd, &offset, file.size) << endl;
         if (offset == file.size)

@@ -6,6 +6,8 @@ project(ChatRoom)
 add_executable(server user.cpp server/database.cpp server/server.cpp server/service_ser.cpp server/thread.cpp server/main.cpp Serialization.cpp Message.cpp group.cpp client/client.cpp File.cpp)
 add_executable(client client/client.cpp client/service.cpp client/UI.cpp client/main.cpp Serialization.cpp server/database.cpp user.cpp Message.cpp group.cpp File.cpp)
 
+# 创建一个文件夹
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/file)
 
 # 添加头文件路径
 target_include_directories(server PRIVATE server ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/client)
